@@ -404,6 +404,8 @@ class MainWindow(object):
                 
                 for device, capture in self.finder.capture_devices.items():
                     iter = model.append()
+                    model.set_value(iter, 0, theme.load_icon("camera-video",
+                                                             size, 0))
                     model.set_value(iter, 1, capture.product)
                     if capture.version == '1':
                         model.set_value(iter, 2, "v4l://" + device)
