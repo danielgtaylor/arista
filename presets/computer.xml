@@ -53,6 +53,26 @@
         </video>
     </preset>
     <preset>
+        <name>Live Input</name>
+        <container>ffmux_mp4</container>
+        <extension>mp4</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=192000</pass>
+            </passes>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>pass=cbr bitrate=2048 subme=4 threads=0</pass>
+            </passes> 
+            <width>320, 1920</width>
+            <height>240, 1080</height>
+            <rate>1, 30</rate>
+        </video>
+    </preset>
+    <preset>
         <name>High</name>
         <container>ffmux_mp4</container>
         <extension>mp4</extension>
