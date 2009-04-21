@@ -49,7 +49,7 @@ _log = logging.getLogger("arista-gtk")
 
 CONFIG_PATH = "/apps/arista"
 
-DEFAULT_CHECK_DVD = True
+DEFAULT_CHECK_INPUTS = True
 DEFAULT_SHOW_TOOLBAR = True
 DEFAULT_SHOW_PREVIEW = True
 DEFAULT_PREVIEW_FPS = 2
@@ -346,7 +346,7 @@ class MainWindow(object):
         
         client.notify_add(CONFIG_PATH + "/show_toolbar", 
                           self.on_gconf_show_toolbar)
-        client.notify_add(CONFIG_PATH + "/check_dvd", self._setup_source)
+        client.notify_add(CONFIG_PATH + "/check_inputs", self._setup_source)
         
         # Show the interface!
         self.source.show()
@@ -381,13 +381,13 @@ class MainWindow(object):
         # Should we check for DVD drives?
         client = gconf.client_get_default()
         try:
-            check_dvd = client.get_value(CONFIG_PATH + "/check_dvd")
+            check_inputs = client.get_value(CONFIG_PATH + "/check_inputs")
         except ValueError:
-            check_dvd = DEFAULT_CHECK_DVD
+            check_inputs = DEFAULT_CHECK_INPUTS
         
-        if check_dvd:
-            # Setup DVD discovery
-            # Adds DVD devices to the source combo box
+        if check_inputs:
+            # Setup input source discovery
+            # Adds DVD and V4L devices to the source combo box
             if not self.finder:
                 self.finder = arista.inputs.InputFinder()
                 
@@ -817,7 +817,7 @@ class PrefsDialog(object):
         
         # Shortcuts for accessing widgets
         self.window = self.builder.get_object("prefs_dialog")
-        self.check_dvd = self.builder.get_object("check_dvd")
+        self.check_inputs = self.builder.get_object("check_inputs")
         self.check_show_live = self.builder.get_object("check_show_live")
         self.spin_live_fps = self.builder.get_object("spin_live_fps")
         self.presets_view = self.builder.get_object("treeview_presets")
@@ -853,10 +853,10 @@ class PrefsDialog(object):
         
         # Update UI to reflect currently stored settings
         try:
-            value = client.get_value(CONFIG_PATH + "/check_dvd")
-            self.check_dvd.set_active(value)
+            value = client.get_value(CONFIG_PATH + "/check_inputs")
+            self.check_inputs.set_active(value)
         except ValueError:
-            self.check_dvd.set_active(DEFAULT_CHECK_DVD)
+            self.check_inputs.set_active(DEFAULT_CHECK_INPUTS)
         
         try:
             value = client.get_value(CONFIG_PATH + "/show_preview")
@@ -871,7 +871,8 @@ class PrefsDialog(object):
             self.spin_live_fps.set_value(DEFAULT_PREVIEW_FPS)
         
         # Register handlers for when settings are changed
-        client.notify_add(CONFIG_PATH + "/check_dvd", self.on_gconf_check_dvd)
+        client.notify_add(CONFIG_PATH + "/check_inputs", 
+                          self.on_gconf_check_inputs)
         client.notify_add(CONFIG_PATH + "/show_preview", 
                           self.on_gconf_show_preview)
         client.notify_add(CONFIG_PATH + "/preview_fps", 
@@ -889,12 +890,12 @@ class PrefsDialog(object):
         """
         self.window.destroy()
     
-    def on_check_dvd_toggled(self, widget):
+    def on_check_inputs_toggled(self, widget):
         """
             Update GConf preference for checking DVD drives.
         """
         client = gconf.client_get_default()
-        client.set_bool(CONFIG_PATH + "/check_dvd", widget.get_active())
+        client.set_bool(CONFIG_PATH + "/check_inputs", widget.get_active())
     
     def on_check_show_live_toggled(self, widget):
         """
@@ -912,12 +913,12 @@ class PrefsDialog(object):
         client = gconf.client_get_default()
         client.set_int(CONFIG_PATH + "/preview_fps", int(widget.get_value()))
     
-    def on_gconf_check_dvd(self, client, connection, entry, args):
+    def on_gconf_check_inputs(self, client, connection, entry, args):
         """
             Update UI when the GConf preference for checking DVD drives has
             been modified.
         """
-        widget = self.builder.get_object("check_dvd")
+        widget = self.builder.get_object("check_inputs")
         widget.set_active(entry.get_value().get_bool())
     
     def on_gconf_show_preview(self, client, connection, entry, args):
