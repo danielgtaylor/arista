@@ -131,6 +131,10 @@ class Transcoder(gobject.GObject):
                 src = "dvdreadsrc device=\"%s\" title=\"%s\"" % (parts[0], parts[1])
             else:
                 src = "dvdreadsrc device=\"%s\"" % parts[0]
+        elif self.infile.startswith("v4l://"):
+            src = "v4lsrc device=\"%s\"" % self.infile[6:]
+        elif self.infile.startswith("v4l2://"):
+            src = "v4l2src device=\"%s\"" % self.infile[7:]
         else:
             src = "filesrc location=\"%s\"" % self.infile
         
@@ -311,8 +315,8 @@ class Transcoder(gobject.GObject):
                 deint = " ffdeinterlace ! "
             
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
-                   "%s videoscale ! %s ! %s queue ! %s ! tee name=videotee " \
-                   "! %s" % \
+                   "%s videoscale ! %s ! %s queue ! %s ! queue ! tee " \
+                   "name=videotee ! queue ! %svideo_00" % \
                    (deint, self.vcaps.to_string(), vbox, vencoder, premux)
             
         if self.info.is_audio and self.preset.acodec and \
@@ -371,7 +375,7 @@ class Transcoder(gobject.GObject):
                 
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
                    "ffaudioresample ! %s ! audioconvert ! audiorate ! " \
-                   "ffaudioresample ! %s ! %s" % \
+                   "ffaudioresample ! %s ! %saudio_00" % \
                    (self.acaps.to_string(), aencoder, premux)
         
         # =====================================================================
@@ -481,7 +485,7 @@ class Transcoder(gobject.GObject):
         duration = max(self.info.videolength, self.info.audiolength)
         
         if not duration:
-            raise TranscoderStatusException("Can't find stream duration!")
+            return 1.0, "Unknown"
         
         try:
             pos, format = self.pipe.query_position(gst.FORMAT_TIME)

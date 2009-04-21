@@ -391,7 +391,7 @@ class MainWindow(object):
             if not self.finder:
                 self.finder = arista.inputs.InputFinder()
                 
-            if len(self.finder.drives):
+            if len(self.finder.drives) or len(self.finder.capture_devices):
                 icon = gtk.stock_lookup(gtk.STOCK_CDROM)[0]
                 self.source = _new_combo_with_image([gobject.TYPE_PYOBJECT])
                 model = self.source.get_model()
@@ -400,8 +400,19 @@ class MainWindow(object):
                     iter = model.append()
                     model.set_value(iter, 0, theme.load_icon(icon, size, 0))
                     model.set_value(iter, 1, drive.nice_label)
-                    model.set_value(iter, 2, "dvd://" + drive.block)
-                    
+                    model.set_value(iter, 2, "dvd://" + block)
+                
+                for device, capture in self.finder.capture_devices.items():
+                    iter = model.append()
+                    model.set_value(iter, 1, capture.product)
+                    if capture.version == '1':
+                        model.set_value(iter, 2, "v4l://" + device)
+                    elif capture.version == '2':
+                        model.set_value(iter, 2, "v4l2://" + device)
+                    else:
+                        print "Unknown V4L version!"
+                        model.remove(iter)
+                
                 iter = model.append()
                 model.set_value(iter, 1, "Choose file...")
                 

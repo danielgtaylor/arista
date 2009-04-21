@@ -260,7 +260,7 @@ class InputFinder(gobject.GObject):
                 break
         
         for device, capture in self.capture_devices.items():
-            if device.udi == udi:
+            if capture.udi == udi:
                 self.emit("v4l-capture-lost", self.capture_devices[device])
                 del self.capture_devices[device]
                 break

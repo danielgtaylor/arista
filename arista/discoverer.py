@@ -23,6 +23,8 @@
 Class and functions for getting multimedia information about files
 
 Modified to support dvd://device@title style URIs using dvdreadsrc.
+Modified to support v4l://device style URIs using v4lsrc.
+Modified to support v4l2://device style URIs using v4l2src.
 """
 
 import logging
@@ -130,6 +132,12 @@ class Discoverer(gst.Pipeline):
             self.src.set_property("device", parts[0])
             if len(parts) > 1:
                 self.src.set_property("title", int(parts[1]))
+        elif filename.startswith("v4l://"):
+            self.src = gst.element_factory_make("v4lsrc")
+            self.src.set_property("device", filename[6:])
+        elif filename.startswith("v4l2://"):
+            self.src = gst.element_factory_make("v4l2src")
+            self.src.set_property("device", filename[7:])
         else:
             if not os.path.isfile(filename):
                 self.debug("File '%s' does not exist, finished" % filename)
