@@ -412,7 +412,7 @@ class MainWindow(object):
                     elif capture.version == '2':
                         model.set_value(iter, 2, "v4l2://" + device)
                     else:
-                        print "Unknown V4L version!"
+                        _log.warning("Unknown V4L version %s!" % capture.version)
                         model.remove(iter)
                 
                 iter = model.append()
