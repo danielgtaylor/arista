@@ -317,10 +317,11 @@ class MainWindow(object):
         pixbuf_renderer = gtk.CellRendererPixbuf()
         text_renderer = gtk.CellRendererText()
         
-        column = gtk.TreeViewColumn("", pixbuf_renderer, pixbuf = 0)
-        self.queue_view.append_column(column)
-        
-        column = gtk.TreeViewColumn("Description", text_renderer, text = 1)
+        column = gtk.TreeViewColumn("Description")
+        column.pack_start(pixbuf_renderer, False)
+        column.set_attributes(pixbuf_renderer, pixbuf = 0)
+        column.pack_start(text_renderer)
+        column.set_attributes(text_renderer, text = 1)
         self.queue_view.append_column(column)
         
         # Setup configuration system
@@ -830,11 +831,11 @@ class PrefsDialog(object):
         pixbuf_renderer = gtk.CellRendererPixbuf()
         text_renderer = gtk.CellRendererText()
         
-        column = gtk.TreeViewColumn("Icon", pixbuf_renderer, pixbuf = 0)
-        self.presets_view.append_column(column)
-        
-        column = gtk.TreeViewColumn("Information", text_renderer,
-                                    markup = 1)
+        column = gtk.TreeViewColumn("Information")
+        column.pack_start(pixbuf_renderer, False)
+        column.set_attributes(pixbuf_renderer, pixbuf = 0)
+        column.pack_start(text_renderer)
+        column.set_attributes(text_renderer, markup = 1)
         self.presets_view.append_column(column)
         
         items = arista.presets.get().items()
