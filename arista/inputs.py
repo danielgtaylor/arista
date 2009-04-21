@@ -210,11 +210,11 @@ class InputFinder(gobject.GObject):
                         self.drives[block].video_udi = udi
                         self.drives[block].label = label
         
-        udis = self.hal.FindDeviceByCapability("video4linux.capture")
+        udis = self.hal.FindDeviceByCapability("video4linux")
         for udi in udis:
-            dev_obj = self.bus.get_object("org.freedeskto.Hal", udi)
+            dev_obj = self.bus.get_object("org.freedesktop.Hal", udi)
             dev = dbus.Interface(dev_obj, "org.freedesktop.Hal.Device")
-            if dev.GetProperty("video4linux.capture"):
+            if dev.QueryCapability("video4linux.video_capture"):
                 device = dev.GetProperty("video4linux.device")
                 self.capture_devices[device] = V4LDevice(udi, dev)
         
@@ -288,7 +288,7 @@ if __name__ == "__main__":
                                       "Not mounted.")
     
     for device, capture in finder.capture_devices.items():
-        print capture.model + ": " + device
+        print capture.product + ": " + device
     
     loop = gobject.MainLoop()
     loop.run()
