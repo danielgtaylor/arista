@@ -1,0 +1,209 @@
+#!/usr/bin/env python
+
+"""
+    Arista Transcoder (command-line client)
+    =======================================
+    An audio/video transcoder based on simple device profiles provided by
+    plugins. This is the command-line version.
+    
+    License
+    -------
+    Copyright 2008 - 2009 Daniel G. Taylor <dan@programmer-art.org>
+    
+    This file is part of Arista.
+
+    Arista is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Foobar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Arista.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import logging
+import os
+import signal
+import sys
+import time
+
+from optparse import OptionParser
+
+import gobject
+
+# FIXME: Stupid hack, see the other fixme comment below!
+if __name__ != "__main__":
+    import gst
+
+import arista
+
+# Initialize threads for gstreamer
+gobject.threads_init()
+
+status_time = None
+status_msg = ""
+transcoder = None
+loop = None
+interrupted = False
+
+def print_status(enc):
+    """
+        Print the current status to the terminal with the estimated time
+        remaining.
+    """
+    global status_msg
+    percent = 0.0
+    
+    if enc.state == gst.STATE_NULL and interrupted:
+        gobject.idle_add(loop.quit)
+        return False
+    elif enc.state != gst.STATE_PLAYING:
+        return True
+    
+    try:
+        percent, time_rem = enc.status
+
+        msg = "Encoding... %i%% (%s remaining)" % (int(percent * 100), time_rem)
+        sys.stdout.write("\b" * len(status_msg))
+        sys.stdout.write(msg)
+        sys.stdout.flush()
+        status_msg = msg
+    except arista.plugins.EncoderStatusException, e:
+        print str(e)
+    
+    return (percent < 100)
+
+def pass_setup(transcoder, options):
+    if not options.quiet:
+        print "Starting pass %d of %d" % (transcoder.enc_pass + 1,
+                                          transcoder.pass_count)
+
+def complete(transcoder, options):
+    if not options.quiet:
+        print
+        
+    transcoder.stop()
+    gobject.idle_add(loop.quit)
+
+def check_interrupted():
+    """
+        Check whether we have been interrupted by Ctrl-C and stop the
+        transcoder.
+    """
+    if interrupted:
+        transcoder.stop()
+        return False
+    return True
+
+def signal_handler(signum, frame):
+    """
+        Handle Ctr-C gracefully and shut down the transcoder.
+    """
+    global interrupted
+    print "\nInterrupt caught. Cleaning up... (Ctrl-C to force exit)"
+    interrupted = True
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+if __name__ == "__main__":
+    parser = OptionParser(usage="%prog [options] infile outfile",
+                          version="Arista Transcoder " + str(arista.__version__))
+    parser.add_option("-i", "--info", dest = "info", action = "store_true",
+                      default = False, 
+                      help = "Show information about available devices [false]")
+    parser.add_option("-p", "--preset", dest = "preset", default = None,
+                      help = "Preset to encode to [default]")
+    parser.add_option("-d", "--device", dest = "device", default = "computer",
+                      help = "Device to encode to [computer]")
+    parser.add_option("-s", "--source-info", dest = "source_info",
+                      action = "store_true", default = False, 
+                      help = "Show information about input file and exit")
+    parser.add_option("-q", "--quiet", dest = "quiet", action = "store_true", 
+                      default = False,
+                      help = "Don't show status and time remaining")
+    parser.add_option("-v", "--verbose", dest = "verbose",
+                      action = "store_true", default = False,
+                      help = "Show verbose (debug) output")
+
+    options, args = parser.parse_args()
+    
+    logging.basicConfig(level = options.verbose and logging.DEBUG \
+                        or logging.INFO, format = "%(name)s [%(lineno)d]: " \
+                        "%(levelname)s %(message)s")
+    
+    # FIXME: OMGWTFBBQ gstreamer hijacks sys.argv unless we import AFTER we use
+    # the optionparser stuff above...
+    # This seems to be fixed http://bugzilla.gnome.org/show_bug.cgi?id=425847
+    # but in my testing it is NOT. Leaving hacks for now.
+    import gst
+    
+    arista.init()
+    
+    devices = arista.presets.get()
+    
+    if options.info and not args:
+        print "Available devices:"
+        for (name, device) in devices.items():
+            print "%s: %s" % (name, device.description)
+        print "\nUse --info device_name for more information on a device."
+        raise SystemExit()
+    elif options.info:
+        print "Preset info:"
+        device = devices[args[0]]
+        print "\tID: " + args[0]
+        print "\tMake: " + device.make
+        print "\tModel: " + device.model
+        print "\tDescription: " + device.description
+        print "\tAuthor: " + str(device.author)
+        print "\tVersion: " + device.version
+        print "\tPresets: " + ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])
+        raise SystemExit()
+    elif options.source_info:
+        if len(args) != 1:
+            print "You may only pass one filename for --source-info!"
+            parser.print_help()
+            raise SystemExit(1)
+        
+        def _got_info(info, is_media):
+            discoverer.print_info()
+            loop.quit()
+        
+        discoverer = arista.discoverer.Discoverer(args[0])
+        discoverer.connect("discovered", _got_info)
+        discoverer.discover()
+        
+        print "Discovering file info..."
+        
+        loop = gobject.MainLoop()
+        loop.run()
+    else:
+        if len(args) != 2:
+            parser.print_help()
+            raise SystemExit(1)
+        
+        device = devices[options.device]
+        
+        if not options.preset:
+            preset = device.presets[device.default]
+        else:
+            for (id, preset) in device.presets.items():
+                if preset.name == options.preset:
+                    break
+        
+        transcoder = arista.transcoder.Transcoder(args[0], args[1], preset)
+        transcoder.connect("pass-setup", pass_setup, options)
+        transcoder.connect("complete", complete, options)
+        
+        if not options.quiet:
+            gobject.timeout_add(500, print_status, transcoder)
+        
+        signal.signal(signal.SIGINT, signal_handler)
+        gobject.timeout_add(50, check_interrupted)
+        
+        loop = gobject.MainLoop()
+        loop.run()
+

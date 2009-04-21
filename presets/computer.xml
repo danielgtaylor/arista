@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<device>
+    <make>Generic</make>
+    <model>Computer</model>
+    <description>H.264/AAC for the computer</description>
+    <author>
+        <name>Daniel G. Taylor</name>
+        <email>dan@programmer-art.org</email>
+    </author>
+    <version>1.0</version>
+    <icon>file://computer.svg</icon>
+    <default>Normal</default>
+    
+    <preset>
+        <name>Low</name>
+        <container>ffmux_mp4</container>
+        <extension>mp4</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=128000 profile=LC</pass>
+            </passes>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>pass=qual quantizer=27 subme=4 threads=0</pass>
+            </passes> 
+            <width>320, 640</width>
+            <height>240, 480</height>
+            <rate>1, 25</rate>
+        </video>
+    </preset>
+    <preset>
+        <name>Normal</name>
+        <container>ffmux_mp4</container>
+        <extension>mp4</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=192000</pass>
+            </passes>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>pass=qual quantizer=21 me=umh subme=6 ref=3 bframes=3 threads=0</pass>
+            </passes>
+            <width>320, 1920</width>
+            <height>240, 1080</height>
+            <rate>1, 30</rate>
+        </video>
+    </preset>
+    <preset>
+        <name>High</name>
+        <container>ffmux_mp4</container>
+        <extension>mp4</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=256000</pass>
+            </passes>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>pass=qual quantizer=18 me=umh subme=6 ref=3 bframes=3 8x8dct=1 threads=0</pass>
+            </passes>
+            <width>320, 1920</width>
+            <height>240, 1080</height>
+            <rate>1, 60</rate>
+        </video>
+    </preset>
+</device>
+

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<device>
+    <make>Apple</make>
+    <model>iPod</model>
+    <description>H.264/AAC for Apple iPod / iPhone</description>
+    <author>
+        <name>Daniel G. Taylor</name>
+        <email>dan@programmer-art.org</email>
+    </author>
+    <version>1.0</version>
+    <icon>file://ipod.svg</icon>
+    <default>Normal</default>
+    
+    <preset>
+        <name>Low</name>
+        <container>ffmux_mp4</container>
+        <extension>m4v</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=96000 profile=LC</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>pass=qual quantizer=27 subme=4 cabac=0 threads=0</pass>
+            </passes> 
+            <width>320, 640</width>
+            <height>240, 480</height>
+            <rate>1, 25</rate>
+        </video>
+    </preset>
+    <preset>
+        <name>Normal</name>
+        <container>ffmux_mp4</container>
+        <extension>m4v</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=128000 profile=LC</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>pass=qual quantizer=21 me=umh subme=6 ref=3 cabac=0 threads=0</pass>
+            </passes>
+            <width>320, 640</width>
+            <height>240, 480</height>
+            <rate>1, 30</rate>
+        </video>
+    </preset>
+</device>
+

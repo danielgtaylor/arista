@@ -1,0 +1,3 @@
+recursive-include presets *.xml *.svg
+recursive-include ui *.ui *.svg
+include . AUTHORS LICENSE TODO
