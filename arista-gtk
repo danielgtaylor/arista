@@ -768,13 +768,20 @@ class MainWindow(object):
                     percent = 1.0
                 if percent < 0.0:
                     percent = 0.0
+                    
                 gtk.gdk.threads_enter()
-                self.progress.set_fraction(percent)
-                self.progress.set_text("Transcoding... (%s remaining)" % \
-                                       time_rem)
+                
+                if percent == 0.0:
+                    self.progress.pulse()
+                    self.progress.set_text("Transcoding...")
+                else:
+                    self.progress.set_fraction(percent)
+                    self.progress.set_text("Transcoding... (%s remaining)" % \
+                                           time_rem)
                 gtk.gdk.threads_leave()
             except arista.transcoder.TranscoderStatusException, e:
                 _log.debug(str(e))
+                self.progress.pulse()
         
         return percent < 1.0 and state != gst.STATE_NULL
     
