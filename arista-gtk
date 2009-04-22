@@ -301,6 +301,7 @@ class MainWindow(object):
         
         # Setup the transcoding queue and watch for events
         self.queue = arista.queue.TranscodeQueue()
+        self.queue.connect("entry-discovered", self.on_queue_entry_discovered)
         self.queue.connect("entry-start", self.on_queue_entry_start)
         self.queue.connect("entry-complete", self.on_queue_entry_complete)
         
@@ -673,6 +674,31 @@ class MainWindow(object):
         else:
             self.toolbar.hide()
     
+    def on_queue_entry_discovered(self, queue, entry):
+        """
+        
+        """
+        if not entry.transcoder.info.is_video and \
+           not entry.transcoder.info.is_audio:
+            _log.error("Input %s contains no valid streams!" % \
+                       entry.transcoder.infile)
+            
+            gtk.gdk.threads_enter()
+            
+            msg = "The input file or device contains no audio or video " \
+                  "streams and will be removed from the queue."
+            
+            dialog = gtk.MessageDialog(self.window,
+                            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                            type = gtk.MESSAGE_ERROR,
+                            buttons = gtk.BUTTONS_OK,
+                            message_format = msg)
+            dialog.set_title("Error with input!")
+            dialog.run()
+            dialog.destroy()
+            gtk.gdk.threads_leave()
+            self.on_queue_entry_complete(queue, entry)
+    
     def on_queue_entry_start(self, queue, entry):
         """
             Called by the queue to start an entry. Setup the correct pass and
@@ -697,17 +723,19 @@ class MainWindow(object):
         
         if show_preview:
             element = transcoder.pipe.get_by_name("videotee")
-            pipe = gst.parse_launch("queue name=preview_source ! decodebin2 ! videoscale method=bilinear ! videorate ! ffmpegcolorspace ! video/x-raw-yuv, framerate=%d/1; video/x-raw-rgb, framerate=%d/1 ! autovideosink name=previewsink" % (fps, fps))
-            psink = pipe.get_by_name("previewsink")
-            psink.connect("element-added", self.on_preview_sink_element_added)
-            transcoder.pipe.add(pipe)
-            src = pipe.get_by_name("preview_source")
-            gst.element_link_many(element, src)
-            bus = transcoder.pipe.get_bus()
-            bus.enable_sync_message_emission()
-            bus.connect("sync-message::element", self.on_sync_msg)
-            self.preview.show()
-            self.image_preview.hide()
+            
+            if element:
+                pipe = gst.parse_launch("queue name=preview_source ! decodebin2 ! videoscale method=bilinear ! videorate ! ffmpegcolorspace ! video/x-raw-yuv, framerate=%d/1; video/x-raw-rgb, framerate=%d/1 ! autovideosink name=previewsink" % (fps, fps))
+                psink = pipe.get_by_name("previewsink")
+                psink.connect("element-added", self.on_preview_sink_element_added)
+                transcoder.pipe.add(pipe)
+                src = pipe.get_by_name("preview_source")
+                gst.element_link_many(element, src)
+                bus = transcoder.pipe.get_bus()
+                bus.enable_sync_message_emission()
+                bus.connect("sync-message::element", self.on_sync_msg)
+                self.preview.show()
+                self.image_preview.hide()
         
         self.progress.show()
         self.update_pause(True)

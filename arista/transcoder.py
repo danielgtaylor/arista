@@ -106,8 +106,10 @@ class Transcoder(gobject.GObject):
         def _got_info(info, is_media):
             self.info = info
             self.emit("discovered", info, is_media)
-            self._setup_pass()
-            self.start()
+            
+            if info.is_video or info.is_audio:
+                self._setup_pass()
+                self.start()
         
         self.info = None
         self.discoverer = discoverer.Discoverer(infile)
@@ -431,7 +433,7 @@ class Transcoder(gobject.GObject):
         """
             Start the pipeline!
         """
-        self.pipe.set_state(gst.STATE_PLAYING)
+        self.state = gst.STATE_PLAYING
         if reset_timer:
             self.start_time = time.time()
     
@@ -439,13 +441,13 @@ class Transcoder(gobject.GObject):
         """
             Pause the pipeline!
         """
-        self.pipe.set_state(gst.STATE_PAUSED)
+        self.state = st.STATE_PAUSED
 
     def stop(self):
         """
             Stop the pipeline!
         """
-        self.pipe.set_state(gst.STATE_NULL)
+        self.state = gst.STATE_NULL
 
     def get_state(self):
         """
@@ -454,7 +456,10 @@ class Transcoder(gobject.GObject):
             @rtype: int
             @return: The state of the current pipeline.
         """
-        return self.pipe.get_state()[1]
+        if self.pipe:
+            return self.pipe.get_state()[1]
+        else:
+            return None
     
     def set_state(self, state):
         """
@@ -463,7 +468,8 @@ class Transcoder(gobject.GObject):
             @type state: int
             @param state: The state to set, e.g. gst.STATE_PLAYING
         """
-        self.pipe.set_state(state)
+        if self.pipe:
+            self.pipe.set_state(state)
     
     state = property(get_state, set_state)
     

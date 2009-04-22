@@ -78,7 +78,11 @@ def print_status(enc):
     
     return (percent < 100)
 
-def pass_setup(transcoder, options):
+def discovered(transcoder, info, is_media, options):
+    if not is_media:
+        print "No audio or video streams found in input!"
+        raise SystemExit(1)
+        
     if not options.quiet:
         print "Starting pass %d of %d" % (transcoder.enc_pass + 1,
                                           transcoder.pass_count)
@@ -195,7 +199,7 @@ if __name__ == "__main__":
                     break
         
         transcoder = arista.transcoder.Transcoder(args[0], args[1], preset)
-        transcoder.connect("pass-setup", pass_setup, options)
+        transcoder.connect("discovered", discovered, options)
         transcoder.connect("complete", complete, options)
         
         if not options.quiet:

@@ -69,11 +69,13 @@ class TranscodeQueue(gobject.GObject):
     
     __gsignals__ = {
         "entry-added": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                       (gobject.TYPE_PYOBJECT,)),    # QueueEntry
+                       (gobject.TYPE_PYOBJECT,)),      # QueueEntry
+        "entry-discovered": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                            (gobject.TYPE_PYOBJECT,)), # QueueEntry
         "entry-start": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                       (gobject.TYPE_PYOBJECT,)),    # QueueEntry
+                       (gobject.TYPE_PYOBJECT,)),      # QueueEntry
         "entry-complete": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                          (gobject.TYPE_PYOBJECT,)), # QueueEntry
+                          (gobject.TYPE_PYOBJECT,)),   # QueueEntry
     }
     
     def __init__(self, check_interval = 500):
@@ -155,10 +157,17 @@ class TranscodeQueue(gobject.GObject):
                                           item.preset)
             item.transcoder.connect("complete", self._on_complete)
             
+            def discovered(transcoder, info, is_media):
+                self.emit("entry-discovered", item)
+                if not is_media:
+                    self._queue.pop(0)
+                    self.pipe_running = False
+            
             def pass_setup(transcoder):
                 if transcoder.enc_pass == 0:
                     self.emit("entry-start", item)
             
+            item.transcoder.connect("discovered", discovered)
             item.transcoder.connect("pass-setup", pass_setup)
             self.pipe_running = True
         return True
