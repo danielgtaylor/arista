@@ -503,7 +503,9 @@ class MainWindow(object):
                 newiter = model.insert(pos)
                 theme = gtk.icon_theme_get_default()
                 icon = gio.content_type_get_icon(gio.content_type_guess(filename)).get_property("names")
-                model.set_value(newiter, 0, theme.choose_icon(icon, gtk.ICON_SIZE_MENU, 0).load_icon())
+                icon = theme.choose_icon(icon, gtk.ICON_SIZE_MENU, 0)
+                if icon:
+                    model.set_value(newiter, 0, icon.load_icon())
                 model.set_value(newiter, 1, os.path.basename(filename))
                 model.set_value(newiter, 2, filename)
                 self.fileiter = newiter
