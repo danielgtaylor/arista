@@ -1,0 +1,39 @@
+pkgname=arista-bzr
+pkgver=r1
+pkgrel=1
+pkgdesc="Easy to use multimedia transcoder for the GNOME Desktop"
+arch=('i686' 'x86_64')
+url="http://programmer-art.org/projects/arista-transcoder"
+license=('GPL3')
+makedepends=('bzr')
+depends=('pygtk' 'gstreamer0.10' 'gstreamer0.10-python' 'gstreamer0.10-ffmpeg' 'gstreamer0.10-base-plugins' 'gstreamer0.10-good-plugins' 'gstreamer0.10-bad-plugins' 'gstreamer0.10-ugly-plugins' 'python-gconf' 'gconf' 'pygobject' 'pycairo' 'cairo' 'dbus-python' 'dbus')
+provides=()
+conflicts=('arista')
+replaces=('arista')
+backup=()
+options=()
+install=
+source=()
+noextract=()
+md5sums=()
+
+_bzrbranch=https://code.launchpad.net/~danielgtaylor/arista/main
+_bzrmod=arista
+
+build() {
+    cd "${srcdir}"
+
+    msg "Connecting to the server..."
+
+    if [ ! -d ./$_bzrmod ]; then
+        bzr branch lp:$_bzrmod
+    fi
+
+    msg "BZR checkout done or server timeout"
+    msg "Running setup script..."
+
+    cd $_bzrmod
+    python setup.py install --prefix=/usr --root=${pkgdir} || return 1
+
+    rm -rf ${srcdir}/$_bzrmod
+}
