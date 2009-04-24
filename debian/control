@@ -1,0 +1,22 @@
+Source: arista
+Section: video
+Priority: normal
+Maintainer: Daniel G. Taylor <dan@programmer-art.org>
+Build-Depends: debhelper (>= 7), cdbs, python-central, python
+XS-Python-Version: >=2.4
+Standards-Version: 3.8.0
+Homepage: http://programmer-art.org/projects/arista-transcoder
+
+Package: arista
+Architecture: all
+XB-Python-Version: ${python:Versions}
+Depends: python, python-gobject, python-gtk2, python-gconf, python-cairo, python-dbus, python-gst0.10, gstreamer0.10-plugins-good, gstreamer0.10-plugins-bad, gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad-multiverse, gstreamer0.10-plugins-ugly-multiverse, ${python:Depends}, ${misc:Depends}
+Provides: ${python:Provides}
+Description: A simple multimedia transcoder for the GNOME Desktop
+ A simple multimedia transcoder for the GNOME Desktop. Arista focuses on being
+ easy to use by making the complex task of encoding for various devices simple.
+ Pick your input, pick your target device, choose a file to save to and go. 
+ Features include automatic discovery of DVD drives and media, ripping from DVD 
+ or files, a live quality preview, and included presets for the most popular 
+ devices currently in use.
+
