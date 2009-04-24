@@ -491,7 +491,7 @@ class Transcoder(gobject.GObject):
         duration = max(self.info.videolength, self.info.audiolength)
         
         if not duration:
-            return 1.0, "Unknown"
+            return 0.0, "Unknown"
         
         try:
             pos, format = self.pipe.query_position(gst.FORMAT_TIME)
