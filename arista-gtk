@@ -1021,7 +1021,7 @@ class AboutDialog(object):
 
 if __name__ == "__main__":
     parser = OptionParser(usage="%prog [options]",
-                          version="Arista Transcoder " + str(arista.__version__))
+                          version="Arista Transcoder GUI " + arista.__version__)
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
                       help = "Show verbose (debug) output")

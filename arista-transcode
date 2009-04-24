@@ -115,7 +115,7 @@ def signal_handler(signum, frame):
 
 if __name__ == "__main__":
     parser = OptionParser(usage="%prog [options] infile outfile",
-                          version="Arista Transcoder " + str(arista.__version__))
+                          version="Arista Transcoder " + arista.__version__)
     parser.add_option("-i", "--info", dest = "info", action = "store_true",
                       default = False, 
                       help = "Show information about available devices [false]")

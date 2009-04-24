@@ -46,6 +46,6 @@ def init():
     import transcoder
     import utils
 
-__version__ = 0.8
+__version__ = "0.9"
 __author__ = "Daniel G. Taylor <dan@programmer-art.org>"
 
