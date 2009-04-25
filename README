@@ -1,8 +1,10 @@
-Arista Transcoder
-=================
+Arista Transcoder 0.9
+=====================
 A simple preset-based transcoder for the GNOME Desktop and a small script for 
 terminal-based transcoding. Settings are chosen based on output device and 
 quality preset.
+
+    http://programmer-art.org/arista-transcoder
 
 Dependencies
 ------------
@@ -12,7 +14,6 @@ python-gobject
 python-gtk >=2.16
 python-gconf
 python-gstreamer
-gstreamer
 gstreamer-ffmpeg
 gstreamer-plugins-base
 gstreamer-plugins-good
@@ -27,7 +28,7 @@ Installation uses python distutils. After extracting the archive, run:
 
 Don't forget to use sudo if necessary. This will install the arista python 
 module to your python site-packages or dist-packages path, install the arista 
-programs into sys.prefix/bin and install presets and graphics into 
+programs into sys.prefix/bin and install all data files into 
 sys.prefix/share/arista.
 
 Usage
@@ -64,3 +65,19 @@ the device you wish to support along with presets that describe how to create a
 proper gstreamer pipeline to encode for the device in an xml file. Please see 
 the xml files in the presets directory that ship with Arista for examples.
 
+Contributing
+------------
+All development is managed through Launchpad.net, which provides source 
+revision control, bug tracking, feature planning, string translation, and a 
+forum-like question/answer area. Please report all bugs to the bug tracker 
+there. Add new feature requests as blueprints. The main development site is:
+
+    http://www.launchpad.net/arista
+
+You may create a local branch of the latest code via:
+
+    bzr branch lp:arista
+    
+To update your local branch to the latest code you can use `bzr merge`. If you 
+choose to publish your branch you may request a merge to trunk, otherwise
+you may just send patches that apply cleanly to the latest trunk.
