@@ -731,8 +731,8 @@ class MainWindow(object):
             element = transcoder.pipe.get_by_name("videotee")
             
             if element:
-                pipe = gst.parse_launch("queue name=preview_source ! decodebin2 ! videoscale method=bilinear ! videorate ! ffmpegcolorspace ! video/x-raw-yuv, framerate=%d/1; video/x-raw-rgb, framerate=%d/1 ! autovideosink name=previewsink" % (fps, fps))
-                psink = pipe.get_by_name("previewsink")
+                pipe = gst.parse_launch("queue name=preview_source ! decodebin2 ! videoscale method=bilinear ! videorate ! ffmpegcolorspace ! video/x-raw-yuv, framerate=%d/1; video/x-raw-rgb, framerate=%d/1 ! autovideosink name=preview_sink" % (fps, fps))
+                psink = pipe.get_by_name("preview_sink")
                 psink.connect("element-added", self.on_preview_sink_element_added)
                 transcoder.pipe.add(pipe)
                 src = pipe.get_by_name("preview_source")
