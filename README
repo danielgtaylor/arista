@@ -81,3 +81,4 @@ You may create a local branch of the latest code via:
 To update your local branch to the latest code you can use `bzr merge`. If you 
 choose to publish your branch you may request a merge to trunk, otherwise
 you may just send patches that apply cleanly to the latest trunk.
+
