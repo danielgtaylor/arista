@@ -15,7 +15,7 @@ if version < '2.2.3':
 
 setup(
     name = "arista",
-    version = "0.8",
+    version = "0.9",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========
@@ -63,6 +63,8 @@ on Ubuntu don't forget to install the multiverse packages.
          glob(os.path.join("presets", "*"))),
         (os.path.join("share", "arista", "ui"),
          glob(os.path.join("ui", "*"))),
+        (os.path.join("share", "arista", "locale"),
+         glob(os.path.join("locale", "*"))),
     ],
     requires = [
         "gtk(>=2.16)", 
