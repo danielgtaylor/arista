@@ -142,6 +142,10 @@ if __name__ == "__main__":
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
                       help = _("Show verbose (debug) output"))
+    parser.add_option("-u", "--update", dest = "update",
+                      action = "store_true", default = False,
+                      help = _("Check for and download updated device " \
+                               "presets if they are available"))
 
     options, args = parser.parse_args()
     
@@ -202,6 +206,8 @@ if __name__ == "__main__":
         
         loop = gobject.MainLoop()
         loop.run()
+    elif options.update:
+        arista.presets.check_for_updates()
     else:
         if len(args) != 2:
             parser.print_help()
