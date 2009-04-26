@@ -513,10 +513,10 @@ class Transcoder(gobject.GObject):
         sec = rem % 60
         
         try:
-            if sec < 10:
-                time_rem = _("%i:0%i") % (min, sec)
-            else:
-                time_rem = _("%i:%i") % (min, sec)
+            time_rem = _("%(min)d:%(sec)02d") % {
+                "min": min,
+                "sec": sec,
+            }
         except TypeError:
             raise TranscoderStatusException(_("Problem calculating time " \
                                               "remaining!"))

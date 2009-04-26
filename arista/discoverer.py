@@ -200,7 +200,9 @@ class Discoverer(gst.Pipeline):
 
     def discover(self):
         """Find the information on the given file asynchronously"""
-        _log.debug(_("Discovering %s" % self.filename))
+        _log.debug(_("Discovering %(filename)s") % {
+            "filename": self.filename
+        })
         self.debug("starting discovery")
         if self.finished:
             self.emit('discovered', False)
@@ -242,21 +244,28 @@ class Discoverer(gst.Pipeline):
         print _("\tAudio:"), self._time_to_string(self.audiolength), _("\n\tVideo:"), self._time_to_string(self.videolength)
         if self.is_video and self.videorate:
             print _("Video :")
-            print _("\t%d x %d @ %d/%d fps") % (self.videowidth,
-                                                self.videoheight,
-                                                self.videorate.num, self.videorate.denom)
+            print _("\t%(width)d x %(height)d @ %(rate_num)d/%(rate_den)d fps") % {
+                "width": self.videowidth,
+                "height": self.videoheight,
+                "rate_num": self.videorate.num,
+                "rate_den": self.videorate.denom
+            }
             if self.tags.has_key("video-codec"):
                 print _("\tCodec :"), self.tags.pop("video-codec")
         if self.is_audio:
             print _("Audio :")
             if self.audiofloat:
-                print _("\t%d channels(s) : %dHz @ %dbits (float)" % (self.audiochannels,
-                                                                    self.audiorate,
-                                                                    self.audiowidth))
+                print _("\t%(channels)d channels(s) : %(rate)dHz @ %(width)dbits (float)") % {
+                    "channels": self.audiochannels,
+                    "rate": self.audiorate,
+                    "width": self.audiowidth
+                }
             else:
-                print _("\t%d channels(s) : %dHz @ %dbits (int)" % (self.audiochannels,
-                                                                  self.audiorate,
-                                                                  self.audiodepth))
+                print _("\t%(channels)d channels(s) : %(rate)dHz @ %(depth)dbits (int)") % {
+                    "channels": self.audiochannels,
+                    "rate": self.audiorate,
+                    "depth": self.audiodepth
+                }
             if self.tags.has_key("audio-codec"):
                 print _("\tCodec :"), self.tags.pop("audio-codec")
         for stream in self.otherstreams:

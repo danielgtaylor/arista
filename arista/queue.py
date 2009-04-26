@@ -58,8 +58,11 @@ class QueueEntry(object):
         self.transcoder = None
     
     def __repr__(self):
-        return _("Queue entry %s -> %s -> %s" % (self.infile, self.preset, 
-                                                 self.outfile))
+        return _("Queue entry %(infile)s -> %(preset)s -> %(outfile)s" % {
+            "infile": self.infile,
+            "preset": self.preset,
+            "outfile": self.outfile,
+        })
 
 class TranscodeQueue(gobject.GObject):
     """
@@ -154,7 +157,9 @@ class TranscodeQueue(gobject.GObject):
         if len(self._queue) and not self.pipe_running:
             item = self._queue[0]
         if item:
-            _log.debug(_("Found item in queue! Queue is %s" % str(self)))
+            _log.debug(_("Found item in queue! Queue is %(queue)s" % {
+                "queue": str(self)
+            }))
             item.transcoder =  Transcoder(item.infile, item.outfile,
                                           item.preset)
             item.transcoder.connect("complete", self._on_complete)

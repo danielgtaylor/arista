@@ -70,7 +70,9 @@ class Fraction(gst.Fraction):
         elif len(parts) == 2:
             gst.Fraction.__init__(self, int(parts[0]), int(parts[1]))
         else:
-            raise ValueError(_("Not a valid integer or fraction: %s!" % value))
+            raise ValueError(_("Not a valid integer or fraction: %(value)s!") % {
+                "value": value,
+            })
 
 class Author(object):
     """
@@ -244,7 +246,9 @@ def _parse_range(value, type = int):
     elif len(parts) == 2:
         return (type(parts[0]), type(parts[1]))
     else:
-        raise ValueError(_("Value may only contain one comma; got %s" % value))
+        raise ValueError(_("Value may only contain one comma; got %(value)s") % {
+            "value": value
+        })
 
 def _load_author(root):
     """
@@ -386,8 +390,10 @@ def load(filename):
         elif child.tag == "default":
             device.default = child.text.strip()
     
-    _log.debug(_("Loaded device %s (%d presets)" % (device.name,
-                                                    len(device.presets))))
+    _log.debug(_("Loaded device %(device)s (%(presets)d presets)") % {
+        "device": device.name,
+        "presets": len(device.presets)
+    })
     
     return device
 

@@ -71,12 +71,15 @@ def print_status(enc):
     try:
         percent, time_rem = enc.status
 
-        msg = _("Encoding... %i%% (%s remaining)" % (int(percent * 100), time_rem))
+        msg = _("Encoding... %(percent)i%% (%(time)s remaining)") % {
+            "percent": int(percent * 100),
+            "time": time_rem,
+        }
         sys.stdout.write("\b" * len(status_msg))
         sys.stdout.write(msg)
         sys.stdout.flush()
         status_msg = msg
-    except arista.plugins.EncoderStatusException, e:
+    except arista.transcoder.TranscoderStatusException, e:
         print str(e)
     
     return (percent < 100)
@@ -87,8 +90,10 @@ def discovered(transcoder, info, is_media, options):
         raise SystemExit(1)
         
     if not options.quiet:
-        print _("Starting pass %d of %d" % (transcoder.enc_pass + 1,
-                                            transcoder.pass_count))
+        print _("Starting pass %(pass)d of %(total)d") % {
+            "pass": transcoder.enc_pass + 1,
+            "total": transcoder.pass_count,
+        }
 
 def complete(transcoder, options):
     if not options.quiet:
@@ -161,7 +166,10 @@ if __name__ == "__main__":
     if options.info and not args:
         print _("Available devices:")
         for (name, device) in devices.items():
-            print "%s: %s" % (name, _(device.description))
+            print _("%(name)s: %(description)s") % {
+                "name": name,
+                "description": device.description,
+            }
         print
         print _("Use --info device_name for more information on a device.")
         raise SystemExit()

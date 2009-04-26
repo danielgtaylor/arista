@@ -104,7 +104,9 @@ def _get_icon_pixbuf(uri, width, height):
     elif uri.startswith("stock://"):
         image = theme.load_icon(uri[8:], size, 0)
     else:
-        raise ValueError(_("Unknown icon URI %s" % uri))
+        raise ValueError(_("Unknown icon URI %(uri)s") % {
+            "uri": uri
+        })
     
     return image
 
@@ -419,8 +421,9 @@ class MainWindow(object):
                     elif capture.version == '2':
                         model.set_value(iter, 2, "v4l2://" + device)
                     else:
-                        _log.warning(_("Unknown V4L version %s!" % \
-                                       capture.version))
+                        _log.warning(_("Unknown V4L version %(version)s!") % {
+                                       "version": capture.version,
+                                    })
                         model.remove(iter)
                 
                 iter = model.append()
@@ -624,7 +627,11 @@ class MainWindow(object):
             image = _get_icon_pixbuf(device.icon, width, height)
             if image:
                 self.queue_model.set_value(iter, 0, image)
-            self.queue_model.set_value(iter, 1, _("%s (%s): %s" % (device.model, preset.name, os.path.basename(filename))))
+            self.queue_model.set_value(iter, 1, _("%(model)s (%(preset)s): %(filename)s") % {
+                "model": device.model,
+                "preset": preset.name,
+                "filename": os.path.basename(filename),
+            })
             self.queue_model.set_value(iter, 2, self.queue[-1])
     
     def on_remove(self, widget):
@@ -689,8 +696,9 @@ class MainWindow(object):
         """
         if not entry.transcoder.info.is_video and \
            not entry.transcoder.info.is_audio:
-            _log.error(_("Input %s contains no valid streams!" % \
-                         entry.transcoder.infile))
+            _log.error(_("Input %(infile)s contains no valid streams!") % {
+                "infile": entry.transcoder.infile,
+            })
             
             gtk.gdk.threads_enter()
             
@@ -813,8 +821,9 @@ class MainWindow(object):
                     self.progress.set_text(_("Transcoding..."))
                 else:
                     self.progress.set_fraction(percent)
-                    self.progress.set_text(_("Transcoding... (%s remaining)" % \
-                                           time_rem))
+                    self.progress.set_text(_("Transcoding... (%(time)s remaining)") % {
+                        "time": time_rem
+                    })
                 gtk.gdk.threads_leave()
             except arista.transcoder.TranscoderStatusException, e:
                 _log.debug(str(e))
