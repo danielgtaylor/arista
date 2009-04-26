@@ -25,9 +25,7 @@ use by making the complex task of encoding for various devices simple. Pick your
 input, pick your target device, choose a file to save to and go.
 
 Arista has been in development since early 2008 as a side project and was just
-recently polished to make it release-worthy. The 0.8 release is the first public
-release and includes a to-do of items that will be completed for the 1.0 final
-release.
+recently polished to make it release-worthy. The 0.8 release is the first release available to the public. Please see http://www.launchpad.net/arista for information on helping out.
 
 Features
 ---------
@@ -36,6 +34,7 @@ Features
 * Live preview to see encoded quality
 * Automatically discover available DVD drives and media
 * Rip straight from DVD media easily (requires libdvdcss)
+* Automatically discover and record from V4L devices
 * Simple terminal client for scripting
 
 Requirements
