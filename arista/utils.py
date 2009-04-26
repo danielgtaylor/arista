@@ -25,9 +25,12 @@
 	along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import os
 import sys
+
+_ = gettext.gettext
 
 def get_search_paths():
     """
@@ -67,5 +70,5 @@ def get_path(*parts):
         if os.path.exists(full):
             return full
     else:
-        raise IOError("Can't find %s in any known prefix!" % path)
+        raise IOError(_("Can't find %s in any known prefix!" % path))
 

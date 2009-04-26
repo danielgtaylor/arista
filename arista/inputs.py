@@ -27,11 +27,15 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
+
 import gobject
 import dbus
 
 from dbus.mainloop.glib import DBusGMainLoop
 DBusGMainLoop(set_as_default=True)
+
+_ = gettext.gettext
 
 class InputSource(object):
     """
@@ -277,7 +281,7 @@ if __name__ == "__main__":
         print device.product + ": " + label
     
     def lost(finder, device, label):
-        print device.product + ": Not mounted."
+        print device.product + ": " + _("Not mounted.")
     
     finder = InputFinder()
     finder.connect("disc-found", found)
@@ -285,7 +289,7 @@ if __name__ == "__main__":
     
     for block, drive in finder.drives.items():
         print drive.product + ": " + (drive.video and drive.label or \
-                                      "Not mounted.")
+                                      _("Not mounted."))
     
     for device, capture in finder.capture_devices.items():
         print capture.product + ": " + device

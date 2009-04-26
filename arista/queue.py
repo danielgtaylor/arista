@@ -26,6 +26,7 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import threading
 import time
@@ -35,6 +36,7 @@ import gst
 
 from .transcoder import Transcoder
 
+_ = gettext.gettext
 _log = logging.getLogger("arista.queue")
 
 class QueueEntry(object):
@@ -56,8 +58,8 @@ class QueueEntry(object):
         self.transcoder = None
     
     def __repr__(self):
-        return "Queue entry %s -> %s -> %s" % (self.infile, self.preset, 
-                                               self.outfile)
+        return _("Queue entry %s -> %s -> %s" % (self.infile, self.preset, 
+                                                 self.outfile))
 
 class TranscodeQueue(gobject.GObject):
     """
@@ -125,7 +127,7 @@ class TranscodeQueue(gobject.GObject):
         """
             Safely get a representation of the queue and its items.
         """
-        return "TranscodeQueue: " + repr(self._queue)
+        return _("Transcode queue: ") + repr(self._queue)
     
     def append(self, infile, outfile, preset):
         """
@@ -152,7 +154,7 @@ class TranscodeQueue(gobject.GObject):
         if len(self._queue) and not self.pipe_running:
             item = self._queue[0]
         if item:
-            _log.debug("Found item in queue! Queue is %s" % str(self))
+            _log.debug(_("Found item in queue! Queue is %s" % str(self)))
             item.transcoder =  Transcoder(item.infile, item.outfile,
                                           item.preset)
             item.transcoder.connect("complete", self._on_complete)

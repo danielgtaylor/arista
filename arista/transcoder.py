@@ -25,6 +25,7 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import os
 import os.path
@@ -36,6 +37,7 @@ import gst
 
 import discoverer
 
+_ = gettext.gettext
 _log = logging.getLogger("arista.transcoder")
 
 # =============================================================================
@@ -400,7 +402,8 @@ class Transcoder(gobject.GObject):
         try:
             self.pipe = gst.parse_launch(cmd)
         except gobject.GError, e:
-            raise PipelineException("Unable to construct pipeline! " + str(e))
+            raise PipelineException(_("Unable to construct pipeline! ") + \
+                                    str(e))
         
         bus = self.pipe.get_bus()
         bus.add_signal_watch()
@@ -491,18 +494,18 @@ class Transcoder(gobject.GObject):
         duration = max(self.info.videolength, self.info.audiolength)
         
         if not duration:
-            return 0.0, "Unknown"
+            return 0.0, _("Unknown")
         
         try:
             pos, format = self.pipe.query_position(gst.FORMAT_TIME)
         except gst.QueryError:
-            raise TranscoderStatusException("Can't query position!")
+            raise TranscoderStatusException(_("Can't query position!"))
         except AttributeError:
-            raise TranscoderStatusException("No pipeline to query!")
+            raise TranscoderStatusException(_("No pipeline to query!"))
         
         percent = pos / float(duration)
         if percent == 0:
-            return 0.0, "Unknown"
+            return 0.0, _("Unknown")
         
         total = 1.0 / percent * (time.time() - self.start_time)
         rem = total - (time.time() - self.start_time)
@@ -511,11 +514,12 @@ class Transcoder(gobject.GObject):
         
         try:
             if sec < 10:
-                time_rem = "%i:0%i" % (min, sec)
+                time_rem = _("%i:0%i") % (min, sec)
             else:
-                time_rem = "%i:%i" % (min, sec)
+                time_rem = _("%i:%i") % (min, sec)
         except TypeError:
-            raise TranscoderStatusException("Problem calculating time remaining!")
+            raise TranscoderStatusException(_("Problem calculating time " \
+                                              "remaining!"))
         
         return percent, time_rem
     

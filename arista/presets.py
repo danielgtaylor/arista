@@ -38,6 +38,7 @@
 	along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import gst
 import logging
 import os
@@ -46,6 +47,7 @@ import xml.etree.ElementTree
 
 import utils
 
+_ = gettext.gettext
 _presets = {}
 _log = logging.getLogger("arista.presets")
 
@@ -68,7 +70,7 @@ class Fraction(gst.Fraction):
         elif len(parts) == 2:
             gst.Fraction.__init__(self, int(parts[0]), int(parts[1]))
         else:
-            raise ValueError("Not a valid integer or fraction: %s!" % value)
+            raise ValueError(_("Not a valid integer or fraction: %s!" % value))
 
 class Author(object):
     """
@@ -242,7 +244,7 @@ def _parse_range(value, type = int):
     elif len(parts) == 2:
         return (type(parts[0]), type(parts[1]))
     else:
-        raise ValueError("Value may only contain one comma; got %s" % value)
+        raise ValueError(_("Value may only contain one comma; got %s" % value))
 
 def _load_author(root):
     """
@@ -384,7 +386,8 @@ def load(filename):
         elif child.tag == "default":
             device.default = child.text.strip()
     
-    _log.debug("Loaded device %s" % device.name)
+    _log.debug(_("Loaded device %s (%d presets)" % (device.name,
+                                                    len(device.presets))))
     
     return device
 

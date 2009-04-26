@@ -26,6 +26,7 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import os
 import re
@@ -45,6 +46,7 @@ if __name__ != "__main__":
 
 import arista
 
+_ = gettext.gettext
 _log = logging.getLogger("arista-gtk")
 
 CONFIG_PATH = "/apps/arista"
@@ -102,7 +104,7 @@ def _get_icon_pixbuf(uri, width, height):
     elif uri.startswith("stock://"):
         image = theme.load_icon(uri[8:], size, 0)
     else:
-        raise ValueError("Unknown icon URI %s" % uri)
+        raise ValueError(_("Unknown icon URI %s" % uri))
     
     return image
 
@@ -417,11 +419,12 @@ class MainWindow(object):
                     elif capture.version == '2':
                         model.set_value(iter, 2, "v4l2://" + device)
                     else:
-                        _log.warning("Unknown V4L version %s!" % capture.version)
+                        _log.warning(_("Unknown V4L version %s!" % \
+                                       capture.version))
                         model.remove(iter)
                 
                 iter = model.append()
-                model.set_value(iter, 1, "Choose file...")
+                model.set_value(iter, 1, _("Choose file..."))
                 
                 self.source.set_active(0)
                 self.source.connect("changed", self.on_source_changed)
@@ -432,9 +435,9 @@ class MainWindow(object):
                 self.finder_disc_lost = self.finder.connect("disc-lost",
                                                         self.on_disc_lost)
             else:
-                self.source = gtk.FileChooserButton("Choose file...")
+                self.source = gtk.FileChooserButton(_("Choose file..."))
         else:
-            self.source = gtk.FileChooserButton("Choose file...")
+            self.source = gtk.FileChooserButton(_("Choose file..."))
         
         self.table.attach(self.source, 1, 2, 0, 1, yoptions = gtk.FILL)
         self.source.show()
@@ -454,7 +457,7 @@ class MainWindow(object):
         
         self.window.hide()
         
-        _log.debug("Cleaning up and flushing buffers...")
+        _log.debug(_("Cleaning up and flushing buffers..."))
         
         def waiting_to_quit():
             if not self.transcoder or self.transcoder.state == gst.STATE_NULL:
@@ -492,8 +495,8 @@ class MainWindow(object):
         iter = widget.get_active_iter()
         model = widget.get_model()
         item = model.get_value(iter, 1)
-        if item == "Choose file...":
-            dialog = gtk.FileChooserDialog(title="Choose Source File...",
+        if item == _("Choose file..."):
+            dialog = gtk.FileChooserDialog(title=_("Choose Source File..."),
                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                  gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
             dialog.set_property("local-only", False)
@@ -602,7 +605,7 @@ class MainWindow(object):
                 
             default_out = "%s%d.%s" % (name, number, ext)
         
-        dialog = gtk.FileChooserDialog(title = "Choose Output File...",
+        dialog = gtk.FileChooserDialog(title = _("Choose Output File..."),
                         action = gtk.FILE_CHOOSER_ACTION_SAVE,
                         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                    gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
@@ -621,7 +624,7 @@ class MainWindow(object):
             image = _get_icon_pixbuf(device.icon, width, height)
             if image:
                 self.queue_model.set_value(iter, 0, image)
-            self.queue_model.set_value(iter, 1, "%s (%s): %s" % (device.model, preset.name, os.path.basename(filename)))
+            self.queue_model.set_value(iter, 1, _("%s (%s): %s" % (device.model, preset.name, os.path.basename(filename))))
             self.queue_model.set_value(iter, 2, self.queue[-1])
     
     def on_remove(self, widget):
@@ -686,8 +689,8 @@ class MainWindow(object):
         """
         if not entry.transcoder.info.is_video and \
            not entry.transcoder.info.is_audio:
-            _log.error("Input %s contains no valid streams!" % \
-                       entry.transcoder.infile)
+            _log.error(_("Input %s contains no valid streams!" % \
+                         entry.transcoder.infile))
             
             gtk.gdk.threads_enter()
             
@@ -699,7 +702,7 @@ class MainWindow(object):
                             type = gtk.MESSAGE_ERROR,
                             buttons = gtk.BUTTONS_OK,
                             message_format = msg)
-            dialog.set_title("Error with input!")
+            dialog.set_title(_("Error with input!"))
             dialog.run()
             dialog.destroy()
             gtk.gdk.threads_leave()
@@ -807,11 +810,11 @@ class MainWindow(object):
                 
                 if percent == 0.0:
                     self.progress.pulse()
-                    self.progress.set_text("Transcoding...")
+                    self.progress.set_text(_("Transcoding..."))
                 else:
                     self.progress.set_fraction(percent)
-                    self.progress.set_text("Transcoding... (%s remaining)" % \
-                                           time_rem)
+                    self.progress.set_text(_("Transcoding... (%s remaining)" % \
+                                           time_rem))
                 gtk.gdk.threads_leave()
             except arista.transcoder.TranscoderStatusException, e:
                 _log.debug(str(e))
@@ -885,7 +888,7 @@ class PrefsDialog(object):
         pixbuf_renderer = gtk.CellRendererPixbuf()
         text_renderer = gtk.CellRendererText()
         
-        column = gtk.TreeViewColumn("Information")
+        column = gtk.TreeViewColumn(_("Information"))
         column.pack_start(pixbuf_renderer, False)
         column.set_attributes(pixbuf_renderer, pixbuf = 0)
         column.pack_start(text_renderer)
@@ -1020,11 +1023,12 @@ class AboutDialog(object):
         self.window.destroy()
 
 if __name__ == "__main__":
-    parser = OptionParser(usage="%prog [options]",
-                          version="Arista Transcoder GUI " + arista.__version__)
+    parser = OptionParser(usage = _("%prog [options]"),
+                          version = _("Arista Transcoder GUI " + \
+                                      arista.__version__))
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
-                      help = "Show verbose (debug) output")
+                      help = _("Show verbose (debug) output"))
     
     options, args = parser.parse_args()
     
@@ -1039,6 +1043,10 @@ if __name__ == "__main__":
     import gst
     
     arista.init()
+    
+    gettext.bindtextdomain("arista",
+                           arista.utils.get_path("locale"))
+    gettext.textdomain("arista")
     
     gtk.gdk.threads_init()
     
