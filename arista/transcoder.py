@@ -236,16 +236,23 @@ class Transcoder(gobject.GObject):
             if owidth > wmax:
                 width = wmax
                 height = int((float(wmax) / owidth) * oheight)
-            if oheight > hmax:
+            if height > hmax:
                 height = hmax
                 width = int((float(hmax) / oheight) * owidth)
             
+            print owidth, oheight, width, height, wmin, hmin, wmax, hmax
+            
             # Add any required padding
             vbox = ""
-            if width < wmin:
+            if width < wmin and height < hmin:
+                wpx = (wmin - width) / 2
+                hpx = (hmin - height) / 2
+                vbox = "videobox left=%i right=%i top=%i bottom=%i ! " % \
+                       (-wpx, -wpx, -hpx, -hpx)
+            elif width < wmin:
                 px = (wmin - width) / 2
-                vbox = "videobox top=%i bottom=%i ! " % (-px, -px)
-            if height < hmin:
+                vbox = "videobox left=%i right=%i ! " % (-px, -px)
+            elif height < hmin:
                 px = (hmin - height) / 2
                 vbox = "videobox top=%i bottom=%i ! " % (-px, -px)
             
