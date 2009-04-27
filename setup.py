@@ -64,6 +64,7 @@ on Ubuntu don't forget to install the multiverse packages.
          glob(os.path.join("ui", "*"))),
         (os.path.join("share", "arista", "locale"),
          glob(os.path.join("locale", "*"))),
+        (os.path.join("share", "applications"), ["arista.desktop"]),
     ],
     requires = [
         "gtk(>=2.16)", 

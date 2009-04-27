@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Arista Transcoder
+GenericName=Multimedia Converter
+Comment=Convert multimedia for all your devices
+Exec=arista-gtk
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/usr/share/arista/ui/icon.svg
+Categories=AudioVideo;GNOME;GTK;
+
