@@ -56,6 +56,7 @@ DEFAULT_CHECK_INPUTS = True
 DEFAULT_SHOW_TOOLBAR = True
 DEFAULT_SHOW_PREVIEW = True
 DEFAULT_PREVIEW_FPS = 2
+DEFAULT_CHECK_UPDATES = True
 
 RE_ENDS_NUM = re.compile(r'^.*(?P<number>[0-9]+)$')
 
@@ -150,20 +151,24 @@ class UpdateChecker(threading.Thread):
                 for loc, name in updates:
                     arista.presets.install_preset(loc, name)
             
-            gtk.gdk.threads_enter()
-            dialog.destroy()
-            dialog = gtk.MessageDialog(parent = self.main.window,
-                type = gtk.MESSAGE_INFO,
-                buttons = gtk.BUTTONS_OK,
-                message_format = _("Updates installed. Reloading device " \
-                                   "presets now."))
-            dialog.run()
-            dialog.destroy()
-            
-            self.main.window.destroy()
-            del self.main
-            self.main = MainWindow()
-            gtk.gdk.threads_leave()
+                gtk.gdk.threads_enter()
+                dialog.destroy()
+                dialog = gtk.MessageDialog(parent = self.main.window,
+                    type = gtk.MESSAGE_INFO,
+                    buttons = gtk.BUTTONS_OK,
+                    message_format = _("Updates installed. Reloading device " \
+                                       "presets now."))
+                dialog.run()
+                dialog.destroy()
+                
+                self.main.window.destroy()
+                del self.main
+                self.main = MainWindow()
+                gtk.gdk.threads_leave()
+            else:
+                gtk.gdk.threads_enter()
+                dialog.destroy()
+                gtk.gdk.threads_leave()
 
 class LogoWidget(gtk.Widget):
     """
@@ -940,6 +945,7 @@ class PrefsDialog(object):
         self.window = self.builder.get_object("prefs_dialog")
         self.check_inputs = self.builder.get_object("check_inputs")
         self.check_show_live = self.builder.get_object("check_show_live")
+        self.check_updates = self.builder.get_object("check_updates")
         self.spin_live_fps = self.builder.get_object("spin_live_fps")
         self.presets_view = self.builder.get_object("treeview_presets")
         
@@ -991,6 +997,12 @@ class PrefsDialog(object):
         except ValueError:
             self.spin_live_fps.set_value(DEFAULT_PREVIEW_FPS)
         
+        try:
+            value = client.get_value(CONFIG_PATH + "/check_updates")
+            self.check_updates.set_active(value)
+        except ValueError:
+            self.check_updates.set_active(DEFAULT_CHECK_UPDATES)
+        
         # Register handlers for when settings are changed
         client.notify_add(CONFIG_PATH + "/check_inputs", 
                           self.on_gconf_check_inputs)
@@ -998,6 +1010,8 @@ class PrefsDialog(object):
                           self.on_gconf_show_preview)
         client.notify_add(CONFIG_PATH + "/preview_fps", 
                           self.on_gconf_preview_fps)
+        client.notify_add(CONFIG_PATH + "/check_updates",
+                          self.on_gconf_check_updates)
         
         # Connect to signals defined in UI definition file
         self.builder.connect_signals(self)
@@ -1034,24 +1048,30 @@ class PrefsDialog(object):
         client = gconf.client_get_default()
         client.set_int(CONFIG_PATH + "/preview_fps", int(widget.get_value()))
     
+    def on_check_updates_toggled(self, widget):
+        """
+            Update GConf preference for checking online for updated presets.
+            If enabled the application will check on launch for updated presets
+            and ask the user to install them.
+        """
+        client = gconf.client_get_default()
+        client.set_bool(CONFIG_PATH + "/check_updates", widget.get_active())
+    
     def on_gconf_check_inputs(self, client, connection, entry, args):
         """
             Update UI when the GConf preference for checking DVD drives has
             been modified.
         """
-        widget = self.builder.get_object("check_inputs")
-        widget.set_active(entry.get_value().get_bool())
+        self.check_inputs.set_active(entry.get_value().get_bool())
     
     def on_gconf_show_preview(self, client, connection, entry, args):
         """
             Update UI when the GConf preference for showing the live preview
             has been modified.
         """
-        widget = self.builder.get_object("check_show_live")
-        
         value = entry.get_value().get_bool()
         
-        widget.set_active(value)
+        self.check_show_live.set_active(value)
         self.spin_live_fps.set_sensitive(value)
     
     def on_gconf_preview_fps(self, client, connection, entry, args):
@@ -1059,8 +1079,14 @@ class PrefsDialog(object):
             Update UI when the GConf preference for the preview framerate has
             been modified.
         """
-        widget = self.builder.get_object("spin_live_fps")
-        widget.set_value(entry.get_value().get_int())
+        self.spin_live_fps.set_value(entry.get_value().get_int())
+    
+    def on_gconf_check_updates(self, client, connection, entry, args):
+        """
+            Update the UI when the GConf preference for checking for updates
+            has been modified.
+        """
+        self.check_updates.set_active(entry.get_value().get_bool())
 
 class AboutDialog(object):
     """
@@ -1120,8 +1146,15 @@ if __name__ == "__main__":
     
     main = MainWindow()
     
-    update_checker = UpdateChecker(main)
-    update_checker.start()
+    client = gconf.client_get_default()
+    try:
+        check_updates = client.get_value(CONFIG_PATH + "/check_updates")
+    except ValueError:
+        check_updates = DEFAULT_CHECK_UPDATES
+    
+    if check_updates:
+        update_checker = UpdateChecker(main)
+        update_checker.start()
     
     gtk.main()
 
