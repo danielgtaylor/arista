@@ -10,7 +10,7 @@ Homepage: http://programmer-art.org/projects/arista-transcoder
 Package: arista
 Architecture: all
 XB-Python-Version: ${python:Versions}
-Depends: python, python-gobject, python-gtk2, python-gconf, python-cairo, python-dbus, python-gst0.10, gstreamer0.10-plugins-good, gstreamer0.10-plugins-bad, gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad-multiverse, gstreamer0.10-plugins-ugly-multiverse, ${python:Depends}, ${misc:Depends}
+Depends: python-gtk2, python-gconf, python-dbus, python-gst0.10, gstreamer0.10-plugins-good, gstreamer0.10-plugins-bad, gstreamer0.10-plugins-ugly, gstreamer0.10-plugins-bad-multiverse, gstreamer0.10-plugins-ugly-multiverse, ${python:Depends}, ${misc:Depends}
 Provides: ${python:Provides}
 Description: A simple multimedia transcoder for the GNOME Desktop
  A simple multimedia transcoder for the GNOME Desktop. Arista focuses on being
