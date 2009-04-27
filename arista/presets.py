@@ -325,7 +325,7 @@ def _load_video_codec(root):
         elif child.tag == "width":
             codec.width = _parse_range(child.text.strip())
         elif child.tag == "height":
-            codec.width = _parse_range(child.text.strip())
+            codec.height = _parse_range(child.text.strip())
         elif child.tag == "rate":
             codec.rate = _parse_range(child.text.strip(), Fraction)
         elif child.tag == "passes":
