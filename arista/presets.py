@@ -495,7 +495,7 @@ def check_for_updates(location = UPDATE_LOCATION):
         @return: A list of [(location, name), (location, name), ...] for each
                  preset that has an update available
     """
-    _log.info(_("Checking for device preset updates..."))
+    _log.debug(_("Checking for device preset updates..."))
     
     updates = []
     
@@ -571,7 +571,7 @@ def check_and_install_updates(location = UPDATE_LOCATION):
         for loc, name in updates:
             install_preset(loc, name)
     else:
-        _log.info(_("All device presets are up to date!"))
+        _log.debug(_("All device presets are up to date!"))
 
 # Automatically load presets - system, home, current path
 for path in reversed(utils.get_search_paths()):
