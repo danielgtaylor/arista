@@ -11,7 +11,7 @@
     <property name="version">0.9</property>
     <property name="copyright" translatable="yes">Copyright 2008 - 2009 Daniel G. Taylor</property>
     <property name="comments" translatable="yes">A multimedia transcoder for the GNOME desktop.</property>
-    <property name="website">http://programmer-art.org/projects/arista</property>
+    <property name="website">http://programmer-art.org/projects/arista-transcoder</property>
     <property name="website_label" translatable="yes">Arista homepage</property>
     <property name="authors">Daniel G. Taylor &lt;dan@programmer-art.org&gt;</property>
     <property name="artists">Daniel G. Taylor &lt;dan@programmer-art.org&gt;
