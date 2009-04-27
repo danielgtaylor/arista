@@ -240,8 +240,6 @@ class Transcoder(gobject.GObject):
                 height = hmax
                 width = int((float(hmax) / oheight) * owidth)
             
-            print owidth, oheight, width, height, wmin, hmin, wmax, hmax
-            
             # Add any required padding
             vbox = ""
             if width < wmin and height < hmin:
