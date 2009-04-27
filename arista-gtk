@@ -31,6 +31,7 @@ import logging
 import os
 import re
 import sys
+import threading
 
 from optparse import OptionParser
 
@@ -109,6 +110,60 @@ def _get_icon_pixbuf(uri, width, height):
         })
     
     return image
+
+class UpdateChecker(threading.Thread):
+    """
+        A thread to check for updates on startup.
+    """
+    def __init__(self, main):
+        """
+            @type main: MainWindow
+            @param main: The main Arista window
+        """
+        self.main = main
+        
+        super(UpdateChecker, self).__init__()
+    
+    def run(self):
+        """
+            Check for updates and present the user with the option of
+            installing any updated presets, then install them if she chooses
+            to. After the installation another dialog is shown asking to
+            restart the program.
+        """
+        updates = arista.presets.check_for_updates()
+        if updates:
+            gtk.gdk.threads_enter()
+            dialog = gtk.MessageDialog(parent = self.main.window,
+                type = gtk.MESSAGE_QUESTION,
+                buttons = gtk.BUTTONS_YES_NO,
+                message_format = _("There are %(count)d new or updated " \
+                                   "device presets available. Install " \
+                                   "them now?") % {
+                    "count": len(updates),
+            })
+            result = dialog.run()
+            dialog.hide()
+            gtk.gdk.threads_leave()
+            
+            if result == gtk.RESPONSE_YES:
+                for loc, name in updates:
+                    arista.presets.install_preset(loc, name)
+            
+            gtk.gdk.threads_enter()
+            dialog.destroy()
+            dialog = gtk.MessageDialog(parent = self.main.window,
+                type = gtk.MESSAGE_INFO,
+                buttons = gtk.BUTTONS_OK,
+                message_format = _("Updates installed. Reloading device " \
+                                   "presets now."))
+            dialog.run()
+            dialog.destroy()
+            
+            self.main.window.destroy()
+            del self.main
+            self.main = MainWindow()
+            gtk.gdk.threads_leave()
 
 class LogoWidget(gtk.Widget):
     """
@@ -1064,6 +1119,9 @@ if __name__ == "__main__":
     gtk.window_set_default_icon_from_file(icon_path)
     
     main = MainWindow()
+    
+    update_checker = UpdateChecker(main)
+    update_checker.start()
     
     gtk.main()
 

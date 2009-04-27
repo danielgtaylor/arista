@@ -53,6 +53,9 @@ _ = gettext.gettext
 _presets = {}
 _log = logging.getLogger("arista.presets")
 
+UPDATE_LOCATION = "http://programmer-art.org" + \
+                  "/media/releases/arista-transcoder/presets/"
+
 class Fraction(gst.Fraction):
     """
         An object for storing a fraction as two integers. This is a subclass
@@ -443,7 +446,7 @@ def version_info():
         
     return info
 
-def _install_preset(location, name):
+def install_preset(location, name):
     """
         Attempt to fetch and install a preset. Presets are always installed
         to ~/.arista/presets/.
@@ -481,15 +484,20 @@ def _install_preset(location, name):
                 "error": str(e),
             })
 
-def check_for_updates(location = "http://programmer-art.org/media/releases/arista-transcoder/presets/"):
+def check_for_updates(location = UPDATE_LOCATION):
     """
         Check for updated presets from a central server.
         
         @type location: str
         @param location: The directory where presets.txt and all preset files
-                         can be found on the server.
+                         can be found on the server
+        @rtype: list
+        @return: A list of [(location, name), (location, name), ...] for each
+                 preset that has an update available
     """
     _log.info(_("Checking for device preset updates..."))
+    
+    updates = []
     
     if not location.endswith("/"):
         location = location + "/"
@@ -515,7 +523,7 @@ def check_for_updates(location = "http://programmer-art.org/media/releases/arist
                             "name": name,
                         })
                         try:
-                            _install_preset(location, name)
+                            updates.append((location, name))
                         except Exception, e:
                             _log.error(_("Error installing preset %(name)s " \
                                          "from %(location)s: %(error)s") % {
@@ -528,7 +536,7 @@ def check_for_updates(location = "http://programmer-art.org/media/releases/arist
                         "name": name,
                     })
                     try:
-                        _install_preset(location, name)
+                        updates.append((location, name))
                     except Exception, e:
                         _log.error(_("Error installing preset %(name)s " \
                                      "from %(location)s: %(error)s") % {
@@ -544,6 +552,26 @@ def check_for_updates(location = "http://programmer-art.org/media/releases/arist
         _log.warning(_("There was a problem accessing %(location)spresets.txt!") % {
             "location": location,
         })
+    
+    return updates
+
+def check_and_install_updates(location = UPDATE_LOCATION):
+    """
+        Check for and install updated presets from a central server. This is
+        equivalent to calling install_preset with each tuple returned from
+        check_for_updates.
+        
+        @type location: str
+        @param location: The directory where presets.txt and all preset files
+                         can be found on the server
+    """
+    updates = check_for_updates(location)
+    
+    if updates:
+        for loc, name in updates:
+            install_preset(loc, name)
+    else:
+        _log.info(_("All device presets are up to date!"))
 
 # Automatically load presets - system, home, current path
 for path in reversed(utils.get_search_paths()):
