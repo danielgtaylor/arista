@@ -26,6 +26,10 @@ Installation uses python distutils. After extracting the archive, run:
 
     python setup.py install
 
+If you are using Ubuntu 9.04 (Jaunty) or later, make sure to install with:
+
+    python setup.py install --install-layout=deb
+
 Don't forget to use sudo if necessary. This will install the arista python 
 module to your python site-packages or dist-packages path, install the arista 
 programs into sys.prefix/bin and install all data files into 
