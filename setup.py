@@ -13,6 +13,20 @@ if version < '2.2.3':
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
 
+data_files = [
+    (os.path.join("share", "applications"), ["arista.desktop"]),
+]
+
+for path in ["presets", "ui", "locale"]:
+    for root, dirs, files in os.walk(path):
+        to_add = []
+        
+        for filename in files:
+            to_add.append(os.path.join(root, filename))
+            
+        if to_add:
+            data_files.append((os.path.join("share", "arista", root), to_add))
+
 setup(
     name = "arista",
     version = "0.9",
@@ -57,15 +71,7 @@ on Ubuntu don't forget to install the multiverse packages.
         "arista-gtk",
         "arista-transcode",
     ],
-    data_files = [
-        (os.path.join("share", "arista", "presets"),
-         glob(os.path.join("presets", "*"))),
-        (os.path.join("share", "arista", "ui"),
-         glob(os.path.join("ui", "*"))),
-        (os.path.join("share", "arista", "locale"),
-         glob(os.path.join("locale", "*"))),
-        (os.path.join("share", "applications"), ["arista.desktop"]),
-    ],
+    data_files = data_files,
     requires = [
         "gtk(>=2.16)", 
         "gst(>=10.22)",
