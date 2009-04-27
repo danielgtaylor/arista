@@ -21,6 +21,7 @@
             <passes>
                 <pass>bitrate=96000 profile=LC</pass>
             </passes>
+            <rate>48000</rate>
             <channels>1, 2</channels>
         </audio>
         <video>
@@ -42,12 +43,13 @@
             <passes>
                 <pass>bitrate=128000 profile=LC</pass>
             </passes>
+            <rate>48000</rate>
             <channels>1, 2</channels>
         </audio>
         <video>
             <name>x264enc</name>
             <passes>
-                <pass>pass=qual quantizer=23 me=umh subme=6 ref=2 threads=0</pass>
+                <pass>pass=qual quantizer=21 me=umh subme=6 ref=2 threads=0</pass>
             </passes>
             <width>480</width>
             <height>272</height>
