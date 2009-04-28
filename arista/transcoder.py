@@ -397,7 +397,8 @@ class Transcoder(gobject.GObject):
             @type cmd: string
             @param cmd: A gst-launch string to construct a pipeline from.
         """
-        _log.debug(cmd.replace("(", "\\(").replace(")", "\\)"))
+        _log.debug(cmd.replace("(", "\\(").replace(")", "\\)")\
+                      .replace(";", "\;"))
         
         try:
             self.pipe = gst.parse_launch(cmd)
