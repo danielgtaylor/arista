@@ -179,18 +179,12 @@ class Transcoder(gobject.GObject):
         if container:
             mux_str = "%s name=mux ! queue !" % container
         
-        # FIXME: Gstreamer doesn't like queues before the muxer for just audio
-        # xor video, so only prepend the queues when we have both!
-        premux = ""
-        if self.info.is_video and self.info.is_audio:
-            premux = "queue ! "
-        
         # Decide whether or not we are using a muxer and link to it or just
         # the file sink if we aren't (for e.g. mp3 audio)
         if mux_str:
-            premux += "mux."
+            premux = "mux."
         else:
-            premux += "sink."
+            premux = "sink."
         
         src = self._get_source()
         
@@ -324,7 +318,7 @@ class Transcoder(gobject.GObject):
                 deint = " ffdeinterlace ! "
             
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
-                   "%s videoscale ! %s ! %s queue ! %s ! queue ! tee " \
+                   "%s videoscale ! %s ! %s%s ! tee " \
                    "name=videotee ! queue ! %svideo_00" % \
                    (deint, self.vcaps.to_string(), vbox, vencoder, premux)
             
