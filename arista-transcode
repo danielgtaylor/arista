@@ -219,6 +219,12 @@ if __name__ == "__main__":
             parser.print_help()
             raise SystemExit(1)
         
+        print _("Encoding %(filename)s for %(device)s (%(preset)s)") % {
+            "filename": os.path.basename(args[0]),
+            "device": options.device,
+            "preset": options.preset or _("default"),
+        }
+        
         device = devices[options.device]
         
         if not options.preset:
