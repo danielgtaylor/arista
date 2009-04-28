@@ -27,6 +27,7 @@
 """
 
 import gettext
+import locale
 import logging
 import os
 import re
@@ -1139,6 +1140,10 @@ if __name__ == "__main__":
     gettext.bindtextdomain("arista",
                            arista.utils.get_path("locale"))
     gettext.textdomain("arista")
+    
+    locale.bindtextdomain("arista",
+                          arista.utils.get_path("locale"))
+    locale.textdomain("arista")
     
     gtk.gdk.threads_init()
     
