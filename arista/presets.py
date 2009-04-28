@@ -1,25 +1,25 @@
 #!/usr/bin/env python
 
 """
-	Arista Presets
-	==============
-	Objects for handling devices, presets, etc. 
-	
-	Example Use
-	-----------
-	Presets are automatically loaded whent he module is initialized.
-	
-	    >>> import arista.presets
-	    >>> arista.presets.get()
-	    { "name": Device, ... }
-	
-	If you have other paths to load, use:
-	
-	    >>> arista.presets.load("file")
-	    >>> arista.presets.load_directory("path")
-	
-	License
-	-------
+    Arista Presets
+    ==============
+    Objects for handling devices, presets, etc. 
+    
+    Example Use
+    -----------
+    Presets are automatically loaded whent he module is initialized.
+    
+        >>> import arista.presets
+        >>> arista.presets.get()
+        { "name": Device, ... }
+    
+    If you have other paths to load, use:
+    
+        >>> arista.presets.load("file")
+        >>> arista.presets.load_directory("path")
+    
+    License
+    -------
     Copyright 2008 - 2009 Daniel G. Taylor <dan@programmer-art.org>
     
     This file is part of Arista.

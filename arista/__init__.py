@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 
 """
-	Arista Transcoder Library
-	=========================
-	A set of tools to transcode files for various devices and presets using
-	gstreamer.
-	
-	Usage
-	-----
-	
-	    >>> import arista
-	    >>> arista.init()
-	    >>> arista.presets.get()
-	    {'name': Device(), ...}
-	
-	License
-	-------
+    Arista Transcoder Library
+    =========================
+    A set of tools to transcode files for various devices and presets using
+    gstreamer.
+    
+    Usage
+    -----
+    
+        >>> import arista
+        >>> arista.init()
+        >>> arista.presets.get()
+        {'name': Device(), ...}
+    
+    License
+    -------
     Copyright 2008 - 2009 Daniel G. Taylor <dan@programmer-art.org>
     
     This file is part of Arista.

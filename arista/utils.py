@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 """
-	Arista Utilities
-	================
-	A set of utility methods to do various things inside of Arista.
-	
-	License
-	-------
+    Arista Utilities
+    ================
+    A set of utility methods to do various things inside of Arista.
+    
+    License
+    -------
     Copyright 2009 Daniel G. Taylor <dan@programmer-art.org>
     
     This file is part of Arista.
