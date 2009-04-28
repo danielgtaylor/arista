@@ -92,7 +92,7 @@ on Ubuntu don't forget to install the multiverse packages.
         "Environment :: X11 Applications :: GTK",
         "Environment :: X11 Applications :: Gnome",
         "Intended Audience :: End Users/Desktop",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "License :: OSI Approved :: GNU Lesser General Public License (LGPL)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Topic :: Multimedia :: Sound/Audio :: Conversion",
