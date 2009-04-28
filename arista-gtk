@@ -389,7 +389,7 @@ class MainWindow(object):
         pixbuf_renderer = gtk.CellRendererPixbuf()
         text_renderer = gtk.CellRendererText()
         
-        column = gtk.TreeViewColumn("Description")
+        column = gtk.TreeViewColumn(_("Description"))
         column.pack_start(pixbuf_renderer, False)
         column.set_attributes(pixbuf_renderer, pixbuf = 0)
         column.pack_start(text_renderer)
