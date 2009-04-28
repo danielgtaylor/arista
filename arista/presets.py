@@ -215,7 +215,7 @@ class AudioCodec(Codec):
     """
     def __init__(self, *args):
         Codec.__init__(self, *args)
-        self.rate = (Fraction("8000"), Fraction("96000"))
+        self.rate = ("8000", "96000")
         self.width = (8, 24)
         self.depth = (8, 24)
         self.channels = (1, 6)
@@ -299,7 +299,7 @@ def _load_audio_codec(root):
         elif child.tag == "channels":
             codec.channels = _parse_range(child.text.strip())
         elif child.tag == "rate":
-            codec.rate = _parse_range(child.text.strip(), Fraction)
+            codec.rate = _parse_range(child.text.strip())
         elif child.tag == "passes":
             for command in child.getchildren():
                 codec.passes.append(command.text.strip())

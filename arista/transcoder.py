@@ -362,12 +362,8 @@ class Transcoder(gobject.GObject):
                 current = getattr(self.info, "audio" + attribute)
                 amin, amax = getattr(self.preset.acodec, attribute)
                 
-                if attribute == "rate":
-                    aminvalue = amin.num / float(amin.denom)
-                    amaxvalue = amax.num / float(amax.denom)
-                else:
-                    aminvalue = amin
-                    amaxvalue = amax
+                aminvalue = amin
+                amaxvalue = amax
                 
                 if current > amaxvalue:
                     for acap in self.acaps:
@@ -383,8 +379,7 @@ class Transcoder(gobject.GObject):
                        self.preset.acodec.passes[self.enc_pass]
                 
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
-                   "ffaudioresample ! %s ! audioconvert ! audiorate ! " \
-                   "ffaudioresample ! %s ! %saudio_00" % \
+                   "ffaudioresample ! %s ! %s ! %saudio_00" % \
                    (self.acaps.to_string(), aencoder, premux)
         
         # =====================================================================
