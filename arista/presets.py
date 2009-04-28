@@ -215,7 +215,7 @@ class AudioCodec(Codec):
     """
     def __init__(self, *args):
         Codec.__init__(self, *args)
-        self.rate = ("8000", "96000")
+        self.rate = (8000, 96000)
         self.width = (8, 24)
         self.depth = (8, 24)
         self.channels = (1, 6)
