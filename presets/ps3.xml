@@ -2,14 +2,14 @@
 
 <device>
     <make>Sony</make>
-    <model>PSP</model>
-    <description>H.264/AAC for Playstation portable</description>
+    <model>Playstation 3</model>
+    <description>H.264/AAC for Playstation 3</description>
     <author>
         <name>Daniel G. Taylor</name>
         <email>dan@programmer-art.org</email>
     </author>
     <version>1.0</version>
-    <icon>file://psp.svg</icon>
+    <icon>file://ps3.svg</icon>
     <default>Normal</default>
     
     <preset>
@@ -19,18 +19,17 @@
         <audio>
             <name>faac</name>
             <passes>
-                <pass>bitrate=96000 profile=LC</pass>
+                <pass>bitrate=128000 profile=LC</pass>
             </passes>
-            <rate>48000</rate>
             <channels>1, 2</channels>
         </audio>
         <video>
             <name>x264enc</name>
             <passes>
-                <pass>pass=qual quantizer=27 subme=4 threads=0</pass>
+                <pass>pass=cbr bitrate=1024 subme=4 threads=0</pass>
             </passes> 
-            <width>480</width>
-            <height>272</height>
+            <width>320, 720</width>
+            <height>240, 480</height>
             <rate>1, 25</rate>
         </video>
     </preset>
@@ -41,18 +40,17 @@
         <audio>
             <name>faac</name>
             <passes>
-                <pass>bitrate=128000 profile=LC</pass>
+                <pass>bitrate=196000 profile=LC</pass>
             </passes>
-            <rate>48000</rate>
             <channels>1, 2</channels>
         </audio>
         <video>
             <name>x264enc</name>
             <passes>
-                <pass>pass=qual quantizer=21 me=umh subme=6 ref=2 threads=0</pass>
+                <pass>pass=cbr bitrate=1536 me=umh subme=6 ref=2 threads=0</pass>
             </passes>
-            <width>480</width>
-            <height>272</height>
+            <width>320, 1920</width>
+            <height>240, 1080</height>
             <rate>1, 30</rate>
         </video>
     </preset>

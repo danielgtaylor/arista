@@ -26,6 +26,10 @@ Installation uses python distutils. After extracting the archive, run:
 
     python setup.py install
 
+If you are using Ubuntu 9.04 (Jaunty) or later, make sure to install with:
+
+    python setup.py install --install-layout=deb
+
 Don't forget to use sudo if necessary. This will install the arista python 
 module to your python site-packages or dist-packages path, install the arista 
 programs into sys.prefix/bin and install all data files into 
@@ -81,3 +85,4 @@ You may create a local branch of the latest code via:
 To update your local branch to the latest code you can use `bzr merge`. If you 
 choose to publish your branch you may request a merge to trunk, otherwise
 you may just send patches that apply cleanly to the latest trunk.
+

@@ -34,6 +34,10 @@
 	along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
+
+_ = gettext.gettext
+
 def init():
     """
         Initialize the arista module. You MUST call this method after
@@ -46,6 +50,6 @@ def init():
     import transcoder
     import utils
 
-__version__ = "0.9"
-__author__ = "Daniel G. Taylor <dan@programmer-art.org>"
+__version__ = _("0.9")
+__author__ = _("Daniel G. Taylor <dan@programmer-art.org>")
 

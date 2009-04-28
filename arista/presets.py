@@ -38,16 +38,23 @@
 	along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import gst
+import gettext
 import logging
 import os
 import sys
+import urllib2
 import xml.etree.ElementTree
+
+import gst
 
 import utils
 
+_ = gettext.gettext
 _presets = {}
 _log = logging.getLogger("arista.presets")
+
+UPDATE_LOCATION = "http://programmer-art.org" + \
+                  "/media/releases/arista-transcoder/presets/"
 
 class Fraction(gst.Fraction):
     """
@@ -68,7 +75,9 @@ class Fraction(gst.Fraction):
         elif len(parts) == 2:
             gst.Fraction.__init__(self, int(parts[0]), int(parts[1]))
         else:
-            raise ValueError("Not a valid integer or fraction: %s!" % value)
+            raise ValueError(_("Not a valid integer or fraction: %(value)s!") % {
+                "value": value,
+            })
 
 class Author(object):
     """
@@ -129,6 +138,8 @@ class Device(object):
         self.presets = presets and presets or {}
         self.icon = icon
         self.default = default
+        
+        self.filename = None
     
     def __repr__(self):
         return "%s %s" % (self.make, self.model)
@@ -242,7 +253,9 @@ def _parse_range(value, type = int):
     elif len(parts) == 2:
         return (type(parts[0]), type(parts[1]))
     else:
-        raise ValueError("Value may only contain one comma; got %s" % value)
+        raise ValueError(_("Value may only contain one comma; got %(value)s") % {
+            "value": value
+        })
 
 def _load_author(root):
     """
@@ -312,7 +325,7 @@ def _load_video_codec(root):
         elif child.tag == "width":
             codec.width = _parse_range(child.text.strip())
         elif child.tag == "height":
-            codec.width = _parse_range(child.text.strip())
+            codec.height = _parse_range(child.text.strip())
         elif child.tag == "rate":
             codec.rate = _parse_range(child.text.strip(), Fraction)
         elif child.tag == "passes":
@@ -365,6 +378,8 @@ def load(filename):
     
     device = Device()
     
+    device.filename = filename
+    
     for child in tree.getroot().getchildren():
         if child.tag == "make":
             device.make = child.text.strip()
@@ -384,7 +399,10 @@ def load(filename):
         elif child.tag == "default":
             device.default = child.text.strip()
     
-    _log.debug("Loaded device %s" % device.name)
+    _log.debug(_("Loaded device %(device)s (%(presets)d presets)") % {
+        "device": device.name,
+        "presets": len(device.presets)
+    })
     
     return device
 
@@ -412,6 +430,148 @@ def get():
                  name for the device
     """
     return _presets
+
+def version_info():
+    """
+        Generate a string of version information. Each line contains 
+        "name, version" for a particular preset file, where name is the key
+        found in arista.presets.get().
+        
+        This is used for checking for updates.
+    """
+    info = ""
+    
+    for name, device in _presets.items():
+        info += "%s, %s\n" % (name, device.version)
+        
+    return info
+
+def install_preset(location, name):
+    """
+        Attempt to fetch and install a preset. Presets are always installed
+        to ~/.arista/presets/.
+        
+        @type location: str
+        @param location: The location of the preset
+        @type name: str
+        @param name: The name of the preset to fetch, without any extension
+    """
+    local_path = os.path.expanduser(os.path.join("~", ".arista", "presets"))
+    
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    
+    if not location.endswith("/"):
+        location = location + "/"
+    
+    for ext in ["xml", "svg"]:
+        path = ".".join([location + name, ext])
+        _log.debug(_("Fetching %(location)s") % {
+            "location": path,
+        })
+        
+        try:
+            f = urllib2.urlopen(path)
+            local_file = os.path.join(local_path, ".".join([name, ext]))
+            _log.debug(_("Writing to %(file)s") % {
+                "file": local_file,
+            })
+            open(local_file, "w").write(f.read())
+        except Exception, e:
+            _log.error(_("There was an error fetching and installing " \
+                         "%(location)s: %(error)s") % {
+                "location": path,
+                "error": str(e),
+            })
+
+def check_for_updates(location = UPDATE_LOCATION):
+    """
+        Check for updated presets from a central server.
+        
+        @type location: str
+        @param location: The directory where presets.txt and all preset files
+                         can be found on the server
+        @rtype: list
+        @return: A list of [(location, name), (location, name), ...] for each
+                 preset that has an update available
+    """
+    _log.debug(_("Checking for device preset updates..."))
+    
+    updates = []
+    
+    if not location.endswith("/"):
+        location = location + "/"
+    
+    f = urllib2.urlopen(location + "presets.txt")
+    
+    try:
+        for line in f.readlines():
+            if not line.strip():
+                continue
+            
+            parts = [part.strip() for part in line.split(",")]
+            
+            if len(parts) == 2:
+                name, version = parts
+                if _presets.has_key(name):
+                    if _presets[name].version >= version:
+                        _log.debug(_("Device preset %(name)s is up to date") % {
+                            "name": name,
+                        })
+                    else:
+                        _log.debug(_("Found updated device preset %(name)s") % {
+                            "name": name,
+                        })
+                        try:
+                            updates.append((location, name))
+                        except Exception, e:
+                            _log.error(_("Error installing preset %(name)s " \
+                                         "from %(location)s: %(error)s") % {
+                                "name": name,
+                                "location": location,
+                                "error": str(e),
+                            })
+                else:
+                    _log.debug(_("Found new device preset %(name)s") % {
+                        "name": name,
+                    })
+                    try:
+                        updates.append((location, name))
+                    except Exception, e:
+                        _log.error(_("Error installing preset %(name)s " \
+                                     "from %(location)s: %(error)s") % {
+                            "name": name,
+                            "location": location,
+                            "error": str(e),
+                        })
+            else:
+                _log.warning(_("Malformed plugin version line %(line)s") % {
+                    "line": line,
+                })
+    except:
+        _log.warning(_("There was a problem accessing %(location)spresets.txt!") % {
+            "location": location,
+        })
+    
+    return updates
+
+def check_and_install_updates(location = UPDATE_LOCATION):
+    """
+        Check for and install updated presets from a central server. This is
+        equivalent to calling install_preset with each tuple returned from
+        check_for_updates.
+        
+        @type location: str
+        @param location: The directory where presets.txt and all preset files
+                         can be found on the server
+    """
+    updates = check_for_updates(location)
+    
+    if updates:
+        for loc, name in updates:
+            install_preset(loc, name)
+    else:
+        _log.debug(_("All device presets are up to date!"))
 
 # Automatically load presets - system, home, current path
 for path in reversed(utils.get_search_paths()):

@@ -26,10 +26,12 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import os
 import re
 import sys
+import threading
 
 from optparse import OptionParser
 
@@ -45,7 +47,10 @@ if __name__ != "__main__":
 
 import arista
 
+_ = gettext.gettext
 _log = logging.getLogger("arista-gtk")
+
+locale.setlocale(locale.LC_ALL, '')
 
 CONFIG_PATH = "/apps/arista"
 
@@ -53,6 +58,7 @@ DEFAULT_CHECK_INPUTS = True
 DEFAULT_SHOW_TOOLBAR = True
 DEFAULT_SHOW_PREVIEW = True
 DEFAULT_PREVIEW_FPS = 2
+DEFAULT_CHECK_UPDATES = True
 
 RE_ENDS_NUM = re.compile(r'^.*(?P<number>[0-9]+)$')
 
@@ -102,9 +108,69 @@ def _get_icon_pixbuf(uri, width, height):
     elif uri.startswith("stock://"):
         image = theme.load_icon(uri[8:], size, 0)
     else:
-        raise ValueError("Unknown icon URI %s" % uri)
+        raise ValueError(_("Unknown icon URI %(uri)s") % {
+            "uri": uri
+        })
     
     return image
+
+class UpdateChecker(threading.Thread):
+    """
+        A thread to check for updates on startup.
+    """
+    def __init__(self, main):
+        """
+            @type main: MainWindow
+            @param main: The main Arista window
+        """
+        self.main = main
+        
+        super(UpdateChecker, self).__init__()
+    
+    def run(self):
+        """
+            Check for updates and present the user with the option of
+            installing any updated presets, then install them if she chooses
+            to. After the installation another dialog is shown asking to
+            restart the program.
+        """
+        updates = arista.presets.check_for_updates()
+        if updates:
+            gtk.gdk.threads_enter()
+            dialog = gtk.MessageDialog(parent = self.main.window,
+                type = gtk.MESSAGE_QUESTION,
+                buttons = gtk.BUTTONS_YES_NO,
+                message_format = _("There are %(count)d new or updated " \
+                                   "device presets available. Install " \
+                                   "them now?") % {
+                    "count": len(updates),
+            })
+            result = dialog.run()
+            dialog.hide()
+            gtk.gdk.threads_leave()
+            
+            if result == gtk.RESPONSE_YES:
+                for loc, name in updates:
+                    arista.presets.install_preset(loc, name)
+            
+                gtk.gdk.threads_enter()
+                dialog.destroy()
+                dialog = gtk.MessageDialog(parent = self.main.window,
+                    type = gtk.MESSAGE_INFO,
+                    buttons = gtk.BUTTONS_OK,
+                    message_format = _("Updates installed. Reloading device " \
+                                       "presets now."))
+                dialog.run()
+                dialog.destroy()
+                
+                self.main.window.destroy()
+                del self.main
+                self.main = MainWindow()
+                gtk.gdk.threads_leave()
+            else:
+                gtk.gdk.threads_enter()
+                dialog.destroy()
+                gtk.gdk.threads_leave()
 
 class LogoWidget(gtk.Widget):
     """
@@ -417,11 +483,13 @@ class MainWindow(object):
                     elif capture.version == '2':
                         model.set_value(iter, 2, "v4l2://" + device)
                     else:
-                        _log.warning("Unknown V4L version %s!" % capture.version)
+                        _log.warning(_("Unknown V4L version %(version)s!") % {
+                                       "version": capture.version,
+                                    })
                         model.remove(iter)
                 
                 iter = model.append()
-                model.set_value(iter, 1, "Choose file...")
+                model.set_value(iter, 1, _("Choose file..."))
                 
                 self.source.set_active(0)
                 self.source.connect("changed", self.on_source_changed)
@@ -432,9 +500,9 @@ class MainWindow(object):
                 self.finder_disc_lost = self.finder.connect("disc-lost",
                                                         self.on_disc_lost)
             else:
-                self.source = gtk.FileChooserButton("Choose file...")
+                self.source = gtk.FileChooserButton(_("Choose file..."))
         else:
-            self.source = gtk.FileChooserButton("Choose file...")
+            self.source = gtk.FileChooserButton(_("Choose file..."))
         
         self.table.attach(self.source, 1, 2, 0, 1, yoptions = gtk.FILL)
         self.source.show()
@@ -454,7 +522,7 @@ class MainWindow(object):
         
         self.window.hide()
         
-        _log.debug("Cleaning up and flushing buffers...")
+        _log.debug(_("Cleaning up and flushing buffers..."))
         
         def waiting_to_quit():
             if not self.transcoder or self.transcoder.state == gst.STATE_NULL:
@@ -492,8 +560,8 @@ class MainWindow(object):
         iter = widget.get_active_iter()
         model = widget.get_model()
         item = model.get_value(iter, 1)
-        if item == "Choose file...":
-            dialog = gtk.FileChooserDialog(title="Choose Source File...",
+        if item == _("Choose file..."):
+            dialog = gtk.FileChooserDialog(title=_("Choose Source File..."),
                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                  gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
             dialog.set_property("local-only", False)
@@ -602,7 +670,7 @@ class MainWindow(object):
                 
             default_out = "%s%d.%s" % (name, number, ext)
         
-        dialog = gtk.FileChooserDialog(title = "Choose Output File...",
+        dialog = gtk.FileChooserDialog(title = _("Choose Output File..."),
                         action = gtk.FILE_CHOOSER_ACTION_SAVE,
                         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                    gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
@@ -621,7 +689,11 @@ class MainWindow(object):
             image = _get_icon_pixbuf(device.icon, width, height)
             if image:
                 self.queue_model.set_value(iter, 0, image)
-            self.queue_model.set_value(iter, 1, "%s (%s): %s" % (device.model, preset.name, os.path.basename(filename)))
+            self.queue_model.set_value(iter, 1, _("%(model)s (%(preset)s): %(filename)s") % {
+                "model": device.model,
+                "preset": preset.name,
+                "filename": os.path.basename(filename),
+            })
             self.queue_model.set_value(iter, 2, self.queue[-1])
     
     def on_remove(self, widget):
@@ -686,8 +758,9 @@ class MainWindow(object):
         """
         if not entry.transcoder.info.is_video and \
            not entry.transcoder.info.is_audio:
-            _log.error("Input %s contains no valid streams!" % \
-                       entry.transcoder.infile)
+            _log.error(_("Input %(infile)s contains no valid streams!") % {
+                "infile": entry.transcoder.infile,
+            })
             
             gtk.gdk.threads_enter()
             
@@ -699,7 +772,7 @@ class MainWindow(object):
                             type = gtk.MESSAGE_ERROR,
                             buttons = gtk.BUTTONS_OK,
                             message_format = msg)
-            dialog.set_title("Error with input!")
+            dialog.set_title(_("Error with input!"))
             dialog.run()
             dialog.destroy()
             gtk.gdk.threads_leave()
@@ -807,11 +880,12 @@ class MainWindow(object):
                 
                 if percent == 0.0:
                     self.progress.pulse()
-                    self.progress.set_text("Transcoding...")
+                    self.progress.set_text(_("Transcoding..."))
                 else:
                     self.progress.set_fraction(percent)
-                    self.progress.set_text("Transcoding... (%s remaining)" % \
-                                           time_rem)
+                    self.progress.set_text(_("Transcoding... (%(time)s remaining)") % {
+                        "time": time_rem
+                    })
                 gtk.gdk.threads_leave()
             except arista.transcoder.TranscoderStatusException, e:
                 _log.debug(str(e))
@@ -873,6 +947,7 @@ class PrefsDialog(object):
         self.window = self.builder.get_object("prefs_dialog")
         self.check_inputs = self.builder.get_object("check_inputs")
         self.check_show_live = self.builder.get_object("check_show_live")
+        self.check_updates = self.builder.get_object("check_updates")
         self.spin_live_fps = self.builder.get_object("spin_live_fps")
         self.presets_view = self.builder.get_object("treeview_presets")
         
@@ -885,7 +960,7 @@ class PrefsDialog(object):
         pixbuf_renderer = gtk.CellRendererPixbuf()
         text_renderer = gtk.CellRendererText()
         
-        column = gtk.TreeViewColumn("Information")
+        column = gtk.TreeViewColumn(_("Information"))
         column.pack_start(pixbuf_renderer, False)
         column.set_attributes(pixbuf_renderer, pixbuf = 0)
         column.pack_start(text_renderer)
@@ -924,6 +999,12 @@ class PrefsDialog(object):
         except ValueError:
             self.spin_live_fps.set_value(DEFAULT_PREVIEW_FPS)
         
+        try:
+            value = client.get_value(CONFIG_PATH + "/check_updates")
+            self.check_updates.set_active(value)
+        except ValueError:
+            self.check_updates.set_active(DEFAULT_CHECK_UPDATES)
+        
         # Register handlers for when settings are changed
         client.notify_add(CONFIG_PATH + "/check_inputs", 
                           self.on_gconf_check_inputs)
@@ -931,6 +1012,8 @@ class PrefsDialog(object):
                           self.on_gconf_show_preview)
         client.notify_add(CONFIG_PATH + "/preview_fps", 
                           self.on_gconf_preview_fps)
+        client.notify_add(CONFIG_PATH + "/check_updates",
+                          self.on_gconf_check_updates)
         
         # Connect to signals defined in UI definition file
         self.builder.connect_signals(self)
@@ -967,24 +1050,30 @@ class PrefsDialog(object):
         client = gconf.client_get_default()
         client.set_int(CONFIG_PATH + "/preview_fps", int(widget.get_value()))
     
+    def on_check_updates_toggled(self, widget):
+        """
+            Update GConf preference for checking online for updated presets.
+            If enabled the application will check on launch for updated presets
+            and ask the user to install them.
+        """
+        client = gconf.client_get_default()
+        client.set_bool(CONFIG_PATH + "/check_updates", widget.get_active())
+    
     def on_gconf_check_inputs(self, client, connection, entry, args):
         """
             Update UI when the GConf preference for checking DVD drives has
             been modified.
         """
-        widget = self.builder.get_object("check_inputs")
-        widget.set_active(entry.get_value().get_bool())
+        self.check_inputs.set_active(entry.get_value().get_bool())
     
     def on_gconf_show_preview(self, client, connection, entry, args):
         """
             Update UI when the GConf preference for showing the live preview
             has been modified.
         """
-        widget = self.builder.get_object("check_show_live")
-        
         value = entry.get_value().get_bool()
         
-        widget.set_active(value)
+        self.check_show_live.set_active(value)
         self.spin_live_fps.set_sensitive(value)
     
     def on_gconf_preview_fps(self, client, connection, entry, args):
@@ -992,8 +1081,14 @@ class PrefsDialog(object):
             Update UI when the GConf preference for the preview framerate has
             been modified.
         """
-        widget = self.builder.get_object("spin_live_fps")
-        widget.set_value(entry.get_value().get_int())
+        self.spin_live_fps.set_value(entry.get_value().get_int())
+    
+    def on_gconf_check_updates(self, client, connection, entry, args):
+        """
+            Update the UI when the GConf preference for checking for updates
+            has been modified.
+        """
+        self.check_updates.set_active(entry.get_value().get_bool())
 
 class AboutDialog(object):
     """
@@ -1020,11 +1115,12 @@ class AboutDialog(object):
         self.window.destroy()
 
 if __name__ == "__main__":
-    parser = OptionParser(usage="%prog [options]",
-                          version="Arista Transcoder GUI " + arista.__version__)
+    parser = OptionParser(usage = _("%prog [options]"),
+                          version = _("Arista Transcoder GUI " + \
+                                      arista.__version__))
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
-                      help = "Show verbose (debug) output")
+                      help = _("Show verbose (debug) output"))
     
     options, args = parser.parse_args()
     
@@ -1040,6 +1136,10 @@ if __name__ == "__main__":
     
     arista.init()
     
+    gettext.bindtextdomain("arista",
+                           arista.utils.get_path("locale"))
+    gettext.textdomain("arista")
+    
     gtk.gdk.threads_init()
     
     # Set the default icon for all windows
@@ -1047,6 +1147,16 @@ if __name__ == "__main__":
     gtk.window_set_default_icon_from_file(icon_path)
     
     main = MainWindow()
+    
+    client = gconf.client_get_default()
+    try:
+        check_updates = client.get_value(CONFIG_PATH + "/check_updates")
+    except ValueError:
+        check_updates = DEFAULT_CHECK_UPDATES
+    
+    if check_updates:
+        update_checker = UpdateChecker(main)
+        update_checker.start()
     
     gtk.main()
 

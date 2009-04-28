@@ -27,6 +27,7 @@ Modified to support v4l://device style URIs using v4lsrc.
 Modified to support v4l2://device style URIs using v4l2src.
 """
 
+import gettext
 import logging
 
 import os.path
@@ -37,6 +38,7 @@ import gst
 
 from gst.extend.pygobject import gsignal
 
+_ = gettext.gettext
 _log = logging.getLogger("arista.discoverer")
 
 class Discoverer(gst.Pipeline):
@@ -198,7 +200,9 @@ class Discoverer(gst.Pipeline):
 
     def discover(self):
         """Find the information on the given file asynchronously"""
-        _log.debug("Discovering %s" % self.filename)
+        _log.debug(_("Discovering %(filename)s") % {
+            "filename": self.filename
+        })
         self.debug("starting discovery")
         if self.finished:
             self.emit('discovered', False)
@@ -231,37 +235,44 @@ class Discoverer(gst.Pipeline):
         if not self.finished:
             return
         if not self.mimetype:
-            print "Unknown media type"
+            print _("Unknown media type")
             return
-        print "Mime Type :\t", self.mimetype
+        print _("Mime Type :\t"), self.mimetype
         if not self.is_video and not self.is_audio:
             return
-        print "Length :\t", self._time_to_string(max(self.audiolength, self.videolength))
-        print "\tAudio:", self._time_to_string(self.audiolength), "\n\tVideo:", self._time_to_string(self.videolength)
+        print _("Length :\t"), self._time_to_string(max(self.audiolength, self.videolength))
+        print _("\tAudio:"), self._time_to_string(self.audiolength), _("\n\tVideo:"), self._time_to_string(self.videolength)
         if self.is_video and self.videorate:
-            print "Video :"
-            print "\t%d x %d @ %d/%d fps" % (self.videowidth,
-                                            self.videoheight,
-                                            self.videorate.num, self.videorate.denom)
+            print _("Video :")
+            print _("\t%(width)d x %(height)d @ %(rate_num)d/%(rate_den)d fps") % {
+                "width": self.videowidth,
+                "height": self.videoheight,
+                "rate_num": self.videorate.num,
+                "rate_den": self.videorate.denom
+            }
             if self.tags.has_key("video-codec"):
-                print "\tCodec :", self.tags.pop("video-codec")
+                print _("\tCodec :"), self.tags.pop("video-codec")
         if self.is_audio:
-            print "Audio :"
+            print _("Audio :")
             if self.audiofloat:
-                print "\t%d channels(s) : %dHz @ %dbits (float)" % (self.audiochannels,
-                                                                    self.audiorate,
-                                                                    self.audiowidth)
+                print _("\t%(channels)d channels(s) : %(rate)dHz @ %(width)dbits (float)") % {
+                    "channels": self.audiochannels,
+                    "rate": self.audiorate,
+                    "width": self.audiowidth
+                }
             else:
-                print "\t%d channels(s) : %dHz @ %dbits (int)" % (self.audiochannels,
-                                                                  self.audiorate,
-                                                                  self.audiodepth)
+                print _("\t%(channels)d channels(s) : %(rate)dHz @ %(depth)dbits (int)") % {
+                    "channels": self.audiochannels,
+                    "rate": self.audiorate,
+                    "depth": self.audiodepth
+                }
             if self.tags.has_key("audio-codec"):
-                print "\tCodec :", self.tags.pop("audio-codec")
+                print _("\tCodec :"), self.tags.pop("audio-codec")
         for stream in self.otherstreams:
             if not stream == self.mimetype:
-                print "Other unsuported Multimedia stream :", stream
+                print _("Other unsuported Multimedia stream :"), stream
         if self.tags:
-            print "Additional information :"
+            print _("Additional information :")
             for tag in self.tags.keys():
                 print "%20s :\t" % tag, self.tags[tag]
 

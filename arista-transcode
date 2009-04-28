@@ -26,6 +26,7 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import os
 import signal
@@ -41,6 +42,8 @@ if __name__ != "__main__":
     import gst
 
 import arista
+
+_ = gettext.gettext
 
 # Initialize threads for gstreamer
 gobject.threads_init()
@@ -68,24 +71,29 @@ def print_status(enc):
     try:
         percent, time_rem = enc.status
 
-        msg = "Encoding... %i%% (%s remaining)" % (int(percent * 100), time_rem)
+        msg = _("Encoding... %(percent)i%% (%(time)s remaining)") % {
+            "percent": int(percent * 100),
+            "time": time_rem,
+        }
         sys.stdout.write("\b" * len(status_msg))
         sys.stdout.write(msg)
         sys.stdout.flush()
         status_msg = msg
-    except arista.plugins.EncoderStatusException, e:
+    except arista.transcoder.TranscoderStatusException, e:
         print str(e)
     
     return (percent < 100)
 
 def discovered(transcoder, info, is_media, options):
     if not is_media:
-        print "No audio or video streams found in input!"
+        print _("No audio or video streams found in input!")
         raise SystemExit(1)
         
     if not options.quiet:
-        print "Starting pass %d of %d" % (transcoder.enc_pass + 1,
-                                          transcoder.pass_count)
+        print _("Starting pass %(pass)d of %(total)d") % {
+            "pass": transcoder.enc_pass + 1,
+            "total": transcoder.pass_count,
+        }
 
 def complete(transcoder, options):
     if not options.quiet:
@@ -109,29 +117,35 @@ def signal_handler(signum, frame):
         Handle Ctr-C gracefully and shut down the transcoder.
     """
     global interrupted
-    print "\nInterrupt caught. Cleaning up... (Ctrl-C to force exit)"
+    print
+    print _("Interrupt caught. Cleaning up... (Ctrl-C to force exit)")
     interrupted = True
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 if __name__ == "__main__":
-    parser = OptionParser(usage="%prog [options] infile outfile",
-                          version="Arista Transcoder " + arista.__version__)
+    parser = OptionParser(usage = _("%prog [options] infile outfile"),
+                          version = _("Arista Transcoder " + arista.__version__))
     parser.add_option("-i", "--info", dest = "info", action = "store_true",
                       default = False, 
-                      help = "Show information about available devices [false]")
+                      help = _("Show information about available devices " \
+                               "[false]"))
     parser.add_option("-p", "--preset", dest = "preset", default = None,
-                      help = "Preset to encode to [default]")
+                      help = _("Preset to encode to [default]"))
     parser.add_option("-d", "--device", dest = "device", default = "computer",
-                      help = "Device to encode to [computer]")
+                      help = _("Device to encode to [computer]"))
     parser.add_option("-s", "--source-info", dest = "source_info",
                       action = "store_true", default = False, 
-                      help = "Show information about input file and exit")
+                      help = _("Show information about input file and exit"))
     parser.add_option("-q", "--quiet", dest = "quiet", action = "store_true", 
                       default = False,
-                      help = "Don't show status and time remaining")
+                      help = _("Don't show status and time remaining"))
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
-                      help = "Show verbose (debug) output")
+                      help = _("Show verbose (debug) output"))
+    parser.add_option("-u", "--update", dest = "update",
+                      action = "store_true", default = False,
+                      help = _("Check for and download updated device " \
+                               "presets if they are available"))
 
     options, args = parser.parse_args()
     
@@ -147,28 +161,36 @@ if __name__ == "__main__":
     
     arista.init()
     
+    gettext.bindtextdomain("arista",
+                           arista.utils.get_path("locale"))
+    gettext.textdomain("arista")
+    
     devices = arista.presets.get()
     
     if options.info and not args:
-        print "Available devices:"
+        print _("Available devices:")
         for (name, device) in devices.items():
-            print "%s: %s" % (name, device.description)
-        print "\nUse --info device_name for more information on a device."
+            print _("%(name)s: %(description)s") % {
+                "name": name,
+                "description": device.description,
+            }
+        print
+        print _("Use --info device_name for more information on a device.")
         raise SystemExit()
     elif options.info:
-        print "Preset info:"
+        print _("Preset info:")
         device = devices[args[0]]
-        print "\tID: " + args[0]
-        print "\tMake: " + device.make
-        print "\tModel: " + device.model
-        print "\tDescription: " + device.description
-        print "\tAuthor: " + str(device.author)
-        print "\tVersion: " + device.version
-        print "\tPresets: " + ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])
+        print "\t" + _("ID:") + " " + args[0]
+        print "\t" + _("Make:") + " " + device.make
+        print "\t" + _("Model:") + " " + device.model
+        print "\t" + _("Description:") + " " + device.description
+        print "\t" + _("Author:") + " " + str(device.author)
+        print "\t" + _("Version:") + " " + device.version
+        print "\t" + _("Presets:") + " " + ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])
         raise SystemExit()
     elif options.source_info:
         if len(args) != 1:
-            print "You may only pass one filename for --source-info!"
+            print _("You may only pass one filename for --source-info!")
             parser.print_help()
             raise SystemExit(1)
         
@@ -180,10 +202,13 @@ if __name__ == "__main__":
         discoverer.connect("discovered", _got_info)
         discoverer.discover()
         
-        print "Discovering file info..."
+        print _("Discovering file info...")
         
         loop = gobject.MainLoop()
         loop.run()
+    elif options.update:
+        # Update the local presets to the latest versions
+        arista.presets.check_and_install_updates()
     else:
         if len(args) != 2:
             parser.print_help()

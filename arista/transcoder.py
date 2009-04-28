@@ -25,6 +25,7 @@
     along with Arista.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import gettext
 import logging
 import os
 import os.path
@@ -36,6 +37,7 @@ import gst
 
 import discoverer
 
+_ = gettext.gettext
 _log = logging.getLogger("arista.transcoder")
 
 # =============================================================================
@@ -234,16 +236,21 @@ class Transcoder(gobject.GObject):
             if owidth > wmax:
                 width = wmax
                 height = int((float(wmax) / owidth) * oheight)
-            if oheight > hmax:
+            if height > hmax:
                 height = hmax
                 width = int((float(hmax) / oheight) * owidth)
             
             # Add any required padding
             vbox = ""
-            if width < wmin:
+            if width < wmin and height < hmin:
+                wpx = (wmin - width) / 2
+                hpx = (hmin - height) / 2
+                vbox = "videobox left=%i right=%i top=%i bottom=%i ! " % \
+                       (-wpx, -wpx, -hpx, -hpx)
+            elif width < wmin:
                 px = (wmin - width) / 2
-                vbox = "videobox top=%i bottom=%i ! " % (-px, -px)
-            if height < hmin:
+                vbox = "videobox left=%i right=%i ! " % (-px, -px)
+            elif height < hmin:
                 px = (hmin - height) / 2
                 vbox = "videobox top=%i bottom=%i ! " % (-px, -px)
             
@@ -400,7 +407,8 @@ class Transcoder(gobject.GObject):
         try:
             self.pipe = gst.parse_launch(cmd)
         except gobject.GError, e:
-            raise PipelineException("Unable to construct pipeline! " + str(e))
+            raise PipelineException(_("Unable to construct pipeline! ") + \
+                                    str(e))
         
         bus = self.pipe.get_bus()
         bus.add_signal_watch()
@@ -491,18 +499,18 @@ class Transcoder(gobject.GObject):
         duration = max(self.info.videolength, self.info.audiolength)
         
         if not duration:
-            return 0.0, "Unknown"
+            return 0.0, _("Unknown")
         
         try:
             pos, format = self.pipe.query_position(gst.FORMAT_TIME)
         except gst.QueryError:
-            raise TranscoderStatusException("Can't query position!")
+            raise TranscoderStatusException(_("Can't query position!"))
         except AttributeError:
-            raise TranscoderStatusException("No pipeline to query!")
+            raise TranscoderStatusException(_("No pipeline to query!"))
         
         percent = pos / float(duration)
         if percent == 0:
-            return 0.0, "Unknown"
+            return 0.0, _("Unknown")
         
         total = 1.0 / percent * (time.time() - self.start_time)
         rem = total - (time.time() - self.start_time)
@@ -510,12 +518,13 @@ class Transcoder(gobject.GObject):
         sec = rem % 60
         
         try:
-            if sec < 10:
-                time_rem = "%i:0%i" % (min, sec)
-            else:
-                time_rem = "%i:%i" % (min, sec)
+            time_rem = _("%(min)d:%(sec)02d") % {
+                "min": min,
+                "sec": sec,
+            }
         except TypeError:
-            raise TranscoderStatusException("Problem calculating time remaining!")
+            raise TranscoderStatusException(_("Problem calculating time " \
+                                              "remaining!"))
         
         return percent, time_rem
     

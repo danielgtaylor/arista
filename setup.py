@@ -13,9 +13,23 @@ if version < '2.2.3':
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
 
+data_files = [
+    (os.path.join("share", "applications"), ["arista.desktop"]),
+]
+
+for path in ["presets", "ui", "locale"]:
+    for root, dirs, files in os.walk(path):
+        to_add = []
+        
+        for filename in files:
+            to_add.append(os.path.join(root, filename))
+            
+        if to_add:
+            data_files.append((os.path.join("share", "arista", root), to_add))
+
 setup(
     name = "arista",
-    version = "0.8",
+    version = "0.9",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========
@@ -25,9 +39,7 @@ use by making the complex task of encoding for various devices simple. Pick your
 input, pick your target device, choose a file to save to and go.
 
 Arista has been in development since early 2008 as a side project and was just
-recently polished to make it release-worthy. The 0.8 release is the first public
-release and includes a to-do of items that will be completed for the 1.0 final
-release.
+recently polished to make it release-worthy. The 0.8 release is the first release available to the public. Please see http://www.launchpad.net/arista for information on helping out.
 
 Features
 ---------
@@ -36,6 +48,7 @@ Features
 * Live preview to see encoded quality
 * Automatically discover available DVD drives and media
 * Rip straight from DVD media easily (requires libdvdcss)
+* Automatically discover and record from V4L devices
 * Simple terminal client for scripting
 
 Requirements
@@ -58,12 +71,7 @@ on Ubuntu don't forget to install the multiverse packages.
         "arista-gtk",
         "arista-transcode",
     ],
-    data_files = [
-        (os.path.join("share", "arista", "presets"),
-         glob(os.path.join("presets", "*"))),
-        (os.path.join("share", "arista", "ui"),
-         glob(os.path.join("ui", "*"))),
-    ],
+    data_files = data_files,
     requires = [
         "gtk(>=2.16)", 
         "gst(>=10.22)",
