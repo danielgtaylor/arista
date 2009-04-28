@@ -139,6 +139,10 @@ msgstr ""
 msgid "Updates installed. Reloading device presets now."
 msgstr ""
 
+#: arista-gtk:392
+msgid "Description"
+msgstr ""
+
 #: arista-gtk:484
 #, python-format
 msgid "Unknown V4L version %(version)s!"
