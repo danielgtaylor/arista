@@ -123,6 +123,11 @@ msgstr ""
 msgid "Discovering file info..."
 msgstr ""
 
+#: arista-transcode:222
+#, python-format
+msgid "Encoding %(filename)s for %(device)s (%(preset)s)"
+msgstr ""
+
 #: arista-gtk:109
 #, python-format
 msgid "Unknown icon URI %(uri)s"
