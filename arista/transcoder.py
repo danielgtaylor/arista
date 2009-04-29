@@ -440,7 +440,7 @@ class Transcoder(gobject.GObject):
         """
             Pause the pipeline!
         """
-        self.state = st.STATE_PAUSED
+        self.state = gst.STATE_PAUSED
 
     def stop(self):
         """
