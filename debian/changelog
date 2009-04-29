@@ -1,6 +1,24 @@
+arista (0.9-4) jaunty; urgency=low
+
+  * Depend on python 2.5 or newer.
+
+ -- Daniel G. Taylor <dan@programmer-art.org>  Wed, 29 Apr 2009 08:30:00 +0200 
+
+arista (0.9-3) jaunty; urgency=low
+
+  * Fixed issue with original tarball preventing build.
+
+ -- Daniel G. Taylor <dan@programmer-art.org>  Wed, 29 Apr 2009 08:30:00 +0200 
+
+arista (0.9-2) jaunty; urgency=low
+
+  * Fixed priority setting causing build upload to fail on launchpad
+
+ -- Daniel G. Taylor <dan@programmer-art.org>  Wed, 29 Apr 2009 08:15:00 +0200 
+
 arista (0.9-1) jaunty; urgency=low
 
   * Initial release
 
- -- Daniel G. Taylor <dan@programmer-art.org>  Thu, 23 Apr 2009 15:19:42 +0200
+ -- Daniel G. Taylor <dan@programmer-art.org>  Thu, 23 Apr 2009 15:19:42 +0200 
  
