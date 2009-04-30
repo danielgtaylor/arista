@@ -236,10 +236,33 @@
                       <placeholder/>
                     </child>
                     <child>
-                      <object class="GtkProgressBar" id="progressbar">
+                      <object class="GtkHBox" id="hbox_progress">
                         <property name="visible">True</property>
-                        <property name="show_text">True</property>
-                        <property name="text" translatable="yes">Idle</property>
+                        <child>
+                          <object class="GtkProgressBar" id="progressbar">
+                            <property name="visible">True</property>
+                            <property name="show_text">True</property>
+                            <property name="text" translatable="yes">Idle</property>
+                          </object>
+                          <packing>
+                            <property name="padding">5</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button_stop">
+                            <property name="label" translatable="yes">gtk-stop</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_stock">True</property>
+                            <signal name="clicked" handler="on_stop_clicked"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>

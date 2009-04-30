@@ -319,7 +319,9 @@ class MainWindow(object):
         self.toolbutton_pause = self.builder.get_object("toolbutton_pause")
         self.devices = _new_combo_with_image([gobject.TYPE_PYOBJECT])
         self.presets = _new_combo_with_image([gobject.TYPE_PYOBJECT])
+        self.hbox_progress = self.builder.get_object("hbox_progress")
         self.progress = self.builder.get_object("progressbar")
+        self.button_stop = self.builder.get_object("button_stop")
         self.preview = self.builder.get_object("video_preview")
         self.settings_frame = self.builder.get_object("settings_frame")
         self.preview_frame = self.builder.get_object("preview_frame")
@@ -426,7 +428,7 @@ class MainWindow(object):
         self.devices.show()
         self.presets.show()
         self.preview.hide()
-        self.progress.hide()
+        self.hbox_progress.hide()
         self.image_preview.show_all()
         self.window.show()
     
@@ -698,6 +700,26 @@ class MainWindow(object):
             })
             self.queue_model.set_value(iter, 2, self.queue[-1])
     
+    def stop_processing_entry(self, entry):
+        """
+            Stop processing an entry that is currently being processed. This
+            sends an end-of-stream signal down the pipe, hides the preview,
+            and makes sure the menu and toolbar is in the proper state.
+            
+            The item will remain in the queue for up to a few seconds as 
+            GStreamer finishes flushing its buffers, then will be removed.
+            If another item is in the queue it will start processing then.
+        """
+        source = entry.transcoder.pipe.get_by_name("source")
+        source.send_event(gst.event_new_eos())
+        entry.transcoder.start()
+        
+        # Hide live preview while we wait for the item to finish
+        self.image_preview.show()
+        self.preview.hide()
+        self.hbox_progress.hide()
+        self.update_pause(False)
+    
     def on_remove(self, widget):
         """
             Remove an item from the queue.
@@ -709,15 +731,7 @@ class MainWindow(object):
             
             if entry.transcoder:
                 # Currently processing
-                source = entry.transcoder.pipe.get_by_name("source")
-                source.send_event(gst.event_new_eos())
-                entry.transcoder.start()
-                
-                # Hide live preview while we wait for the item to finish
-                self.image_preview.show()
-                self.preview.hide()
-                self.progress.hide()
-                self.update_pause(False)
+                self.stop_processing_entry(entry)
             else:
                 self.queue.remove(entry)
                 model.remove(iter)
@@ -818,7 +832,7 @@ class MainWindow(object):
                 self.preview.show()
                 self.image_preview.hide()
         
-        self.progress.show()
+        self.hbox_progress.show()
         self.update_pause(True)
     
     def on_queue_entry_complete(self, queue, entry):
@@ -831,7 +845,7 @@ class MainWindow(object):
         self.queue_model.remove(iter)
         self.image_preview.show()
         self.preview.hide()
-        self.progress.hide()
+        self.hbox_progress.hide()
         self.update_pause(False)
     
     def on_preview_sink_element_added(self, autovideosink, element):
@@ -925,6 +939,13 @@ class MainWindow(object):
         model, selected = widget.get_selected()
         
         self.update_remove(bool(selected))
+    
+    def on_stop_clicked(self, widget):
+        """
+            The user clicked the stop button, so stop processing the entry.
+        """
+        if len(self.queue):
+            self.stop_processing_entry(self.queue[0])
     
     def on_queue_row_changed(self, model, path, iter):
         pass
