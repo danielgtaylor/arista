@@ -47,6 +47,7 @@ import urllib2
 import xml.etree.ElementTree
 
 import gst
+import gst.pbutils
 
 import utils
 
@@ -186,6 +187,44 @@ class Preset(object):
     
     def __repr__(self):
         return "%s %s" % (self.name, self.container)
+    
+    def check_elements(self, callback, *args):
+        """
+            Check the elements used in this preset. If they don't exist then
+            let GStreamer offer to install them.
+            
+            @type callback: callable(preset, success, *args)
+            @param callback: A method to call when the elements are all 
+                             available or installation failed
+            @rtype: bool
+            @return: True if required elements are available, False otherwise
+        """
+        elements = [self.container, self.acodec.name, self.vcodec.name]
+        
+        missing = []
+        for element in elements:
+            if not gst.element_factory_find(element):
+                missing.append(gst.pbutils.missing_element_installer_detail_new(element))
+        
+        if missing:
+            if gst.pbutils.install_plugins_supported():
+                
+                def install_done(result, null):
+                    if result == gst.pbutils.INSTALL_PLUGINS_INSTALL_IN_PROGRESS:
+                        # Ignore start of installer message
+                        pass
+                    elif result == gst.pbutils.INSTALL_PLUGINS_SUCCESS:
+                        callback(self, True, *args)
+                    else:
+                        callback(self, False, *args)
+            
+                context = gst.pbutils.InstallPluginsContext()
+                gst.pbutils.install_plugins_async(missing, context,
+                                                  install_done, "")
+            else:
+                callback(self, False, *args)
+        else:
+            callback(self, True, *args)
 
 class Codec(object):
     """

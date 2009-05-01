@@ -640,6 +640,35 @@ class MainWindow(object):
             pick the output filename and then adds the item to the queue for
             transcoding.
         """
+        iter = self.presets.get_active_iter()
+        preset = self.presets.get_model().get_value(iter, 2)
+        
+        self.source.set_sensitive(False)
+        self.devices.set_sensitive(False)
+        self.presets.set_sensitive(False)
+        
+        can_encode = preset.check_elements(self.preset_ready)
+    
+    def preset_ready(self, preset, can_encode):
+        """
+            Called when a preset is ready to be encoded after checking for
+            (and optionally installing) required GStreamer elements.
+        """
+        gtk.gdk.threads_enter()
+        self.source.set_sensitive(True)
+        self.devices.set_sensitive(True)
+        self.presets.set_sensitive(True)
+        gtk.gdk.threads_leave()
+        
+        if not can_encode:
+            gtk.gdk.threads_enter()
+            dialog = gtk.MessageDialog(self.window, type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK, message_format = _("Cannot add item to queue because of missing elements!"))
+            dialog.run()
+            dialog.destroy()
+            gtk.gdk.threads_leave()
+            return
+        
+        gtk.gdk.threads_enter()
         if isinstance(self.source, gtk.ComboBox):
             iter = self.source.get_active_iter()
             model = self.source.get_model()
@@ -651,9 +680,6 @@ class MainWindow(object):
         
         iter = self.devices.get_active_iter()
         device = self.devices.get_model().get_value(iter, 2)
-        
-        iter = self.presets.get_active_iter()
-        preset = self.presets.get_model().get_value(iter, 2)
         
         if "." in inname:
             default_out = ".".join(inname.split(".")[:-1]) + "." + preset.extension
@@ -699,6 +725,8 @@ class MainWindow(object):
                 "filename": os.path.basename(filename),
             })
             self.queue_model.set_value(iter, 2, self.queue[-1])
+        
+        gtk.gdk.threads_leave()
     
     def stop_processing_entry(self, entry):
         """
@@ -1156,6 +1184,7 @@ if __name__ == "__main__":
     # This seems to be fixed http://bugzilla.gnome.org/show_bug.cgi?id=425847
     # but in my testing it is NOT. Leaving hacks for now.
     import gst
+    import gst.pbutils
     
     arista.init()
     
