@@ -374,7 +374,7 @@ class Transcoder(gobject.GObject):
                        self.preset.acodec.passes[self.enc_pass]
                 
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
-                   "ffaudioresample ! %s ! %s ! %saudio_00" % \
+                   "audioresample ! %s ! %s ! %saudio_00" % \
                    (self.acaps.to_string(), aencoder, premux)
         
         # =====================================================================
