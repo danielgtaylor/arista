@@ -46,6 +46,7 @@ import sys
 import urllib2
 import xml.etree.ElementTree
 
+import gobject
 import gst
 import gst.pbutils
 
@@ -222,9 +223,9 @@ class Preset(object):
                 gst.pbutils.install_plugins_async(missing, context,
                                                   install_done, "")
             else:
-                callback(self, False, *args)
+                gobject.idle_add(callback, self, False, *args)
         else:
-            callback(self, True, *args)
+            gobject.idle_add(callback, self, True, *args)
 
 class Codec(object):
     """
