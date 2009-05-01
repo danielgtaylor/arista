@@ -200,7 +200,24 @@ class Preset(object):
             @rtype: bool
             @return: True if required elements are available, False otherwise
         """
-        elements = [self.container, self.acodec.name, self.vcodec.name]
+        elements = [
+            # Elements defined in external files
+            self.container,
+            self.acodec.name,
+            self.vcodec.name,
+            # Elements used internally
+            "decodebin2",
+            "videobox",
+            "ffmpegcolorspace",
+            "videoscale",
+            "videorate",
+            "ffdeinterlace",
+            "audioconvert",
+            "audiorate",
+            "audioresample",
+            "tee",
+            "queue",
+        ]
         
         missing = []
         for element in elements:
