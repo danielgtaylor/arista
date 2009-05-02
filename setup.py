@@ -29,7 +29,7 @@ for path in ["presets", "ui", "locale"]:
 
 setup(
     name = "arista",
-    version = "0.9",
+    version = "0.9.1",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========
@@ -63,7 +63,7 @@ on Ubuntu don't forget to install the multiverse packages.
     author = "Daniel G. Taylor",
     author_email = "dan@programmer-art.org",
     url = "http://programmer-art.org/projects/arista-transcoder",
-    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.tar.gz",
+    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.1.tar.gz",
     packages = [
         "arista",
     ],
