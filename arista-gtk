@@ -1041,6 +1041,9 @@ class PrefsDialog(object):
                                          _get_icon_pixbuf(device.icon, 32, 32))
             self.presets_model.set_value(iter, 1, "<b>%s</b>\n%s" % \
                                          (device.name, device.description))
+            self.presets_model.set_value(iter, 2, device)
+        
+        self.presets_view.get_selection().select_path((0,))
         
         # Setup configuration system
         client = gconf.client_get_default()
@@ -1087,6 +1090,37 @@ class PrefsDialog(object):
         
         # Show the window and go!
         self.window.show_all()
+    
+    def on_about(self, widget):
+        """
+            Display a very simple dialog showing information about a device
+            preset. Currently shown are:
+            
+             * Icon
+             * Name
+             * Description
+             * Author
+             * Version
+            
+        """
+        model, iter = self.presets_view.get_selection().get_selected()
+        device = model.get_value(iter, 2)
+        
+        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
+        image = _get_icon_pixbuf(device.icon, width, height)
+        
+        dialog = gtk.AboutDialog()
+        dialog.set_name(device.name)
+        dialog.set_version(device.version)
+        dialog.set_copyright(str(device.author))
+        dialog.set_comments(device.description)
+        
+        if image:
+            dialog.set_logo(image)
+        
+        dialog.run()
+        
+        dialog.destroy()
     
     def on_close(self, widget, response):
         """
