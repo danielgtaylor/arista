@@ -1,0 +1,29 @@
+Arista Release Guide
+====================
+This file describes what steps should be taken to make a new release of Arista.
+
+Pre-Release
+-----------
+
+ * Download new translation files from launchpad and commit to bzr
+ * Version bump in arista/__init__.py and ui/about.ui
+ * Updated README
+ * Update setup.py and debian/* to make sure they are up to date for the release
+
+Release
+-------
+
+ * Create the source distribution: setup.py sdist
+ * Upload the resulting dist/arista-*.tar.gz to Programmer-art.org
+ * Turn the next milestone into a release on launchpad and upload tarball
+ * Update python package index: setup.py register
+
+Post-Release
+------------
+
+ * Setup new milestone for next release on launchpad if applicable
+ * Bug and blueprint triage on launchpad
+ * Update various sites:
+    * gnomefiles.org
+    * freshmeat.net
+
