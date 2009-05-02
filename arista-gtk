@@ -34,6 +34,7 @@ import os
 import re
 import sys
 import threading
+import time
 
 from optparse import OptionParser
 
@@ -136,6 +137,21 @@ class UpdateChecker(threading.Thread):
             to. After the installation another dialog is shown asking to
             restart the program.
         """
+        client = gconf.client_get_default()
+        
+        try:
+            last_check = client.get_value(CONFIG_PATH + "/last_update_check")
+        except ValueError:
+            last_check = 0
+        
+        # Let's not hammer the server - wait minimum of an hour between checks
+        if time.time() - last_check < 60 * 60:
+            return
+        
+        # Set last update check time
+        client.set_value(CONFIG_PATH + "/last_update_check", time.time())
+        
+        # Do the update checks
         updates = arista.presets.check_for_updates()
         if updates:
             gtk.gdk.threads_enter()
