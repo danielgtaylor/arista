@@ -133,6 +133,12 @@ class TranscodeQueue(gobject.GObject):
         """
         return _("Transcode queue: ") + repr(self._queue)
     
+    def insert(self, pos, entry):
+        """
+            Insert an entry at an arbitrary position.
+        """
+        self._queue.insert(pos, entry)
+    
     def append(self, infile, outfile, preset):
         """
             Append a QueueEntry to the queue.
