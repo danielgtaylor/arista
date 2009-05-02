@@ -1,5 +1,5 @@
 Source: arista
-Section: video
+Section: gnome
 Priority: extra
 Maintainer: Daniel G. Taylor <dan@programmer-art.org>
 Build-Depends: debhelper (>= 7), cdbs, python-central, python (>=2.5)
