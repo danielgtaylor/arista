@@ -13,6 +13,7 @@ Pre-Release
 Release
 -------
 
+ * Tag bzr revision with version, e.g. 'arista-0.9.1'
  * Create the source distribution: setup.py sdist
  * Upload the resulting dist/arista-*.tar.gz to Programmer-art.org
  * Turn the next milestone into a release on launchpad and upload tarball
