@@ -509,6 +509,8 @@ class MainWindow(object):
                         model.remove(iter)
                 
                 iter = model.append()
+                icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
+                model.set_value(iter, 0, theme.load_icon(icon, size, 0))
                 model.set_value(iter, 1, _("Choose file..."))
                 
                 self.source.set_active(0)
