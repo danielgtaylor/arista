@@ -1,3 +1,9 @@
+arista (0.9.1-1) jaunty; urgency=low
+
+  * New upstream release.
+  
+ -- Daniel G. Taylor <dan@programmer-art.org>  Sun, 3 May 2009 15:20:00 +0200 
+
 arista (0.9-4) jaunty; urgency=low
 
   * Depend on python 2.5 or newer.
