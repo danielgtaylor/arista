@@ -62,7 +62,11 @@ def print_status(enc):
         remaining.
     """
     global status_msg
+    global interrupted
     percent = 0.0
+    
+    if interrupted:
+        return True
     
     if enc.state == gst.STATE_NULL and interrupted:
         gobject.idle_add(loop.quit)
@@ -110,7 +114,8 @@ def check_interrupted():
         transcoder.
     """
     if interrupted:
-        transcoder.stop()
+        source = transcoder.pipe.get_by_name("source")
+        source.send_event(gst.event_new_eos())
         return False
     return True
 
