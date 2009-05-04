@@ -103,8 +103,6 @@ class Transcoder(gobject.GObject):
         self.pipe = None
         
         self.enc_pass = 0
-        self.pass_count = max(len(self.preset.vcodec.passes),
-                              len(self.preset.acodec.passes))
         
         def _got_info(info, is_media):
             self.info = info
@@ -371,7 +369,10 @@ class Transcoder(gobject.GObject):
             # Add audio transcoding pipeline to command
             # =================================================================
             aencoder = self.preset.acodec.name + " " + \
-                       self.preset.acodec.passes[self.enc_pass]
+                       self.preset.acodec.passes[ \
+                            len(self.preset.vcodec.passes) - \
+                            self.enc_pass - 1 \
+                       ]
                 
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
                    "audioresample ! %s ! %s ! %saudio_00" % \
@@ -419,7 +420,7 @@ class Transcoder(gobject.GObject):
         if t == gst.MESSAGE_EOS:
             self.state = gst.STATE_NULL
             self.emit("pass-complete")
-            if self.enc_pass < self.pass_count - 1:
+            if self.enc_pass < self.preset.pass_count - 1:
                 self.enc_pass += 1
                 self._setup_pass()
                 self.start()

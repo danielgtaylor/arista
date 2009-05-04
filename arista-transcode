@@ -94,11 +94,15 @@ def discovered(transcoder, info, is_media, options):
     if not is_media:
         print _("No audio or video streams found in input!")
         raise SystemExit(1)
-        
+
+def pass_setup(transcoder, options):
     if not options.quiet:
+        if transcoder.enc_pass > 0:
+            print # blank line
+            
         print _("Starting pass %(pass)d of %(total)d") % {
             "pass": transcoder.enc_pass + 1,
-            "total": transcoder.pass_count,
+            "total": transcoder.preset.pass_count,
         }
 
 def complete(transcoder, options):
@@ -168,12 +172,10 @@ if __name__ == "__main__":
     
     arista.init()
     
-    gettext.bindtextdomain("arista",
-                           arista.utils.get_path("locale"))
+    gettext.bindtextdomain("arista", arista.utils.get_path("locale"))
     gettext.textdomain("arista")
     
-    locale.bindtextdomain("arista",
-                          arista.utils.get_path("locale"))
+    locale.bindtextdomain("arista", arista.utils.get_path("locale"))
     locale.textdomain("arista")
     
     devices = arista.presets.get()
@@ -242,6 +244,7 @@ if __name__ == "__main__":
         
         transcoder = arista.transcoder.Transcoder(args[0], args[1], preset)
         transcoder.connect("discovered", discovered, options)
+        transcoder.connect("pass-setup", pass_setup, options)
         transcoder.connect("complete", complete, options)
         
         if not options.quiet:

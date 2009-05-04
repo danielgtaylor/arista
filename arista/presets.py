@@ -189,6 +189,14 @@ class Preset(object):
     def __repr__(self):
         return "%s %s" % (self.name, self.container)
     
+    @property
+    def pass_count(self):
+        """
+            @rtype: int
+            @return: The number of passes in this preset
+        """
+        return max(len(self.vcodec.passes), len(self.acodec.passes))
+    
     def check_elements(self, callback, *args):
         """
             Check the elements used in this preset. If they don't exist then
