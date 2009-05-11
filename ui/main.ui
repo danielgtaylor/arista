@@ -251,7 +251,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="button_stop">
-                            <property name="label" translatable="yes">gtk-stop</property>
+                            <property name="label">gtk-stop</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
