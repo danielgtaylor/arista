@@ -568,7 +568,10 @@ def check_for_updates(location = UPDATE_LOCATION):
     if not location.endswith("/"):
         location = location + "/"
     
-    f = urllib2.urlopen(location + "presets.txt")
+    try:
+        f = urllib2.urlopen(location + "presets.txt")
+    except urllib2.URLError:
+        return updates
     
     try:
         for line in f.readlines():
