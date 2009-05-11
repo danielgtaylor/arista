@@ -7,7 +7,7 @@
     
     Example Use
     -----------
-    Presets are automatically loaded whent he module is initialized.
+    Presets are automatically loaded whent the module is initialized.
     
         >>> import arista.presets
         >>> arista.presets.get()
