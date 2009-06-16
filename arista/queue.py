@@ -44,23 +44,23 @@ class QueueEntry(object):
     """
         An entry in the queue.
     """
-    def __init__(self, infile, outfile, preset):
+    def __init__(self, input_options, outfile, preset):
         """
-            @type infile: str
-            @param infile: The input path to process
+            @type input_options: arista.transcoder.InputOptions
+            @param input_options: The input options (uri, subs) to process
             @type outfile: str
             @param outfile: The output path to save to
             @type preset: Preset
             @param preset: The preset instance to use for the conversion
         """
-        self.infile = infile
+        self.input_options = input_options
         self.outfile = outfile
         self.preset = preset
         self.transcoder = None
     
     def __repr__(self):
         return _("Queue entry %(infile)s -> %(preset)s -> %(outfile)s" % {
-            "infile": self.infile,
+            "infile": self.input_options.uri,
             "preset": self.preset,
             "outfile": self.outfile,
         })
@@ -139,11 +139,11 @@ class TranscodeQueue(gobject.GObject):
         """
         self._queue.insert(pos, entry)
     
-    def append(self, infile, outfile, preset):
+    def append(self, input_options, outfile, preset):
         """
             Append a QueueEntry to the queue.
         """
-        self._queue.append(QueueEntry(infile, outfile, preset))
+        self._queue.append(QueueEntry(input_options, outfile, preset))
         self.emit("entry-added", self._queue[-1])
     
     def remove(self, entry):
@@ -167,7 +167,7 @@ class TranscodeQueue(gobject.GObject):
             _log.debug(_("Found item in queue! Queue is %(queue)s" % {
                 "queue": str(self)
             }))
-            item.transcoder =  Transcoder(item.infile, item.outfile,
+            item.transcoder =  Transcoder(item.input_options, item.outfile,
                                           item.preset)
             item.transcoder.connect("complete", self._on_complete)
             

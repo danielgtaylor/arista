@@ -66,6 +66,38 @@ class PipelineException(TranscoderException):
     pass
 
 # =============================================================================
+# Transcoder Options
+# =============================================================================
+
+class InputOptions(object):
+    """
+        Options pertaining to the input location, subtitles, etc.
+    """
+    def __init__(self, uri, subfile = None, font = "Sans Bold 16",
+                 deinterlace = None):
+        """
+            @type uri: str
+            @param uri: The URI to the input file, device, or stream
+            @type subfile: str
+            @param subfile: The location of the subtitle file
+            @type font: str
+            @param font: Pango font description
+            @type deinterlace: bool
+            @param deinterlace: Force deinterlacing of the input data
+        """
+        self.reset(uri, subfile, font, deinterlace)
+    
+    def reset(self, uri = None, subfile = None, font = "Sans Bold 16",
+              deinterlace = None):
+        """
+            Reset the input options to nothing.
+        """
+        self.uri = uri
+        self.subfile = subfile
+        self.font = font
+        self.deinterlace = deinterlace
+
+# =============================================================================
 # The Transcoder
 # =============================================================================
 
@@ -85,20 +117,19 @@ class Transcoder(gobject.GObject):
         "complete": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, tuple()),
     }
     
-    def __init__(self, infile, outfile, preset):
+    def __init__(self, input_options, outfile, preset):
         """
-            @type infile: str
-            @param infile: The input path to process
+            @type infile: InputOptions
+            @param infile: The input options to process (uri, subtitles, etc)
             @type outfile: str
             @param outfile: The output path to save to
             @type preset: Preset
             @param preset: The preset instance to use for the conversion
         """
         self.__gobject_init__()
-        self.infile = infile
+        self.input_options = input_options
         self.outfile = outfile
         self.preset = preset
-        self.deinterlace = False
         
         self.pipe = None
         
@@ -113,9 +144,20 @@ class Transcoder(gobject.GObject):
                 self.start()
         
         self.info = None
-        self.discoverer = discoverer.Discoverer(infile)
+        self.discoverer = discoverer.Discoverer(input_options.uri)
         self.discoverer.connect("discovered", _got_info)
         self.discoverer.discover()
+    
+    @property
+    def infile(self):
+        """
+            Provide access to the input uri for backwards compatibility after
+            moving to InputOptions for uri, subtitles, etc.
+            
+            @rtype: str
+            @return: The input uri to process
+        """
+        return self.input_options.uri
     
     def _get_source(self):
         """
@@ -127,7 +169,8 @@ class Transcoder(gobject.GObject):
             @return: Source to prepend to gst-launch style strings.
         """
         if self.infile.startswith("dvd://"):
-            self.deinterlace = True
+            if self.input_options.deinterlace is None:
+                self.input_options.deinterlace = True
             parts = self.infile[6:].split("@")
             if len(parts) > 1:
                 title = parts[1]
@@ -313,13 +356,23 @@ class Transcoder(gobject.GObject):
                                   self.preset.vcodec.passes[self.enc_pass])
             
             deint = ""
-            if self.deinterlace:
+            if self.input_options.deinterlace:
                 deint = " ffdeinterlace ! "
             
+            sub = ""
+            if self.input_options.subfile:
+                # Render subtitles onto the video stream
+                sub = "textoverlay font-desc=\"%(font)s\" name=txt ! " % {
+                    "font": self.input_options.font,
+                }
+                cmd += " filesrc location=\"%(subfile)s\" ! subparse ! txt." % {
+                    "subfile": self.input_options.subfile
+                }
+            
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
-                   "%s videoscale ! %s ! %s%s ! tee " \
+                   "%s %s videoscale ! %s ! %s%s ! tee " \
                    "name=videotee ! queue ! %svideo_00" % \
-                   (deint, self.vcaps.to_string(), vbox, vencoder, premux)
+                   (deint, sub, self.vcaps.to_string(), vbox, vencoder, premux)
             
         if self.info.is_audio and self.preset.acodec and \
            self.enc_pass == len(self.preset.vcodec.passes) - 1:

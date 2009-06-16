@@ -140,6 +140,10 @@ if __name__ == "__main__":
                       default = False, 
                       help = _("Show information about available devices " \
                                "[false]"))
+    parser.add_option("-S", "--subtitle", dest = "subtitle", default = None,
+                      help = _("Subtitle file to render"))
+    parser.add_option("-f", "--font", dest = "font", default = "Sans Bold 16",
+                      help = _("Font to use when rendering subtitles"))
     parser.add_option("-p", "--preset", dest = "preset", default = None,
                       help = _("Preset to encode to [default]"))
     parser.add_option("-d", "--device", dest = "device", default = "computer",
@@ -242,7 +246,11 @@ if __name__ == "__main__":
                 if preset.name == options.preset:
                     break
         
-        transcoder = arista.transcoder.Transcoder(args[0], args[1], preset)
+        opts = arista.transcoder.InputOptions(args[0], 
+                                              subfile = options.subtitle,
+                                              font = options.font)
+        
+        transcoder = arista.transcoder.Transcoder(opts, args[1], preset)
         transcoder.connect("discovered", discovered, options)
         transcoder.connect("pass-setup", pass_setup, options)
         transcoder.connect("complete", complete, options)

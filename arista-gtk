@@ -117,6 +117,27 @@ def _get_icon_pixbuf(uri, width, height):
     
     return image
 
+def _get_filename_icon(filename):
+    """
+        Get the icon from a filename using GIO.
+        
+            >>> icon = _get_filename_icon("test.mp4")
+            >>> if icon:
+            >>>     # Do something here using icon.load_icon()
+            >>>     ...
+        
+        @type filename: str
+        @param filename: The name of the file whose icon to fetch
+        @rtype: gtk.ThemedIcon or None
+        @return: The requested unloaded icon or nothing if it cannot be found
+    """
+    theme = gtk.icon_theme_get_default()
+    
+    names = gio.content_type_get_icon(gio.content_type_guess(filename)).get_property("names")
+    icon = theme.choose_icon(names, gtk.ICON_SIZE_MENU, 0)
+    
+    return icon
+
 class UpdateChecker(threading.Thread):
     """
         A thread to check for updates on startup.
@@ -344,6 +365,7 @@ class MainWindow(object):
         self.queue_view = self.builder.get_object("queue")
         
         self.source = None
+        self.source_hbox = None
         self.finder = None
         self.finder_video_found = None
         self.finder_video_lost = None
@@ -388,6 +410,7 @@ class MainWindow(object):
         
         self.fileiter = None
         self.transcoder = None
+        self.input_options = arista.transcoder.InputOptions('')
         
         # Setup the transcoding queue and watch for events
         self.queue = arista.queue.TranscodeQueue()
@@ -457,7 +480,8 @@ class MainWindow(object):
         
         # Already exists? Remove it!
         if self.source:
-            self.table.remove(self.source)
+            self.source_hbox.remove(self.source)
+            self.source.destroy()
         
         if self.finder:
             if self.finder_disc_found is not None:
@@ -525,8 +549,32 @@ class MainWindow(object):
         else:
             self.source = gtk.FileChooserButton(_("Choose file..."))
         
-        self.table.attach(self.source, 1, 2, 0, 1, yoptions = gtk.FILL)
-        self.source.show()
+        # Add properties button to set source properties like subtitles
+        source_prop_image = gtk.Image()
+        source_prop_image.set_from_stock(gtk.STOCK_PROPERTIES, 
+                                         gtk.ICON_SIZE_MENU)
+        source_properties = gtk.Button()
+        source_properties.add(source_prop_image)
+        source_properties.connect("clicked", self.on_source_properties)
+        
+        if not self.source_hbox:
+            self.source_hbox = gtk.HBox()
+            self.source_hbox.pack_end(source_properties, expand = False)
+            self.table.attach(self.source_hbox, 1, 2, 0, 1, yoptions = gtk.FILL)
+        
+        self.source_hbox.pack_start(self.source)
+        
+        # Attach and show the source
+        self.source_hbox.show_all()
+    
+    def on_source_properties(self, widget):
+        """
+            Show source properties dialog so user can set things like
+            subtitles, forcing deinterlacing, etc.
+        """
+        dialog = PropertiesDialog(self.input_options)
+        dialog.window.run()
+        dialog.window.destroy()
     
     def on_quit(self, widget, *args):
         """
@@ -595,8 +643,7 @@ class MainWindow(object):
                 pos = widget.get_active()
                 newiter = model.insert(pos)
                 theme = gtk.icon_theme_get_default()
-                names = gio.content_type_get_icon(gio.content_type_guess(filename)).get_property("names")
-                icon = theme.choose_icon(names, gtk.ICON_SIZE_MENU, 0)
+                icon = _get_filename_icon(filename)
                 if icon:
                     model.set_value(newiter, 0, icon.load_icon())
                 model.set_value(newiter, 1, os.path.basename(filename))
@@ -609,6 +656,9 @@ class MainWindow(object):
                     widget.set_active(pos - 1)
                 else:
                     widget.set_active(0)
+        
+        # Reset the custom input options
+        self.input_options.reset()
     
     def on_device_changed(self, widget):
         """
@@ -729,7 +779,9 @@ class MainWindow(object):
         if response == gtk.RESPONSE_ACCEPT:
             filename = dialog.get_filename()
             
-            self.queue.append(inpath, filename, preset)
+            self.input_options.uri = inpath
+            
+            self.queue.append(self.input_options, filename, preset)
             
             iter = self.queue_model.append()
             width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
@@ -1211,6 +1263,63 @@ class PrefsDialog(object):
             has been modified.
         """
         self.check_updates.set_active(entry.get_value().get_bool())
+
+class PropertiesDialog(object):
+    """
+        Arista Source Properties Dialog
+        ===============================
+        A simple dialog to set properties for the input source, such as
+        subtitles and deinterlacing.
+    """
+    def __init__(self, input_options):
+        self.input_options = input_options
+    
+        ui_path = arista.utils.get_path("ui", "props.ui")
+        
+        self.builder = gtk.Builder()
+        self.builder.add_from_file(ui_path)
+        
+        self.window = self.builder.get_object("props_dialog")
+        self.subs = self.builder.get_object("filechooserbutton_subs")
+        self.font = self.builder.get_object("fontbutton")
+        self.deinterlace = self.builder.get_object("checkbutton_deinterlace")
+        
+        if input_options.subfile:
+            self.subs.set_filename(input_options.subfile)
+        
+        if input_options.font:
+            self.font.set_font_name(input_options.font)
+        
+        if input_options.deinterlace:
+            self.deinterlace.set_active(input_options.deinterlace)
+        
+        self.builder.connect_signals(self)
+        
+        self.window.show_all()
+    
+    def on_close(self, widget, response):
+        """
+            Close was clicked, remove the window.
+        """
+        self.window.destroy()
+    
+    def on_subs_set(self, widget):
+        """
+            Set subtitle file.
+        """
+        self.input_options.subfile = widget.get_filename()
+    
+    def on_font_set(self, widget):
+        """
+            Set subtitle rendering font.
+        """
+        self.input_options.font = widget.get_font_name()
+    
+    def on_deinterlace(self, widget):
+        """
+            Toggle forced deinterlacing.
+        """
+        self.input_options.deinterlace = widget.get_active()
 
 class AboutDialog(object):
     """
