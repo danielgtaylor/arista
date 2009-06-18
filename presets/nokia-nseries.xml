@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<device>
+    <make>Nokia</make>
+    <model>N Series</model>
+    <description>Presets for Nokia N Series devices</description>
+    <author>
+        <name>Daniel G. Taylor</name>
+        <email>dan@programmer-art.org</email>
+    </author>
+    <version>1.0</version>
+    <icon>file://nokia-nseries.svg</icon>
+    <default>N770</default>
+    
+    <preset>
+        <name>N770</name>
+        <container>avimux</container>
+        <extension>avi</extension>
+        <audio>
+            <name>lame</name>
+            <passes>
+                <pass>bitrate=96</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>xvidenc</name>
+            <passes>
+                <pass>pass=1 bitrate=300000 ! video/x-xvid, format=(fourcc)DIVX</pass>
+                <pass>pass=2 bitrate=300000 ! video/x-xvid, format=(fourcc)DIVX</pass>
+            </passes> 
+            <width>352</width>
+            <height>208</height>
+            <rate>15, 24</rate>
+        </video>
+    </preset>
+    <preset>
+        <name>N800 / N810</name>
+        <container>ffmux_mp4</container>
+        <extension>m4v</extension>
+        <audio>
+            <name>faac</name>
+            <passes>
+                <pass>bitrate=96000 profile=LC</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>x264enc</name>
+            <passes>
+                <pass>bitrate=400 me=umh subme=6 cabac=0 threads=0</pass>
+            </passes>
+            <width>400</width>
+            <height>224</height>
+            <rate>15, 24</rate>
+        </video>
+    </preset>
+</device>
+
