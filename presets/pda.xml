@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<device>
+    <make>PDA</make>
+    <model>Generic</model>
+    <description>MPEG4 in AVI for your PDA</description>
+    <author>
+        <name>LM</name>
+        <email>LM@lm.com</email>
+    </author>
+    <version>1.0</version>
+    <icon>file://pda.png</icon>
+    <default>Normal</default>
+    
+    <preset>
+        <name>Low</name>
+        <container>avimux</container>
+        <extension>avi</extension>
+        <audio>
+            <name>lame</name>
+            <passes>
+                <pass>bitrate=112</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>xvidenc</name>
+            <passes>
+                <pass>pass=quant quantizer=3 max-bframes=0 trellis=true</pass>
+            </passes> 
+            <width>320</width>
+            <height>240</height>
+            <rate>1, 25</rate>
+        </video>
+    </preset>
+    <preset>
+        <name>Normal</name>
+        <container>avimux</container>
+        <extension>avi</extension>
+        <audio>
+            <name>lame</name>
+            <passes>
+                <pass>bitrate=192</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>xvidenc</name>
+            <passes>
+                <pass>pass=quant quantizer=1 max-bframes=0 trellis=true</pass>
+            </passes>
+            <width>320</width>
+            <height>240</height>
+            <rate>1, 30</rate>
+        </video>
+    </preset>
+</device>
+
