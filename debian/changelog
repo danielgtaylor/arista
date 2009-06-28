@@ -1,3 +1,9 @@
+arista (0.9.2-1) jaunty; urgency=low
+
+  * New upstream release.
+
+ -- Daniel G. Taylor <dan@programmer-art.org>  Sun, 28 Jun 2009 15:40:00 +0200 
+
 arista (0.9.1-1) jaunty; urgency=low
 
   * New upstream release.
