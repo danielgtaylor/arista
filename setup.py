@@ -29,7 +29,7 @@ for path in ["presets", "ui", "locale"]:
 
 setup(
     name = "arista",
-    version = "0.9.2",
+    version = "0.9.3",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========

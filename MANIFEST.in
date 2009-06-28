@@ -1,4 +1,4 @@
-recursive-include presets *.xml *.svg
+recursive-include presets *.xml *.svg *.png
 recursive-include ui *.ui *.svg
 recursive-include locale *.pot *.po *.mo
 recursive-include debian *
