@@ -63,7 +63,7 @@ on Ubuntu don't forget to install the multiverse packages.
     author = "Daniel G. Taylor",
     author_email = "dan@programmer-art.org",
     url = "http://programmer-art.org/projects/arista-transcoder",
-    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.2.tar.gz",
+    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.3.tar.gz",
     packages = [
         "arista",
     ],
