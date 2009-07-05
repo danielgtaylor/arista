@@ -1368,12 +1368,12 @@ if __name__ == "__main__":
     
     arista.init()
     
-    gettext.bindtextdomain("arista",
-                           arista.utils.get_path("locale"))
+    lc_path = arista.utils.get_path("locale", default = "")
+    if lc_path:
+        gettext.bindtextdomain("arista", lc_path)
+        locale.bindtextdomain("arista", lc_path)
+        
     gettext.textdomain("arista")
-    
-    locale.bindtextdomain("arista",
-                          arista.utils.get_path("locale"))
     locale.textdomain("arista")
     
     gtk.gdk.threads_init()

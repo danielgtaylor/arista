@@ -47,7 +47,7 @@ def get_search_paths():
         os.path.join(sys.prefix, "local", "share", "arista"),
     ]
 
-def get_path(*parts):
+def get_path(*parts, **kwargs):
     """
         Get a path, searching first in the current directory, then the user's
         home directory, then sys.prefix, then sys.prefix + "local".
@@ -60,6 +60,8 @@ def get_path(*parts):
         @type parts: str
         @param parts: The parts of the path to get that you would normally 
                       send to os.path.join
+        @type default: bool
+        @param default: A default value to return rather than raising IOError
         @rtype: str
         @return: The full path to the relative path passed in
         @raise IOError: The path cannot be found in any location
@@ -71,6 +73,9 @@ def get_path(*parts):
         if os.path.exists(full):
             return full
     else:
+        if "default" in kwargs:
+            return kwargs["default"]
+            
         raise IOError(_("Can't find %(path)s in any known prefix!") % {
             "path": path,
         })

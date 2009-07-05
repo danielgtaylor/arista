@@ -17,7 +17,9 @@ data_files = [
     (os.path.join("share", "applications"), ["arista.desktop"]),
 ]
 
-for path in ["presets", "ui", "locale"]:
+for (prefix, path) in [("arista", "presets"), 
+                        ("arista", "ui"), 
+                        ("", "locale")]:
     for root, dirs, files in os.walk(path):
         to_add = []
         
@@ -25,7 +27,7 @@ for path in ["presets", "ui", "locale"]:
             to_add.append(os.path.join(root, filename))
             
         if to_add:
-            data_files.append((os.path.join("share", "arista", root), to_add))
+            data_files.append((os.path.join("share", prefix, root), to_add))
 
 setup(
     name = "arista",
