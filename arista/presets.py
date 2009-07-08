@@ -160,6 +160,27 @@ class Device(object):
             return self.model
         else:
             return "%s %s" % (self.make, self.model)
+    
+    @property
+    def default_preset(self):
+        """
+            Get the default preset for this device. If no default has been
+            defined, the first preset that was loaded is returned. If no
+            presets have been defined an exception is raised.
+            
+            @rtype: Preset
+            @return: The default preset for this device
+            @raise ValueError: No presets have been defined for this device
+        """
+        if self.default:
+            preset = self.presets[self.default]
+        elif len(self.presets):
+            preset = self.presets[0]
+        else:
+            raise ValueError(_("No presets have been defined for " \
+                                 "%(name)s") % { "name": self.name })
+        
+        return preset
 
 class Preset(object):
     """
