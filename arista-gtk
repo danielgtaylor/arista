@@ -410,7 +410,7 @@ class MainWindow(object):
         
         self.fileiter = None
         self.transcoder = None
-        self.input_options = arista.transcoder.InputOptions('')
+        self.options = arista.transcoder.TranscoderOptions()
         
         # Setup the transcoding queue and watch for events
         self.queue = arista.queue.TranscodeQueue()
@@ -572,7 +572,7 @@ class MainWindow(object):
             Show source properties dialog so user can set things like
             subtitles, forcing deinterlacing, etc.
         """
-        dialog = PropertiesDialog(self.input_options)
+        dialog = PropertiesDialog(self.options)
         dialog.window.run()
         dialog.window.destroy()
     
@@ -658,7 +658,7 @@ class MainWindow(object):
                     widget.set_active(0)
         
         # Reset the custom input options
-        self.input_options.reset()
+        self.options.reset()
     
     def on_device_changed(self, widget):
         """
@@ -779,9 +779,12 @@ class MainWindow(object):
         if response == gtk.RESPONSE_ACCEPT:
             filename = dialog.get_filename()
             
-            self.input_options.uri = inpath
+            # Setup the transcode job options
+            self.options.uri = inpath
+            self.options.preset = preset
+            self.options.output_uri = filename
             
-            self.queue.append(self.input_options, filename, preset)
+            self.queue.append(self.options)
             
             iter = self.queue_model.append()
             width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
@@ -1271,8 +1274,8 @@ class PropertiesDialog(object):
         A simple dialog to set properties for the input source, such as
         subtitles and deinterlacing.
     """
-    def __init__(self, input_options):
-        self.input_options = input_options
+    def __init__(self, options):
+        self.options = options
     
         ui_path = arista.utils.get_path("ui", "props.ui")
         
@@ -1284,14 +1287,14 @@ class PropertiesDialog(object):
         self.font = self.builder.get_object("fontbutton")
         self.deinterlace = self.builder.get_object("checkbutton_deinterlace")
         
-        if input_options.subfile:
-            self.subs.set_filename(input_options.subfile)
+        if options.subfile:
+            self.subs.set_filename(options.subfile)
         
-        if input_options.font:
-            self.font.set_font_name(input_options.font)
+        if options.font:
+            self.font.set_font_name(options.font)
         
-        if input_options.deinterlace:
-            self.deinterlace.set_active(input_options.deinterlace)
+        if options.deinterlace:
+            self.deinterlace.set_active(options.deinterlace)
         
         self.builder.connect_signals(self)
         
@@ -1307,19 +1310,19 @@ class PropertiesDialog(object):
         """
             Set subtitle file.
         """
-        self.input_options.subfile = widget.get_filename()
+        self.options.subfile = widget.get_filename()
     
     def on_font_set(self, widget):
         """
             Set subtitle rendering font.
         """
-        self.input_options.font = widget.get_font_name()
+        self.options.font = widget.get_font_name()
     
     def on_deinterlace(self, widget):
         """
             Toggle forced deinterlacing.
         """
-        self.input_options.deinterlace = widget.get_active()
+        self.options.deinterlace = widget.get_active()
 
 class AboutDialog(object):
     """

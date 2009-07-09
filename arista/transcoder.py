@@ -69,15 +69,20 @@ class PipelineException(TranscoderException):
 # Transcoder Options
 # =============================================================================
 
-class InputOptions(object):
+class TranscoderOptions(object):
     """
-        Options pertaining to the input location, subtitles, etc.
+        Options pertaining to the input/output location, presets, 
+        subtitles, etc.
     """
-    def __init__(self, uri, subfile = None, font = "Sans Bold 16",
-                 deinterlace = None):
+    def __init__(self, uri = None, preset = None, output_uri = None, 
+                 subfile = None, font = "Sans Bold 16", deinterlace = None):
         """
             @type uri: str
             @param uri: The URI to the input file, device, or stream
+            @type preset: Preset
+            @param preset: The preset to convert to
+            @type output_uri: str
+            @param output_uri: The URI to the output file, device, or stream
             @type subfile: str
             @param subfile: The location of the subtitle file
             @type font: str
@@ -85,14 +90,16 @@ class InputOptions(object):
             @type deinterlace: bool
             @param deinterlace: Force deinterlacing of the input data
         """
-        self.reset(uri, subfile, font, deinterlace)
+        self.reset(uri, preset, output_uri, subfile, font, deinterlace)
     
-    def reset(self, uri = None, subfile = None, font = "Sans Bold 16",
-              deinterlace = None):
+    def reset(self, uri = None, preset = None, output_uri = None,
+              subfile = None, font = "Sans Bold 16", deinterlace = None):
         """
             Reset the input options to nothing.
         """
         self.uri = uri
+        self.preset = preset
+        self.output_uri = output_uri
         self.subfile = subfile
         self.font = font
         self.deinterlace = deinterlace
@@ -103,7 +110,7 @@ class InputOptions(object):
 
 class Transcoder(gobject.GObject):
     """
-    
+        The transcoder - converts media between formats.
     """
     __gsignals__ = {
         "discovered": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
@@ -117,19 +124,14 @@ class Transcoder(gobject.GObject):
         "complete": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, tuple()),
     }
     
-    def __init__(self, input_options, outfile, preset):
+    def __init__(self, options):
         """
-            @type infile: InputOptions
-            @param infile: The input options to process (uri, subtitles, etc)
-            @type outfile: str
-            @param outfile: The output path to save to
-            @type preset: Preset
-            @param preset: The preset instance to use for the conversion
+            @type options: TranscoderOptions
+            @param options: The options, like input uri, subtitles, preset, 
+                            output uri, etc.
         """
         self.__gobject_init__()
-        self.input_options = input_options
-        self.outfile = outfile
-        self.preset = preset
+        self.options = options
         
         self.pipe = None
         
@@ -144,7 +146,7 @@ class Transcoder(gobject.GObject):
                 self.start()
         
         self.info = None
-        self.discoverer = discoverer.Discoverer(input_options.uri)
+        self.discoverer = discoverer.Discoverer(options.uri)
         self.discoverer.connect("discovered", _got_info)
         self.discoverer.discover()
     
@@ -152,12 +154,23 @@ class Transcoder(gobject.GObject):
     def infile(self):
         """
             Provide access to the input uri for backwards compatibility after
-            moving to InputOptions for uri, subtitles, etc.
+            moving to TranscoderOptions for uri, subtitles, etc.
             
             @rtype: str
             @return: The input uri to process
         """
-        return self.input_options.uri
+        return self.options.uri
+    
+    @property
+    def preset(self):
+        """
+            Provide access to the output preset for backwards compatibility
+            after moving to TranscoderOptions.
+            
+            @rtype: Preset
+            @return: The output preset
+        """
+        return self.options.preset
     
     def _get_source(self):
         """
@@ -169,8 +182,8 @@ class Transcoder(gobject.GObject):
             @return: Source to prepend to gst-launch style strings.
         """
         if self.infile.startswith("dvd://"):
-            if self.input_options.deinterlace is None:
-                self.input_options.deinterlace = True
+            if self.options.deinterlace is None:
+                self.options.deinterlace = True
             parts = self.infile[6:].split("@")
             if len(parts) > 1:
                 title = parts[1]
@@ -231,7 +244,7 @@ class Transcoder(gobject.GObject):
         src = self._get_source()
         
         cmd = "%s ! decodebin2 name=dmux %s filesink name=sink " \
-              "location=\"%s\"" % (src, mux_str, self.outfile)
+              "location=\"%s\"" % (src, mux_str, self.options.output_uri)
             
         if self.info.is_video and self.preset.vcodec:
             # =================================================================
@@ -356,17 +369,17 @@ class Transcoder(gobject.GObject):
                                   self.preset.vcodec.passes[self.enc_pass])
             
             deint = ""
-            if self.input_options.deinterlace:
+            if self.options.deinterlace:
                 deint = " ffdeinterlace ! "
             
             sub = ""
-            if self.input_options.subfile:
+            if self.options.subfile:
                 # Render subtitles onto the video stream
                 sub = "textoverlay font-desc=\"%(font)s\" name=txt ! " % {
-                    "font": self.input_options.font,
+                    "font": self.options.font,
                 }
                 cmd += " filesrc location=\"%(subfile)s\" ! subparse ! txt." % {
-                    "subfile": self.input_options.subfile
+                    "subfile": self.options.subfile
                 }
             
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \

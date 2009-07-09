@@ -176,6 +176,8 @@ if __name__ == "__main__":
     
     arista.init()
     
+    from arista.transcoder import TranscoderOptions
+    
     lc_path = arista.utils.get_path("locale", default = "")
     if lc_path:
         gettext.bindtextdomain("arista", lc_path)
@@ -248,11 +250,11 @@ if __name__ == "__main__":
                 if preset.name == options.preset:
                     break
         
-        opts = arista.transcoder.InputOptions(args[0], 
-                                              subfile = options.subtitle,
-                                              font = options.font)
+        opts = TranscoderOptions(args[0], preset, args[1], 
+                                 subfile = options.subtitle, 
+                                 font = options.font)
         
-        transcoder = arista.transcoder.Transcoder(opts, args[1], preset)
+        transcoder = arista.transcoder.Transcoder(opts)
         transcoder.connect("discovered", discovered, options)
         transcoder.connect("pass-setup", pass_setup, options)
         transcoder.connect("complete", complete, options)

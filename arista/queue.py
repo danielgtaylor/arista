@@ -44,25 +44,18 @@ class QueueEntry(object):
     """
         An entry in the queue.
     """
-    def __init__(self, input_options, outfile, preset):
+    def __init__(self, options):
         """
-            @type input_options: arista.transcoder.InputOptions
-            @param input_options: The input options (uri, subs) to process
-            @type outfile: str
-            @param outfile: The output path to save to
-            @type preset: Preset
-            @param preset: The preset instance to use for the conversion
+            @type options: arista.transcoder.TranscoderOptions
+            @param options: The input options (uri, subs) to process
         """
-        self.input_options = input_options
-        self.outfile = outfile
-        self.preset = preset
-        self.transcoder = None
+        self.options = options
     
     def __repr__(self):
         return _("Queue entry %(infile)s -> %(preset)s -> %(outfile)s" % {
-            "infile": self.input_options.uri,
-            "preset": self.preset,
-            "outfile": self.outfile,
+            "infile": self.options.uri,
+            "preset": self.options.preset,
+            "outfile": self.options.output_uri,
         })
 
 class TranscodeQueue(gobject.GObject):
@@ -139,11 +132,15 @@ class TranscodeQueue(gobject.GObject):
         """
         self._queue.insert(pos, entry)
     
-    def append(self, input_options, outfile, preset):
+    def append(self, options):
         """
             Append a QueueEntry to the queue.
         """
-        self._queue.append(QueueEntry(input_options, outfile, preset))
+        # Sanity check of input options
+        if not options.uri or not options.preset or not options.output_uri:
+            raise ValueError("Invalid input options %s" % str(options))
+        
+        self._queue.append(QueueEntry(options))
         self.emit("entry-added", self._queue[-1])
     
     def remove(self, entry):
@@ -167,8 +164,7 @@ class TranscodeQueue(gobject.GObject):
             _log.debug(_("Found item in queue! Queue is %(queue)s" % {
                 "queue": str(self)
             }))
-            item.transcoder =  Transcoder(item.input_options, item.outfile,
-                                          item.preset)
+            item.transcoder =  Transcoder(item.options)
             item.transcoder.connect("complete", self._on_complete)
             
             def discovered(transcoder, info, is_media):
