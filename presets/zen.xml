@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<device>
+    <make>Creative</make>
+    <model>ZEN</model>
+    <description>MPEG4 in AVI for your Creative ZEN</description>
+    <author>
+        <name>geinux</name>
+        <email>geinux@gmail.com</email>
+    </author>
+    <version>1.1</version>
+    <icon>file://zen.svg</icon>
+    <default>Low</default>
+    
+    <preset>
+        <name>Normal</name>
+        <container>avimux</container>
+        <extension>avi</extension>
+        <audio>
+            <name>lame</name>
+            <passes>
+                <pass>bitrate=128</pass>
+            </passes>
+            <channels>1, 2</channels>
+        </audio>
+        <video>
+            <name>xvidenc</name>
+            <passes>
+                <pass>pass=quant quantizer=3 max-bframes=0 trellis=true</pass>
+            </passes> 
+            <width>320, 320</width>
+            <height>176, 240</height>
+            <rate>1, 25</rate>
+        </video>
+    </preset>
+</device>
+
