@@ -249,13 +249,18 @@ class Preset(object):
         ]
         
         missing = []
+        missingdesc = ""
         for element in elements:
             if not gst.element_factory_find(element):
                 missing.append(gst.pbutils.missing_element_installer_detail_new(element))
+                if missingdesc:
+                    missingdesc += ", %s" % element
+                else:
+                    missingdesc += element
         
         if missing:
+            _log.info("Attempting to install elements: %s" % missingdesc)
             if gst.pbutils.install_plugins_supported():
-                
                 def install_done(result, null):
                     if result == gst.pbutils.INSTALL_PLUGINS_INSTALL_IN_PROGRESS:
                         # Ignore start of installer message
@@ -263,12 +268,14 @@ class Preset(object):
                     elif result == gst.pbutils.INSTALL_PLUGINS_SUCCESS:
                         callback(self, True, *args)
                     else:
+                        _log.error("Unable to install required elements!")
                         callback(self, False, *args)
             
                 context = gst.pbutils.InstallPluginsContext()
                 gst.pbutils.install_plugins_async(missing, context,
                                                   install_done, "")
             else:
+                _log.error("Installing elements not supported!")
                 gobject.idle_add(callback, self, False, *args)
         else:
             gobject.idle_add(callback, self, True, *args)
