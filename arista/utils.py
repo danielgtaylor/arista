@@ -45,6 +45,8 @@ def get_search_paths():
         os.path.expanduser(os.path.join("~", ".arista")),
         os.path.join(sys.prefix, "share", "arista"),
         os.path.join(sys.prefix, "local", "share", "arista"),
+        # The following allows stuff like virtualenv to work!
+        os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "share", "arista")),
     ]
 
 def get_path(*parts, **kwargs):

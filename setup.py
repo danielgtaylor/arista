@@ -101,5 +101,6 @@ on Ubuntu don't forget to install the multiverse packages.
         "Topic :: Multimedia :: Video :: Conversion",
         "Topic :: Utilities",
     ],
+    zip_safe = False,
 )
 
