@@ -8,7 +8,7 @@
         <name>Daniel G. Taylor</name>
         <email>dan@programmer-art.org</email>
     </author>
-    <version>1.0</version>
+    <version>1.1</version>
     <icon>file://dvd.svg</icon>
     <default>DivX Home Theater</default>
     
@@ -28,8 +28,8 @@
             <passes>
                 <pass>format=9 bitrate=4000</pass>
             </passes> 
-            <width>16, 4096</width>
-            <height>16, 4096</height>
+            <width>320, 720</width>
+            <height>240, 576</height>
             <rate>25</rate>
         </video>
     </preset>
@@ -49,8 +49,8 @@
             <passes>
                 <pass>format=9 bitrate=4000</pass>
             </passes> 
-            <width>16, 4096</width>
-            <height>16, 4096</height>
+            <width>320, 720</width>
+            <height>240, 576</height>
             <rate>24</rate>
         </video>
     </preset>
