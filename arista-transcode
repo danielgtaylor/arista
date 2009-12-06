@@ -182,7 +182,10 @@ if __name__ == "__main__":
     if lc_path:
         gettext.bindtextdomain("arista", lc_path)
         locale.bindtextdomain("arista", lc_path)
-        
+    
+    gettext.bind_textdomain_codeset("arista", "UTF-8")
+    locale.bind_textdomain_codeset("arista", "UTF-8")
+    
     gettext.textdomain("arista")
     locale.textdomain("arista")
     
