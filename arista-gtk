@@ -663,7 +663,10 @@ class MainWindow(object):
                 icon = _get_filename_icon(filename)
                 if icon:
                     model.set_value(newiter, 0, icon.load_icon())
-                model.set_value(newiter, 1, os.path.basename(filename))
+                basename = os.path.basename(filename)
+                if len(basename) > 25:
+                    basename = basename[:22] + "..."
+                model.set_value(newiter, 1, basename)
                 model.set_value(newiter, 2, filename)
                 self.fileiter = newiter
                 widget.set_active(pos)
@@ -756,8 +759,8 @@ class MainWindow(object):
         if isinstance(self.source, gtk.ComboBox):
             iter = self.source.get_active_iter()
             model = self.source.get_model()
-            inname = model.get_value(iter, 1)
             inpath = model.get_value(iter, 2)
+            inname = os.path.basename(inpath)
         else:
             inpath = self.source.get_filename()
             inname = os.path.basename(inpath)
