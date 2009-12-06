@@ -556,7 +556,7 @@ class Transcoder(gobject.GObject):
         """
         duration = max(self.info.videolength, self.info.audiolength)
         
-        if not duration:
+        if not duration or duration < 0:
             return 0.0, _("Unknown")
         
         try:
@@ -567,7 +567,7 @@ class Transcoder(gobject.GObject):
             raise TranscoderStatusException(_("No pipeline to query!"))
         
         percent = pos / float(duration)
-        if percent == 0:
+        if percent <= 0.0:
             return 0.0, _("Unknown")
         
         total = 1.0 / percent * (time.time() - self.start_time)
