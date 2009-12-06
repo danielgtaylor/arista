@@ -63,6 +63,7 @@ DEFAULT_SHOW_TOOLBAR = True
 DEFAULT_SHOW_PREVIEW = True
 DEFAULT_PREVIEW_FPS = 2
 DEFAULT_CHECK_UPDATES = True
+DEFAULT_OPEN_PATH = os.path.expanduser("~")
 
 RE_ENDS_NUM = re.compile(r'^.*(?P<number>[0-9]+)$')
 
@@ -458,9 +459,20 @@ class MainWindow(object):
                 self.toolbar.hide()
             self.menuitem_toolbar.set_active(DEFAULT_SHOW_TOOLBAR)
         
+        try:
+            value = client.get_value(CONFIG_PATH + "/last_open_path")
+            if value and os.path.exists(value):
+                self.last_open_path = value
+            else:
+                self.last_open_path = DEFAULT_OPEN_PATH
+        except ValueError:
+            self.last_open_path = DEFAULT_OPEN_PATH
+        
         client.notify_add(CONFIG_PATH + "/show_toolbar", 
                           self.on_gconf_show_toolbar)
         client.notify_add(CONFIG_PATH + "/check_inputs", self._setup_source)
+        client.notify_add(CONFIG_PATH + "/last_open_path", 
+                          self.on_gconf_last_open_path)
         
         # Show the interface!
         self.source.show()
@@ -635,12 +647,16 @@ class MainWindow(object):
                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                  gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
             dialog.set_property("local-only", False)
+            dialog.set_current_folder(self.last_open_path)
             response = dialog.run()
             dialog.hide()
             if response == gtk.RESPONSE_ACCEPT:
                 if self.fileiter:
                     model.remove(self.fileiter)
                 filename = dialog.get_filename()
+                client = gconf.client_get_default()
+                client.set_string(CONFIG_PATH + "/last_open_path",
+                                  os.path.dirname(filename))
                 pos = widget.get_active()
                 newiter = model.insert(pos)
                 theme = gtk.icon_theme_get_default()
@@ -874,6 +890,17 @@ class MainWindow(object):
             self.toolbar.show()
         else:
             self.toolbar.hide()
+    
+    def on_gconf_last_open_path(self, client, connection, entry, args):
+        """
+            Change the default location of the open dialog when choosing a 
+            new file or folder to transcode.
+        """
+        path = entry.get_value().get_string()
+        if os.path.exists(path):
+            self.last_open_path = path
+        else:
+            self.last_open_path = DEFAULT_OPEN_PATH
     
     def on_queue_entry_discovered(self, queue, entry):
         """
