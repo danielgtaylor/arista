@@ -4,21 +4,21 @@ A simple preset-based transcoder for the GNOME Desktop and a small script for
 terminal-based transcoding. Settings are chosen based on output device and 
 quality preset.
 
-    http://programmer-art.org/arista-transcoder
+    http://programmer-art.org/projects/arista-transcoder
 
 Dependencies
 ------------
-python-dbus
-python-cairo
-python-gobject
-python-gtk >=2.16
-python-gconf
-python-gstreamer
-gstreamer-ffmpeg
-gstreamer-plugins-base
-gstreamer-plugins-good
-gstreamer-plugins-bad
-gstreamer-plugins-ugly
+ * python-dbus
+ * python-cairo
+ * python-gobject
+ * python-gtk >=2.16
+ * python-gconf
+ * python-gstreamer
+ * gstreamer-ffmpeg
+ * gstreamer-plugins-base
+ * gstreamer-plugins-good
+ * gstreamer-plugins-bad
+ * gstreamer-plugins-ugly
 
 Installation
 ------------
@@ -71,18 +71,16 @@ the xml files in the presets directory that ship with Arista for examples.
 
 Contributing
 ------------
-All development is managed through Launchpad.net, which provides source 
-revision control, bug tracking, feature planning, string translation, and a 
-forum-like question/answer area. Please report all bugs to the bug tracker 
-there. Add new feature requests as blueprints. The main development site is:
+All active development has moved to GitHub.com. Code is managed through git and
+new bugs should be opened in the GitHub tracker. Translations and Answers
+are still managed on Launchpad. The GitHub page is here:
 
-    http://www.launchpad.net/arista
+    http://github.com/danielgtaylor/arista
 
-You may create a local branch of the latest code via:
+You can grab a copy of the source code for Arista via:
 
-    bzr branch lp:arista
-    
-To update your local branch to the latest code you can use `bzr merge`. If you 
-choose to publish your branch you may request a merge to trunk, otherwise
-you may just send patches that apply cleanly to the latest trunk.
+    git clone git://github.com/danielgtaylor/arista.git
+
+Feel free to fork on GitHub and propose updates to the main branch. You can
+keep your branch up to date via `git pull`
 
