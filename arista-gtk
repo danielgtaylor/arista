@@ -805,6 +805,10 @@ class MainWindow(object):
             self.options.output_uri = filename
             
             self.queue.append(self.options)
+
+            # Reset the options for the next item so we don't inadvertently
+            # change the queued option data!
+            self.options = arista.transcoder.TranscoderOptions()
             
             iter = self.queue_model.append()
             width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
