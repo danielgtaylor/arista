@@ -558,7 +558,7 @@ def install_preset(location, name):
     if not location.endswith("/"):
         location = location + "/"
     
-    for ext in ["xml", "svg"]:
+    for ext in ["xml", "svg", "png"]:
         path = ".".join([location + name, ext])
         _log.debug(_("Fetching %(location)s") % {
             "location": path,
@@ -572,8 +572,8 @@ def install_preset(location, name):
             })
             open(local_file, "w").write(f.read())
         except Exception, e:
-            _log.error(_("There was an error fetching and installing " \
-                         "%(location)s: %(error)s") % {
+            _log.warning(_("There was an error fetching and installing " \
+                           "%(location)s: %(error)s") % {
                 "location": path,
                 "error": str(e),
             })
