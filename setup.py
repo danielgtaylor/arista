@@ -31,7 +31,7 @@ for (prefix, path) in [("arista", "presets"),
 
 setup(
     name = "arista",
-    version = "0.9.3",
+    version = "0.9.4",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========
@@ -89,7 +89,7 @@ on Ubuntu don't forget to install the multiverse packages.
         "Platform Independent",
     ],
     classifiers = [
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Environment :: X11 Applications :: GTK",
         "Environment :: X11 Applications :: Gnome",
