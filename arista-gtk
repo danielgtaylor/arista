@@ -533,7 +533,7 @@ class MainWindow(object):
                     iter = model.append()
                     model.set_value(iter, 0, theme.load_icon("camera-video",
                                                              size, 0))
-                    model.set_value(iter, 1, capture.product)
+                    model.set_value(iter, 1, capture.nice_label)
                     if capture.version == '1':
                         model.set_value(iter, 2, "v4l://" + device)
                     elif capture.version == '2':
@@ -623,8 +623,9 @@ class MainWindow(object):
         """
         model = self.source.get_model()
         for pos, item in enumerate(model):
-            if item[1].startswith(device.product):
+            if item[2] and item[2].endswith(device.path):
                 model[pos] = (item[0], device.nice_label, item[2])
+                break
     
     def on_disc_lost(self, finder, device, label):
         """
@@ -632,8 +633,9 @@ class MainWindow(object):
         """
         model = self.source.get_model()
         for pos, item in enumerate(model):
-            if item[1].startswith(device.get_nice_label(label)):
+            if item[2].endswith(device.path):
                 model[pos] = (item[0], device.nice_label, item[2])
+                break
     
     def on_source_changed(self, widget):
         """

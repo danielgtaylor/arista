@@ -8,7 +8,7 @@ quality preset.
 
 Dependencies
 ------------
- * python-dbus
+ * python-gudev
  * python-cairo
  * python-gobject
  * python-gtk >=2.16

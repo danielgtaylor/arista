@@ -56,7 +56,7 @@ Features
 Requirements
 ---------------
 Arista is written in Python and requires the bindings for GTK+ 2.16 or newer,
-GStreamer, GConf, GObject, Cairo, and DBus. If you are an Ubuntu user this means
+GStreamer, GConf, GObject, Cairo, and udev. If you are an Ubuntu user this means
 you need to be using at least Ubuntu 9.04 (Jaunty). The GStreamer plugins
 required depend on the presets available, but at this time you should have
 gst-plugins-good, gst-plugins-bad, gst-plugins-ugly, and gst-ffmpeg. If you are
@@ -79,7 +79,7 @@ on Ubuntu don't forget to install the multiverse packages.
         "gst(>=10.22)",
         "gconf",
         "cairo",
-        "dbus",
+        "udev",
     ],
     provides = [
         "arista",
