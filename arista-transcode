@@ -193,24 +193,45 @@ if __name__ == "__main__":
     
     if options.info and not args:
         print _("Available devices:")
-        for (name, device) in devices.items():
+        print
+        
+        longest = 0
+        for name in devices:
+            longest = max(longest, len(name))
+            
+        for name in sorted(devices.keys()):
             print _("%(name)s: %(description)s") % {
-                "name": name,
-                "description": device.description,
+                "name": name.rjust(longest + 1),
+                "description": devices[name].description,
             }
         print
         print _("Use --info device_name for more information on a device.")
         raise SystemExit()
     elif options.info:
         print _("Preset info:")
+        print 
+        
         device = devices[args[0]]
-        print "\t" + _("ID:") + " " + args[0]
-        print "\t" + _("Make:") + " " + device.make
-        print "\t" + _("Model:") + " " + device.model
-        print "\t" + _("Description:") + " " + device.description
-        print "\t" + _("Author:") + " " + str(device.author)
-        print "\t" + _("Version:") + " " + device.version
-        print "\t" + _("Presets:") + " " + ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])
+        info = [
+            (_("ID:"), args[0]),
+            (_("Make:"), device.make),
+            (_("Model:"), device.model),
+            (_("Description:"), device.description),
+            (_("Author:"), unicode(device.author)),
+            (_("Version:"), device.version),
+            (_("Presets:"), ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])),
+        ]
+
+        longest = 0
+        for (attr, value) in info:
+            longest = max(longest, len(attr))
+
+        for (attr, value) in info:
+            print "%(attr)s %(value)s" % {
+                "attr": attr.rjust(longest + 1),
+                "value": value,
+            }
+        print
         raise SystemExit()
     elif options.source_info:
         if len(args) != 1:
