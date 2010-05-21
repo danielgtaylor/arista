@@ -9,7 +9,7 @@
     <property name="has_separator">False</property>
     <property name="program_name">Arista Transcoder</property>
     <property name="version">0.9.4</property>
-    <property name="copyright" translatable="yes">Copyright 2008 - 2009 Daniel G. Taylor</property>
+    <property name="copyright" translatable="yes">Copyright 2008 - 2010 Daniel G. Taylor</property>
     <property name="comments" translatable="yes">A multimedia transcoder for the GNOME desktop.</property>
     <property name="website">http://programmer-art.org/projects/arista-transcoder</property>
     <property name="website_label" translatable="yes">Arista homepage</property>
@@ -29,7 +29,6 @@ Various icons made by Tango project contributors</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <placeholder/>
