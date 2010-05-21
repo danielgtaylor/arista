@@ -16,7 +16,7 @@
     
     License
     -------
-    Copyright 2008 - 2009 Daniel G. Taylor <dan@programmer-art.org>
+    Copyright 2008 - 2010 Daniel G. Taylor <dan@programmer-art.org>
     
     This file is part of Arista.
 
