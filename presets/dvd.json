@@ -1,0 +1,155 @@
+{
+    "version": "1.1", 
+    "description": "DivX or MPEG2 for DVD players", 
+    "author": {
+        "name": "Daniel G. Taylor", 
+        "email": "dan@programmer-art.org"
+    }, 
+    "default": "DivX Home Theater", 
+    "make": "Generic", 
+    "presets": [
+        {
+            "vcodec": {
+                "passes": [
+                    "format=9 bitrate=4000"
+                ], 
+                "container": "ffmux_dvd", 
+                "name": "mpeg2enc", 
+                "height": [
+                    240, 
+                    576
+                ], 
+                "width": [
+                    320, 
+                    720
+                ], 
+                "rate": [
+                    24,
+                    24
+                ]
+            }, 
+            "container": "ffmux_dvd", 
+            "name": "NTSC DVD", 
+            "extension": "mpg", 
+            "acodec": {
+                "passes": [
+                    "bitrate=128"
+                ], 
+                "container": "ffmux_dvd", 
+                "name": "lame", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
+        }, 
+        {
+            "vcodec": {
+                "passes": [
+                    "pass=quant quantizer=5 max-bframes=0 trellis=true"
+                ], 
+                "container": "avimux", 
+                "name": "xvidenc", 
+                "height": [
+                    240, 
+                    480
+                ], 
+                "width": [
+                    320, 
+                    720
+                ], 
+                "rate": [
+                    1,
+                    30
+                ]
+            }, 
+            "container": "avimux", 
+            "name": "DivX Home Theater", 
+            "extension": "avi", 
+            "acodec": {
+                "passes": [
+                    "bitrate=160"
+                ], 
+                "container": "avimux", 
+                "name": "lame", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
+        }, 
+        {
+            "vcodec": {
+                "passes": [
+                    "format=9 bitrate=4000"
+                ], 
+                "container": "ffmux_dvd", 
+                "name": "mpeg2enc", 
+                "height": [
+                    240, 
+                    576
+                ], 
+                "width": [
+                    320, 
+                    720
+                ], 
+                "rate": [
+                    25,
+                    25
+                ]
+            }, 
+            "container": "ffmux_dvd", 
+            "name": "PAL DVD", 
+            "extension": "mpg", 
+            "acodec": {
+                "passes": [
+                    "bitrate=128"
+                ], 
+                "container": "ffmux_dvd", 
+                "name": "lame", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
+        }
+    ], 
+    "model": "DVD Player", 
+    "icon": "file://dvd.svg"
+}

@@ -1,0 +1,108 @@
+{
+    "version": "1.0", 
+    "description": "MPEG4 in AVI for your PDA", 
+    "author": {
+        "name": "LM", 
+        "email": "LM@lm.com"
+    }, 
+    "default": "Normal", 
+    "make": "PDA", 
+    "presets": [
+        {
+            "vcodec": {
+                "passes": [
+                    "pass=quant quantizer=3 max-bframes=0 trellis=true"
+                ], 
+                "container": "avimux", 
+                "name": "xvidenc", 
+                "height": [
+                    240, 
+                    240
+                ], 
+                "width": [
+                    320, 
+                    320
+                ], 
+                "rate": [
+                    1,
+                    25
+                ]
+            }, 
+            "container": "avimux", 
+            "name": "Low", 
+            "extension": "avi", 
+            "acodec": {
+                "passes": [
+                    "bitrate=112"
+                ], 
+                "container": "avimux", 
+                "name": "lame", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
+        }, 
+        {
+            "vcodec": {
+                "passes": [
+                    "pass=quant quantizer=1 max-bframes=0 trellis=true"
+                ], 
+                "container": "avimux", 
+                "name": "xvidenc", 
+                "height": [
+                    240, 
+                    240
+                ], 
+                "width": [
+                    320, 
+                    320
+                ], 
+                "rate": [
+                    1,
+                    30
+                ]
+            }, 
+            "container": "avimux", 
+            "name": "Normal", 
+            "extension": "avi", 
+            "acodec": {
+                "passes": [
+                    "bitrate=192"
+                ], 
+                "container": "avimux", 
+                "name": "lame", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
+        }
+    ], 
+    "model": "Generic", 
+    "icon": "file://pda.png"
+}

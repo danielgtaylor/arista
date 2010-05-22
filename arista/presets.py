@@ -40,11 +40,11 @@
 """
 
 import gettext
+import json
 import logging
 import os
 import sys
 import urllib2
-import xml.etree.ElementTree
 
 import gobject
 import gst
@@ -71,7 +71,7 @@ class Fraction(gst.Fraction):
             @param value: Either a single number or two numbers separated by
                           a '/' that represent a fraction
         """
-        parts = value.split("/")
+        parts = str(value).split("/")
         
         if len(parts) == 1:
             gst.Fraction.__init__(self, int(value), 1)
@@ -182,6 +182,103 @@ class Device(object):
         
         return preset
 
+    @property
+    def json(self):
+        data = {
+            "make": self.make,
+            "model": self.model,
+            "description": self.description,
+            "author": {
+                "name": self.author.name,
+                "email": self.author.email,
+            },
+            "version": self.version,
+            "icon": self.icon,
+            "default": self.default,
+            "presets": [],
+        }
+
+        for name, preset in self.presets.items():
+            rates = []
+            for x in preset.acodec.rate[0], preset.acodec.rate[1], preset.vcodec.rate[0], preset.vcodec.rate[1]:
+                if isinstance(x, gst.Fraction):
+                    if x.num == x.denom:
+                        rates.append("%s" % x.num)
+                    else:
+                        rates.append("%s/%s" % (x.num, x.denom))
+                else:
+                    rates.append("%s" % x)
+        
+            data["presets"].append({
+                "name": preset.name,
+                "container": preset.container,
+                "extension": preset.extension,
+                "acodec": {
+                    "name": preset.acodec.name,
+                    "container": preset.acodec.container,
+                    "rate": [rates[0], rates[1]],
+                    "passes": preset.acodec.passes,
+                    "width": preset.acodec.width,
+                    "depth": preset.acodec.depth,
+                    "channels": preset.acodec.channels,
+                },
+                "vcodec": {
+                    "name": preset.vcodec.name,
+                    "container": preset.vcodec.container,
+                    "rate": [rates[2], rates[3]],
+                    "passes": preset.vcodec.passes,
+                    "width": preset.vcodec.width,
+                    "height": preset.vcodec.height,
+                },
+            })
+        
+        return json.dumps(data, indent=4)
+
+    @staticmethod
+    def from_json(data):
+        parsed = json.loads(data)
+
+        device = Device(**{
+            "make": parsed.get("make", "Generic"),
+            "model": parsed.get("model", ""),
+            "description": parsed.get("description", ""),
+            "author": Author(
+                name = parsed.get("name", ""),
+                email = parsed.get("email", ""),
+            ),
+            "version": parsed.get("version", ""),
+            "icon": parsed.get("icon", ""),
+            "default": parsed.get("default", ""),
+        })
+
+        for preset in parsed.get("presets", []):
+            acodec = preset.get("acodec", {})
+            vcodec = preset.get("vcodec", {})
+            device.presets[preset.get("name", "")] = Preset(**{
+                "name": preset.get("name", ""),
+                "container": preset.get("container", ""),
+                "extension": preset.get("extension", ""),
+                "acodec": AudioCodec(**{
+                    "name": acodec.get("name", ""),
+                    "container": acodec.get("container", ""),
+                    "rate": acodec.get("rate", []),
+                    "passes": acodec.get("passes", []),
+                    "width": acodec.get("width", []),
+                    "depth": acodec.get("depth", []),
+                    "channels": acodec.get("channels", []),
+                }),
+                "vcodec": VideoCodec(**{
+                    "name": vcodec.get("name", ""),
+                    "container": vcodec.get("container", ""),
+                    "rate": [Fraction(x) for x in vcodec.get("rate", [])],
+                    "passes": vcodec.get("passes", []),
+                    "width": vcodec.get("width", []),
+                    "height": vcodec.get("height", []),
+                }),
+            })
+
+        return device
+
 class Preset(object):
     """
         A preset representing audio and video encoding options for a particular
@@ -285,7 +382,7 @@ class Codec(object):
         Settings for encoding audio or video. This object defines options
         common to both audio and video encoding.
     """
-    def __init__(self, name = "", container = ""):
+    def __init__(self, name=None, container=None, passes=None):
         """
             @type name: str
             @param name: The name of the encoding GStreamer element, e.g. faac
@@ -295,10 +392,11 @@ class Codec(object):
                               may not want to wrap it in an avi or mp4; if not
                               set it defaults to the preset container
         """
-        self.name = name
-        self.container = container
+        self.name = name and name or ""
+        self.container = container and container or ""
+        self.passes = passes and passes or []
+
         self.rate = (Fraction(), Fraction())
-        self.passes = []
     
     def __repr__(self):
         return "%s %s" % (self.name, self.container)
@@ -307,157 +405,22 @@ class AudioCodec(Codec):
     """
         Settings for encoding audio.
     """
-    def __init__(self, *args):
-        Codec.__init__(self, *args)
-        self.rate = (8000, 96000)
-        self.width = (8, 24)
-        self.depth = (8, 24)
-        self.channels = (1, 6)
+    def __init__(self, name=None, container=None, rate=None, passes=None, width=None, depth=None, channels=None):
+        Codec.__init__(self, name=name, container=container, passes=passes)
+        self.rate = rate and rate or (8000, 96000)
+        self.width = width and width or (8, 24)
+        self.depth = depth and depth or (8, 24)
+        self.channels = channels and channels or (1, 6)
 
 class VideoCodec(Codec):
     """
         Settings for encoding video.
     """
-    def __init__(self, *args):
-        Codec.__init__(self, *args)
-        self.rate = (Fraction("1"), Fraction("60"))
-        self.width = (2, 1920)
-        self.height = (2, 1080)
-
-def _parse_range(value, type = int):
-    """
-        Parse a string into a range.
-        
-            >>> _parse_range("1")
-            (1, 1)
-            >>> _parse_range("2, 5")
-            (2, 5)
-            >>> _parse_range("1.0, 6", type = float)
-            (1.0, 6.0)
-        
-        @type value: str
-        @param value: A string value to be parsed
-        @type type: type
-        @param type: The type to coerce value into
-    """
-    parts = value.split(",")
-    
-    if len(parts) == 1:
-        return (type(parts[0]), type(parts[0]))
-    elif len(parts) == 2:
-        return (type(parts[0]), type(parts[1]))
-    else:
-        raise ValueError(_("Value may only contain one comma; got %(value)s") % {
-            "value": value
-        })
-
-def _load_author(root):
-    """
-        Load an author from a given xml element.
-        
-        @type root: xml.etree.Element
-        @param root: An author element with name and email children
-        @rtype: Author
-        @return: A new Author instance
-    """
-    author = Author()
-    
-    for child in root.getchildren():
-        if child.tag == "name":
-            author.name = child.text.strip()
-        elif child.tag == "email":
-            author.email = child.text.strip()
-    
-    return author
-
-def _load_audio_codec(root):
-    """
-        Load an audio codec from a given xml element.
-        
-        @type root: xml.etree.Element
-        @param root: An audio codec element
-        @rtype: AudioCodec
-        @return: A new AudioCodec instance
-    """
-    codec = AudioCodec()
-    
-    for child in root.getchildren():
-        if child.tag == "name":
-            codec.name = child.text.strip()
-        elif child.tag == "container":
-            codec.container = child.text.strip()
-        elif child.tag == "width":
-            codec.width = _parse_range(child.text.strip())
-        elif child.tag == "depth":
-            codec.depth = _parse_range(child.text.strip())
-        elif child.tag == "channels":
-            codec.channels = _parse_range(child.text.strip())
-        elif child.tag == "rate":
-            codec.rate = _parse_range(child.text.strip())
-        elif child.tag == "passes":
-            for command in child.getchildren():
-                codec.passes.append(command.text.strip())
-    
-    return codec
-
-def _load_video_codec(root):
-    """
-        Load a video codec from a given xml element.
-        
-        @type root: xml.etree.Element
-        @param root: An video codec element
-        @rtype: VideoCodec
-        @return: A new VideoCodec instance
-    """
-    codec = VideoCodec()
-    
-    for child in root.getchildren():
-        if child.tag == "name":
-            codec.name = child.text.strip()
-        elif child.tag == "container":
-            codec.container = child.text.strip()
-        elif child.tag == "width":
-            codec.width = _parse_range(child.text.strip())
-        elif child.tag == "height":
-            codec.height = _parse_range(child.text.strip())
-        elif child.tag == "rate":
-            codec.rate = _parse_range(child.text.strip(), Fraction)
-        elif child.tag == "passes":
-            for command in child.getchildren():
-                codec.passes.append(command.text.strip())
-    
-    return codec
-
-def _load_preset(root):
-    """
-        Load a preset from a given xml element.
-        
-        @type root: xml.etree.Element
-        @param root: An preset element
-        @rtype: Preset
-        @return: A new preset instance
-    """
-    preset = Preset()
-    
-    for child in root.getchildren():
-        if child.tag == "name":
-            preset.name = child.text.strip()
-        elif child.tag == "container":
-            preset.container = child.text.strip()
-        elif child.tag == "extension":
-            preset.extension = child.text.strip()
-        elif child.tag == "audio":
-            preset.acodec = _load_audio_codec(child)
-        elif child.tag == "video":
-            preset.vcodec = _load_video_codec(child)
-    
-    if preset.acodec and not preset.acodec.container:
-        preset.acodec.container = preset.container
-    
-    if preset.vcodec and not preset.vcodec.container:
-        preset.vcodec.container = preset.container
-        
-    return preset
+    def __init__(self, name=None, container=None, rate=None, passes=None, width=None, height=None):
+        Codec.__init__(self, name=name, container=container, passes=passes)
+        self.rate = rate and rate or (Fraction("1"), Fraction("60"))
+        self.width = width and width or (2, 1920)
+        self.height = height and height or (2, 1080)
 
 def load(filename):
     """
@@ -468,34 +431,13 @@ def load(filename):
         @rtype: Device
         @return: A new device instance loaded from the file
     """
-    tree = xml.etree.ElementTree.parse(filename)
-    
-    device = Device()
+    device = Device.from_json(open(filename).read())
     
     device.filename = filename
     
-    for child in tree.getroot().getchildren():
-        if child.tag == "make":
-            device.make = child.text.strip()
-        elif child.tag == "model":
-            device.model = child.text.strip()
-        elif child.tag == "description":
-            device.description = child.text.strip()
-        elif child.tag == "author":
-            device.author = _load_author(child)
-        elif child.tag == "version":
-            device.version = child.text.strip()
-        elif child.tag == "preset":
-            preset = (_load_preset(child))
-            device.presets[preset.name] = preset
-        elif child.tag == "icon":
-            device.icon = child.text.strip()
-        elif child.tag == "default":
-            device.default = child.text.strip()
-    
     _log.debug(_("Loaded device %(device)s (%(presets)d presets)") % {
         "device": device.name,
-        "presets": len(device.presets)
+        "presets": len(device.presets),
     })
     
     return device
@@ -511,8 +453,11 @@ def load_directory(directory):
     """
     global _presets
     for filename in os.listdir(directory):
-        if filename.endswith("xml"):
-            _presets[filename[:-4]] = load(os.path.join(directory, filename))
+        if filename.endswith("json"):
+            try:
+                _presets[filename[:-5]] = load(os.path.join(directory, filename))
+            except:
+                _log.warning("Problem loading %s!" % filename)
     return _presets
 
 def get():
@@ -558,7 +503,7 @@ def install_preset(location, name):
     if not location.endswith("/"):
         location = location + "/"
     
-    for ext in ["xml", "svg", "png"]:
+    for ext in ["json", "svg", "png"]:
         path = ".".join([location + name, ext])
         _log.debug(_("Fetching %(location)s") % {
             "location": path,
