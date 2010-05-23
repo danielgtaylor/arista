@@ -1,5 +1,5 @@
 {
-    "version": "1.0", 
+    "version": "1.1", 
     "description": "H.264/AAC for Apple iPod / iPhone", 
     "author": {
         "name": "Daniel G. Taylor", 
@@ -103,6 +103,6 @@
             }
         }
     ], 
-    "model": "iPod", 
+    "model": "iPod / iPhone", 
     "icon": "file://ipod.svg"
 }
