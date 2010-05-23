@@ -275,6 +275,7 @@ class Device(object):
                     "width": vcodec.get("width", []),
                     "height": vcodec.get("height", []),
                 }),
+                "device": device,
             })
 
         return device
@@ -285,7 +286,7 @@ class Preset(object):
         device.
     """
     def __init__(self, name = "", container = "", extension = "", 
-                 acodec = None, vcodec = None):
+                 acodec = None, vcodec = None, device = None):
         """
             @type name: str
             @param name: The name of the preset, e.g. "High Quality"
@@ -297,12 +298,15 @@ class Preset(object):
             @param acodec: The audio encoding settings
             @type vcodec: VideoCodec
             @param vcodec: The video encoding settings
+            @type device: Device
+            @param device: A link back to the device this preset belongs to
         """
         self.name = name
         self.container = container
         self.extension = extension
         self.acodec = acodec
         self.vcodec = vcodec
+        self.device = device
     
     def __repr__(self):
         return "%s %s" % (self.name, self.container)
