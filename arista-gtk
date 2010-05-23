@@ -49,6 +49,12 @@ import gtk
 if __name__ != "__main__":
     import gst
 
+try:
+    import pynotify
+    pynotify.init("icon-summary-body")
+except ImportError:
+    pynotify = None
+
 import arista
 
 _ = gettext.gettext
@@ -986,6 +992,10 @@ class MainWindow(object):
         """
             An entry in the queue is finished. Update the queue model.
         """
+        if pynotify:
+            icon = arista.utils.get_path("presets/" + entry.options.preset.device.icon[7:])
+            notice = pynotify.Notification("Job done", "Conversion of %s to %s %s finished" % (os.path.basename(entry.options.output_uri), entry.options.preset.device, entry.options.preset.name), icon)
+            notice.show()
         iter = self.queue_model.get_iter_first()
         if self.queue_view.get_selection().iter_is_selected(iter):
             self.update_remove(False)
