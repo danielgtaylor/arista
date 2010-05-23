@@ -4,7 +4,7 @@ A simple preset-based transcoder for the GNOME Desktop and a small script for
 terminal-based transcoding. Settings are chosen based on output device and 
 quality preset.
 
-    http://programmer-art.org/projects/arista-transcoder
+    http://www.transcoder.org/
 
 Dependencies
 ------------
@@ -14,6 +14,7 @@ Dependencies
  * python-gtk >=2.16
  * python-gconf
  * python-gstreamer
+ * python-pynotify (optional)
  * gstreamer-ffmpeg
  * gstreamer-plugins-base
  * gstreamer-plugins-good
@@ -83,4 +84,10 @@ You can grab a copy of the source code for Arista via:
 
 Feel free to fork on GitHub and propose updates to the main branch. You can
 keep your branch up to date via `git pull`
+
+The public website of this project is also open source, and can be found here:
+
+    http://github.com/danielgtaylor/arista-website
+
+Feel free to fork it and contribute as well.
 
