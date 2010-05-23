@@ -149,15 +149,6 @@
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem_answers">
-                        <property name="visible">True</property>
-                        <property name="tooltip_text" translatable="yes">Get answers and help</property>
-                        <property name="label" translatable="yes">Answers</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_answers"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkImageMenuItem" id="menuitem_about">
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
@@ -240,7 +231,6 @@
                 <child>
                   <object class="GtkVBox" id="vbox_preview">
                     <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkDrawingArea" id="video_preview">
                         <property name="width_request">320</property>
@@ -309,7 +299,6 @@
             <child>
               <object class="GtkVBox" id="vbox3">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkFrame" id="settings_frame">

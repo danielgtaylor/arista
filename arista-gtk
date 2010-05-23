@@ -117,7 +117,7 @@ def _get_icon_pixbuf(uri, width, height):
         if os.path.exists(path):
             image = gtk.gdk.pixbuf_new_from_file_at_size(path, width, height)
     elif uri.startswith("stock://"):
-        image = theme.load_icon(uri[8:], size, 0)
+        image = theme.load_icon(uri[8:], gtk.ICON_SIZE_MENU, 0)
     else:
         raise ValueError(_("Unknown icon URI %(uri)s") % {
             "uri": uri
@@ -413,6 +413,11 @@ class MainWindow(object):
             if id == "computer":
                 selected = x
         
+        iter = model.append()
+        icon = _get_icon_pixbuf("stock://gtk-go-down", width, height)
+        model.set_value(iter, 0, icon)
+        model.set_value(iter, 1, "Download more")
+        
         self.devices.connect("changed", self.on_device_changed)
         self.devices.set_active(selected)
         
@@ -697,6 +702,11 @@ class MainWindow(object):
         
         device = self.devices.get_model().get_value(iter, 2)
         
+        if device is None:
+            webbrowser.open("http://www.transcoder.org/presets/")
+            self.devices.set_active(0)
+            return
+        
         model = self.presets.get_model()
         model.clear()
         
@@ -869,12 +879,6 @@ class MainWindow(object):
                 model.remove(iter)
             
             self.update_remove(False)
-    
-    def on_answers(self, widget):
-        """
-            Open a browser to the launchpad answers site.
-        """
-        webbrowser.open("http://answers.launchpad.net/arista")
     
     def on_about(self, widget):
         """
