@@ -243,8 +243,8 @@ class Device(object):
             "model": parsed.get("model", ""),
             "description": parsed.get("description", ""),
             "author": Author(
-                name = parsed.get("name", ""),
-                email = parsed.get("email", ""),
+                name = parsed.get("author", {}).get("name", ""),
+                email = parsed.get("author", {}).get("email", ""),
             ),
             "version": parsed.get("version", ""),
             "icon": parsed.get("icon", ""),
