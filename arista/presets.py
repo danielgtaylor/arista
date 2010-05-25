@@ -258,6 +258,7 @@ class Device(object):
                 "name": preset.get("name", ""),
                 "container": preset.get("container", ""),
                 "extension": preset.get("extension", ""),
+                "icon": preset.get("icon", ""),
                 "acodec": AudioCodec(**{
                     "name": acodec.get("name", ""),
                     "container": acodec.get("container", ""),
@@ -286,7 +287,7 @@ class Preset(object):
         device.
     """
     def __init__(self, name = "", container = "", extension = "", 
-                 acodec = None, vcodec = None, device = None):
+                 acodec = None, vcodec = None, device = None, icon = None):
         """
             @type name: str
             @param name: The name of the preset, e.g. "High Quality"
@@ -307,6 +308,7 @@ class Preset(object):
         self.acodec = acodec
         self.vcodec = vcodec
         self.device = device
+        self.icon = icon
     
     def __repr__(self):
         return "%s %s" % (self.name, self.container)

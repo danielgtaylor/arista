@@ -698,6 +698,8 @@ class MainWindow(object):
             The device combo was changed - update the presets for the newly
             selected device.
         """
+        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
+        
         iter = self.devices.get_active_iter()
         
         device = self.devices.get_model().get_value(iter, 2)
@@ -713,6 +715,13 @@ class MainWindow(object):
         selected = 0
         for (pos, (name, preset)) in enumerate(device.presets.items()):
             iter = model.append()
+            
+            if preset.icon:
+                image = _get_icon_pixbuf(preset.icon, width, height)
+                
+                if image:
+                    model.set_value(iter, 0, image)
+            
             model.set_value(iter, 1, name)
             model.set_value(iter, 2, preset)
             if device.default and device.default == preset.name:
