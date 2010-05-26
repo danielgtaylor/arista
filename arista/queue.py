@@ -50,6 +50,9 @@ class QueueEntry(object):
             @param options: The input options (uri, subs) to process
         """
         self.options = options
+        
+        # Set when QueueEntry.stop() was called so you can react accordingly
+        self.force_stopped = False
     
     def __repr__(self):
         return _("Queue entry %(infile)s -> %(preset)s -> %(outfile)s" % {
@@ -57,6 +60,17 @@ class QueueEntry(object):
             "preset": self.options.preset,
             "outfile": self.options.output_uri,
         })
+    
+    def stop(self):
+        """
+            Stop this queue entry from processing.
+        """
+        if hasattr(self, "transcoder"):
+            source = self.transcoder.pipe.get_by_name("source")
+            source.send_event(gst.event_new_eos())
+            self.transcoder.start()
+            
+            self.force_stopped = True
 
 class TranscodeQueue(gobject.GObject):
     """

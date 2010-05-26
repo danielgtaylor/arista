@@ -861,9 +861,7 @@ class MainWindow(object):
             GStreamer finishes flushing its buffers, then will be removed.
             If another item is in the queue it will start processing then.
         """
-        source = entry.transcoder.pipe.get_by_name("source")
-        source.send_event(gst.event_new_eos())
-        entry.transcoder.start()
+        entry.stop()
         
         # Hide live preview while we wait for the item to finish
         self.image_preview.show()
@@ -1005,7 +1003,7 @@ class MainWindow(object):
         """
             An entry in the queue is finished. Update the queue model.
         """
-        if pynotify:
+        if pynotify and not entry.force_stopped:
             icon = arista.utils.get_path("presets/" + entry.options.preset.device.icon[7:])
             notice = pynotify.Notification("Job done", "Conversion of %s to %s %s finished" % (os.path.basename(entry.options.output_uri), entry.options.preset.device, entry.options.preset.name), icon)
             notice.show()
