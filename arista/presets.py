@@ -56,8 +56,7 @@ _ = gettext.gettext
 _presets = {}
 _log = logging.getLogger("arista.presets")
 
-UPDATE_LOCATION = "http://programmer-art.org" + \
-                  "/media/releases/arista-transcoder/presets/"
+UPDATE_LOCATION = "http://www.transcoder.org/media/presets/"
 
 class Fraction(gst.Fraction):
     """
@@ -534,7 +533,7 @@ def check_for_updates(location = UPDATE_LOCATION):
         Check for updated presets from a central server.
         
         @type location: str
-        @param location: The directory where presets.txt and all preset files
+        @param location: The directory where latest.txt and all preset files
                          can be found on the server
         @rtype: list
         @return: A list of [(location, name), (location, name), ...] for each
@@ -548,7 +547,7 @@ def check_for_updates(location = UPDATE_LOCATION):
         location = location + "/"
     
     try:
-        f = urllib2.urlopen(location + "presets.txt")
+        f = urllib2.urlopen(location + "latest.txt")
     except urllib2.URLError:
         return updates
     
@@ -579,25 +578,12 @@ def check_for_updates(location = UPDATE_LOCATION):
                                 "location": location,
                                 "error": str(e),
                             })
-                else:
-                    _log.debug(_("Found new device preset %(name)s") % {
-                        "name": name,
-                    })
-                    try:
-                        updates.append((location, name))
-                    except Exception, e:
-                        _log.error(_("Error installing preset %(name)s " \
-                                     "from %(location)s: %(error)s") % {
-                            "name": name,
-                            "location": location,
-                            "error": str(e),
-                        })
             else:
                 _log.warning(_("Malformed plugin version line %(line)s") % {
                     "line": line,
                 })
     except:
-        _log.warning(_("There was a problem accessing %(location)spresets.txt!") % {
+        _log.warning(_("There was a problem accessing %(location)slatest.txt!") % {
             "location": location,
         })
     
