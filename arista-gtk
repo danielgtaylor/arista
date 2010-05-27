@@ -113,7 +113,11 @@ def _get_icon_pixbuf(uri, width, height):
         return image
     
     if uri.startswith("file://"):
-        path = arista.utils.get_path("presets", uri[7:])
+        try:
+            path = arista.utils.get_path("presets", uri[7:])
+        except IOError:
+            path = ""
+        
         if os.path.exists(path):
             image = gtk.gdk.pixbuf_new_from_file_at_size(path, width, height)
     elif uri.startswith("stock://"):
