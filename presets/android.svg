@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="48"
+   height="48"
+   viewBox="91.801 15.624 47.999998 47.999998"
+   enable-background="new 91.801 15.624 611.306 568.512"
+   xml:space="preserve"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="android.svg"><metadata
+   id="metadata33"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs31"><inkscape:perspective
+   sodipodi:type="inkscape:persp3d"
+   inkscape:vp_x="0 : 284.25601 : 1"
+   inkscape:vp_y="0 : 1000 : 0"
+   inkscape:vp_z="611.30603 : 284.25601 : 1"
+   inkscape:persp3d-origin="305.65302 : 189.50401 : 1"
+   id="perspective35" />
+	
+	
+</defs><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="689"
+   inkscape:window-height="485"
+   id="namedview29"
+   showgrid="false"
+   inkscape:zoom="2.3482663"
+   inkscape:cx="23.42988"
+   inkscape:cy="25.684357"
+   inkscape:window-x="67"
+   inkscape:window-y="493"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1" />
+<g
+   id="g21"
+   transform="matrix(0.10195877,0,0,0.10195877,75.349918,17.219255)"
+   style="stroke:none;stroke-opacity:1;stroke-width:9.80788566000000017;stroke-miterlimit:4;stroke-dasharray:none">
+		<path
+   style="fill:#94c147;stroke:none;stroke-opacity:1;stroke-width:9.80788566000000017;stroke-miterlimit:4;stroke-dasharray:none"
+   id="path23"
+   d="m 552.777,147.57 c -14.147,0 -25.622,11.652 -25.622,26.02 v 101.68 c 0,14.372 11.475,26.019 25.622,26.019 14.147,0 25.61,-11.646 25.61,-26.019 V 173.59 c 0.001,-14.368 -11.462,-26.02 -25.61,-26.02 z m -309.011,0 c -14.155,0 -25.618,11.652 -25.618,26.02 v 101.68 c 0,14.372 11.462,26.019 25.618,26.019 14.153,0 25.623,-11.646 25.623,-26.019 V 173.59 c -0.008,-14.368 -11.475,-26.02 -25.623,-26.02 z" />
+		<path
+   style="fill:#94c147;stroke:none;stroke-opacity:1;stroke-width:9.80788566000000017;stroke-miterlimit:4;stroke-dasharray:none"
+   id="path25"
+   d="m 284.799,148.364 v 185.768 c 0,11.035 8.948,19.98 19.983,19.98 h 22.815 v 56.567 c 0,14.37 11.47,26.016 25.623,26.016 14.148,0 25.623,-11.646 25.623,-26.016 v -56.567 h 39.878 v 56.567 c 0,14.37 11.463,26.016 25.61,26.016 14.147,0 25.622,-11.646 25.622,-26.016 v -56.567 h 22.828 c 11.022,0 19.971,-8.953 19.971,-19.98 V 148.364 H 284.799 l 0,0 z" />
+		<path
+   style="fill:#94c147;stroke:none;stroke-opacity:1;stroke-width:9.80788566000000017;stroke-miterlimit:4;stroke-dasharray:none"
+   id="path27"
+   d="m 452.302,52.105 21.057,-30.572 c 1.245,-1.819 0.939,-4.199 -0.695,-5.329 -1.637,-1.123 -3.968,-0.568 -5.225,1.251 l -21.875,31.75 c -14.404,-5.682 -30.418,-8.844 -47.293,-8.844 -16.87,0 -32.893,3.162 -47.297,8.844 l -21.875,-31.75 c -1.257,-1.819 -3.589,-2.375 -5.225,-1.251 -1.636,1.124 -1.946,3.509 -0.696,5.329 l 21.057,30.572 c -33.464,15.57 -56.951,45.166 -59.941,79.706 H 512.25 C 509.259,97.271 485.772,67.676 452.302,52.105 z M 350.187,100.28 c -6.965,0 -12.617,-5.646 -12.617,-12.616 0,-6.958 5.647,-12.61 12.617,-12.61 6.97,0 12.603,5.652 12.603,12.61 0,6.965 -5.64,12.616 -12.603,12.616 z m 97.744,0 c -6.97,0 -12.609,-5.646 -12.609,-12.616 0,-6.958 5.64,-12.61 12.609,-12.61 6.971,0 12.61,5.652 12.61,12.61 0,6.965 -5.64,12.616 -12.61,12.616 z" />
+	</g>
+</svg>
