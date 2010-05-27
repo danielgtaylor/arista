@@ -48,18 +48,29 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSeparatorMenuItem" id="separator1">
-                        <property name="visible">True</property>
-                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkCheckMenuItem" id="menuitem_pause">
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="label" translatable="yes">_Pause</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="on_pause_toggled"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separator1">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitem_install">
+                        <property name="label" translatable="yes">_Install device preset</property>
+                        <property name="visible">True</property>
+                        <property name="sensitive">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="image">image5</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_install_device"/>
                       </object>
                     </child>
                     <child>
@@ -457,5 +468,10 @@
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="stock">gtk-properties</property>
+  </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="stock">gtk-connect</property>
+    <property name="icon-size">1</property>
   </object>
 </interface>

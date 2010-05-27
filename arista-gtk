@@ -391,46 +391,8 @@ class MainWindow(object):
         self.table.attach(self.devices, 1, 2, 1, 2, yoptions = gtk.FILL)
         self.table.attach(self.presets, 1, 2, 2, 3, yoptions = gtk.FILL)
         
-        self._setup_source()
-        
-        # Find plugins and sort them nicely
-        # Adds output device profiles to the output device combo box
-        
-        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
-        
-        model = self.devices.get_model()
-        
-        self.default_device = 0
-        for x, (id, device) in enumerate(sorted(arista.presets.get().items(),
-                                   lambda x, y: cmp(x[1].make + x[1].model,
-                                                    y[1].make + y[1].model))):
-            iter = model.append()
-            
-            image = _get_icon_pixbuf(device.icon, width, height)
-            
-            if image:
-                model.set_value(iter, 0, image)
-            
-            model.set_value(iter, 1, device.name)
-            model.set_value(iter, 2, device)
-            
-            if id == "computer":
-                self.default_device = x
-        
-        iter = model.append()
-        icon = _get_icon_pixbuf("stock://gtk-add", width, height)
-        model.set_value(iter, 0, icon)
-        model.set_value(iter, 1, "Create new")
-        model.set_value(iter, 2, "http://www.transcoder.org/presets/create/")
-        
-        iter = model.append()
-        icon = _get_icon_pixbuf("stock://gtk-go-down", width, height)
-        model.set_value(iter, 0, icon)
-        model.set_value(iter, 1, "Download more")
-        model.set_value(iter, 2, "http://www.transcoder.org/presets/")
-        
-        self.devices.connect("changed", self.on_device_changed)
-        self.devices.set_active(self.default_device)
+        self.setup_source()
+        self.setup_devices()
         
         self.fileiter = None
         self.transcoder = None
@@ -492,7 +454,7 @@ class MainWindow(object):
         
         client.notify_add(CONFIG_PATH + "/show_toolbar", 
                           self.on_gconf_show_toolbar)
-        client.notify_add(CONFIG_PATH + "/check_inputs", self._setup_source)
+        client.notify_add(CONFIG_PATH + "/check_inputs", self.setup_source)
         client.notify_add(CONFIG_PATH + "/last_open_path", 
                           self.on_gconf_last_open_path)
         
@@ -505,7 +467,7 @@ class MainWindow(object):
         self.image_preview.show_all()
         self.window.show()
     
-    def _setup_source(self, *args):
+    def setup_source(self, *args):
         """
             Setup the source widget. Creates a combo box or a file input button
             depending on the settings and available devices.
@@ -601,6 +563,54 @@ class MainWindow(object):
         
         # Attach and show the source
         self.source_hbox.show_all()
+    
+    def setup_devices(self):
+        # Find plugins and sort them nicely
+        # Adds output device profiles to the output device combo box
+        
+        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
+        
+        model = self.devices.get_model()
+        
+        # Disconnect from existing signals
+        if hasattr(self.devices, "handler_id"):
+            self.devices.disconnect(self.devices.handler_id)
+        
+        # Remove existing items
+        model.clear()
+        
+        self.default_device = 0
+        for x, (id, device) in enumerate(sorted(arista.presets.get().items(),
+                                   lambda x, y: cmp(x[1].make + x[1].model,
+                                                    y[1].make + y[1].model))):
+            iter = model.append()
+            
+            image = _get_icon_pixbuf(device.icon, width, height)
+            
+            if image:
+                model.set_value(iter, 0, image)
+            
+            model.set_value(iter, 1, device.name)
+            model.set_value(iter, 2, device)
+            
+            if id == "computer":
+                self.default_device = x
+        
+        iter = model.append()
+        icon = _get_icon_pixbuf("stock://gtk-add", width, height)
+        model.set_value(iter, 0, icon)
+        model.set_value(iter, 1, "Create new")
+        model.set_value(iter, 2, "http://www.transcoder.org/presets/create/")
+        
+        iter = model.append()
+        icon = _get_icon_pixbuf("stock://gtk-go-down", width, height)
+        model.set_value(iter, 0, icon)
+        model.set_value(iter, 1, "Download more")
+        model.set_value(iter, 2, "http://www.transcoder.org/presets/")
+        
+        self.devices.handler_id = self.devices.connect("changed",
+                                                       self.on_device_changed)
+        self.devices.set_active(self.default_device)
     
     def on_source_properties(self, widget):
         """
@@ -1147,6 +1157,20 @@ class MainWindow(object):
     
     def on_queue_row_deleted(self, model, path):
         pass
+    
+    def on_install_device(self, widget):
+        dialog = gtk.FileChooserDialog(title=_("Choose Source File..."),
+                        buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                                 gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
+        dialog.set_property("local-only", False)
+        dialog.set_current_folder(self.last_open_path)
+        response = dialog.run()
+        dialog.hide()
+        if response == gtk.RESPONSE_ACCEPT:
+            filename = dialog.get_filename()
+            arista.presets.extract(open(filename))
+            arista.presets.reset()
+            self.setup_devices()
 
 class PrefsDialog(object):
     """

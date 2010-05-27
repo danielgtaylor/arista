@@ -161,6 +161,9 @@ if __name__ == "__main__":
                       action = "store_true", default = False,
                       help = _("Check for and download updated device " \
                                "presets if they are available"))
+    parser.add_option("--install-preset", dest = "install",
+                      action = "store_true", default=False,
+                      help = _("Install a downloaded device preset file"))
 
     options, args = parser.parse_args()
     
@@ -254,6 +257,9 @@ if __name__ == "__main__":
     elif options.update:
         # Update the local presets to the latest versions
         arista.presets.check_and_install_updates()
+    elif options.install:
+        for arg in args:
+            arista.presets.extract(open(arg))
     else:
         if len(args) != 2:
             parser.print_help()

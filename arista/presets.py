@@ -44,6 +44,7 @@ import json
 import logging
 import os
 import sys
+import tarfile
 import urllib2
 
 import gobject
@@ -490,7 +491,25 @@ def version_info():
         
     return info
 
-def install_preset(location, name):
+def extract(stream):
+    """
+        Extract a preset file into the user's local presets directory.
+        
+        @type stream: a file-like object
+        @param stream: The opened bzip2-compressed tar file of the preset
+    """
+    local_path = os.path.expanduser(os.path.join("~", ".arista", "presets"))
+    
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+        
+    tar = tarfile.open(mode="r|bz2", fileobj=stream)
+    _log.debug(_("Extracting %(filename)s") % {
+        "filename": hasattr(stream, "name") and stream.name or "data stream",
+    })
+    tar.extractall(path=local_path)
+
+def fetch(location, name):
     """
         Attempt to fetch and install a preset. Presets are always installed
         to ~/.arista/presets/.
@@ -500,33 +519,23 @@ def install_preset(location, name):
         @type name: str
         @param name: The name of the preset to fetch, without any extension
     """
-    local_path = os.path.expanduser(os.path.join("~", ".arista", "presets"))
-    
-    if not os.path.exists(local_path):
-        os.makedirs(local_path)
-    
     if not location.endswith("/"):
         location = location + "/"
     
-    for ext in ["json", "svg", "png"]:
-        path = ".".join([location + name, ext])
-        _log.debug(_("Fetching %(location)s") % {
+    path = location + name + ".tar.bz2"
+    _log.debug(_("Fetching %(location)s") % {
+        "location": path,
+    })
+    
+    try:
+        f = urllib2.urlopen(path)
+        extract(f)
+    except Exception, e:
+        _log.warning(_("There was an error fetching and installing " \
+                       "%(location)s: %(error)s") % {
             "location": path,
+            "error": str(e),
         })
-        
-        try:
-            f = urllib2.urlopen(path)
-            local_file = os.path.join(local_path, ".".join([name, ext]))
-            _log.debug(_("Writing to %(file)s") % {
-                "file": local_file,
-            })
-            open(local_file, "w").write(f.read())
-        except Exception, e:
-            _log.warning(_("There was an error fetching and installing " \
-                           "%(location)s: %(error)s") % {
-                "location": path,
-                "error": str(e),
-            })
 
 def check_for_updates(location = UPDATE_LOCATION):
     """
@@ -603,13 +612,20 @@ def check_and_install_updates(location = UPDATE_LOCATION):
     
     if updates:
         for loc, name in updates:
-            install_preset(loc, name)
+            fetch(loc, name)
     else:
         _log.debug(_("All device presets are up to date!"))
 
-# Automatically load presets - system, home, current path
-for path in reversed(utils.get_search_paths()):
-    full = os.path.join(path, "presets")
-    if os.path.exists(full):
-        load_directory(full)
+def reset():
+    # Automatically load presets - system, home, current path
+    global _presets
+    
+    _presets = {}
+    
+    for path in reversed(utils.get_search_paths()):
+        full = os.path.join(path, "presets")
+        if os.path.exists(full):
+            load_directory(full)
+
+reset()
 
