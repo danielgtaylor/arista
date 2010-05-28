@@ -56,7 +56,7 @@ transcoder = None
 loop = None
 interrupted = False
 
-def print_status(enc):
+def print_status(enc, options):
     """
         Print the current status to the terminal with the estimated time
         remaining.
@@ -77,14 +77,15 @@ def print_status(enc):
     try:
         percent, time_rem = enc.status
 
-        msg = _("Encoding... %(percent)i%% (%(time)s remaining)") % {
-            "percent": int(percent * 100),
-            "time": time_rem,
-        }
-        sys.stdout.write("\b" * len(status_msg))
-        sys.stdout.write(msg)
-        sys.stdout.flush()
-        status_msg = msg
+        if not options.quiet:
+            msg = _("Encoding... %(percent)i%% (%(time)s remaining)") % {
+                "percent": int(percent * 100),
+                "time": time_rem,
+            }
+            sys.stdout.write("\b" * len(status_msg))
+            sys.stdout.write(msg)
+            sys.stdout.flush()
+            status_msg = msg
     except arista.transcoder.TranscoderStatusException, e:
         print str(e)
     
@@ -300,8 +301,7 @@ if __name__ == "__main__":
         transcoder.connect("complete", complete, options)
         transcoder.connect("error", error, options)
         
-        if not options.quiet:
-            gobject.timeout_add(500, print_status, transcoder)
+        gobject.timeout_add(500, print_status, transcoder, options)
         
         signal.signal(signal.SIGINT, signal_handler)
         gobject.timeout_add(50, check_interrupted)
