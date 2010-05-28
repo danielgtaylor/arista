@@ -497,6 +497,8 @@ def extract(stream):
         
         @type stream: a file-like object
         @param stream: The opened bzip2-compressed tar file of the preset
+        @rtype: list
+        @return: The installed device preset shortnames ["name1", "name2", ...]
     """
     local_path = os.path.expanduser(os.path.join("~", ".arista", "presets"))
     
@@ -508,6 +510,8 @@ def extract(stream):
         "filename": hasattr(stream, "name") and stream.name or "data stream",
     })
     tar.extractall(path=local_path)
+    
+    return [x[:-5] for x in tar.getnames() if x.endswith(".json")]
 
 def fetch(location, name):
     """
@@ -518,6 +522,8 @@ def fetch(location, name):
         @param location: The location of the preset
         @type name: str
         @param name: The name of the preset to fetch, without any extension
+        @rtype: list
+        @return: The installed device preset shortnames ["name1", "name2", ...]
     """
     if not location.endswith("/"):
         location = location + "/"
@@ -527,15 +533,19 @@ def fetch(location, name):
         "location": path,
     })
     
+    updated = []
+    
     try:
         f = urllib2.urlopen(path)
-        extract(f)
+        updated += extract(f)
     except Exception, e:
         _log.warning(_("There was an error fetching and installing " \
                        "%(location)s: %(error)s") % {
             "location": path,
             "error": str(e),
         })
+    
+    return updated
 
 def check_for_updates(location = UPDATE_LOCATION):
     """

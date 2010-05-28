@@ -201,22 +201,23 @@ class UpdateChecker(threading.Thread):
             gtk.gdk.threads_leave()
             
             if result == gtk.RESPONSE_YES:
+                devices = []
+                
                 for loc, name in updates:
-                    arista.presets.install_preset(loc, name)
+                    devices += arista.presets.fetch(loc, name)
+                
+                for device in devices:
+                    icon = arista.utils.get_path("presets/" + arista.presets.get()[device].icon[7:])
+                    notice = pynotify.Notification(_("Update Successful"), _("Device preset %(name)s successfully updated.") % {
+                        "name": arista.presets.get()[device],
+                    }, icon)
+                    notice.show()
             
                 gtk.gdk.threads_enter()
                 dialog.destroy()
-                dialog = gtk.MessageDialog(parent = self.main.window,
-                    type = gtk.MESSAGE_INFO,
-                    buttons = gtk.BUTTONS_OK,
-                    message_format = _("Updates installed. Reloading device " \
-                                       "presets now."))
-                dialog.run()
-                dialog.destroy()
                 
-                self.main.window.destroy()
-                del self.main
-                self.main = MainWindow()
+                arista.presets.reset()
+                self.main.setup_devices()
                 gtk.gdk.threads_leave()
             else:
                 gtk.gdk.threads_enter()
@@ -1026,7 +1027,7 @@ class MainWindow(object):
         """
         if pynotify and not entry.force_stopped:
             icon = arista.utils.get_path("presets/" + entry.options.preset.device.icon[7:])
-            notice = pynotify.Notification("Job done", "Conversion of %s to %s %s finished" % (os.path.basename(entry.options.output_uri), entry.options.preset.device, entry.options.preset.name), icon)
+            notice = pynotify.Notification(_("Job done"), _("Conversion of %s to %s %s finished") % (os.path.basename(entry.options.output_uri), entry.options.preset.device, entry.options.preset.name), icon)
             notice.show()
         iter = self.queue_model.get_iter_first()
         if self.queue_view.get_selection().iter_is_selected(iter):
@@ -1168,9 +1169,16 @@ class MainWindow(object):
         dialog.hide()
         if response == gtk.RESPONSE_ACCEPT:
             filename = dialog.get_filename()
-            arista.presets.extract(open(filename))
+            devices = arista.presets.extract(open(filename))
             arista.presets.reset()
             self.setup_devices()
+            if pynotify:
+                for device in devices:
+                    icon = arista.utils.get_path("presets/" + arista.presets.get()[device].icon[7:])
+                    notice = pynotify.Notification(_("Installation Successful"), _("Device preset %(name)s successfully installed.") % {
+                        "name": arista.presets.get()[device],
+                    }, icon)
+                    notice.show()
 
 class PrefsDialog(object):
     """
