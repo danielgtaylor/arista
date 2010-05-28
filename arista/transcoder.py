@@ -398,7 +398,7 @@ class Transcoder(gobject.GObject):
             
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
                    "%s %s videoscale ! %s ! %s%s ! tee " \
-                   "name=videotee ! queue ! %svideo_00" % \
+                   "name=videotee ! queue ! %s" % \
                    (deint, sub, self.vcaps.to_string(), vbox, vencoder, premux)
             
         if self.info.is_audio and self.preset.acodec and \
@@ -455,7 +455,7 @@ class Transcoder(gobject.GObject):
                        ]
                 
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
-                   "audioresample ! %s ! %s ! %saudio_00" % \
+                   "audioresample ! %s ! %s ! %s" % \
                    (self.acaps.to_string(), aencoder, premux)
         
         # =====================================================================
