@@ -112,14 +112,24 @@ def complete(transcoder, options):
     transcoder.stop()
     gobject.idle_add(loop.quit)
 
+def error(transcoder, errorstr, options):
+    print errorstr
+    transcoder.stop()
+    gobject.idle_add(loop.quit)
+
 def check_interrupted():
     """
         Check whether we have been interrupted by Ctrl-C and stop the
         transcoder.
     """
     if interrupted:
-        source = transcoder.pipe.get_by_name("source")
-        source.send_event(gst.event_new_eos())
+        try:
+            source = transcoder.pipe.get_by_name("source")
+            source.send_event(gst.event_new_eos())
+        except:
+            # Something pretty bad happened... just exit!
+            gobject.idle_add(loop.quit)
+            
         return False
     return True
 
@@ -288,6 +298,7 @@ if __name__ == "__main__":
         transcoder.connect("discovered", discovered, options)
         transcoder.connect("pass-setup", pass_setup, options)
         transcoder.connect("complete", complete, options)
+        transcoder.connect("error", error, options)
         
         if not options.quiet:
             gobject.timeout_add(500, print_status, transcoder)
