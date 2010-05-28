@@ -122,6 +122,8 @@ class Transcoder(gobject.GObject):
                    (gobject.TYPE_PYOBJECT,         # bus
                     gobject.TYPE_PYOBJECT)),       # message
         "complete": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, tuple()),
+        "error": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                 (gobject.TYPE_PYOBJECT,)),        # error
     }
     
     def __init__(self, options):
@@ -142,7 +144,12 @@ class Transcoder(gobject.GObject):
             self.emit("discovered", info, is_media)
             
             if info.is_video or info.is_audio:
-                self._setup_pass()
+                try:
+                    self._setup_pass()
+                except PipelineException, e:
+                    self.emit("error", str(e))
+                    return
+                    
                 self.start()
         
         self.info = None
