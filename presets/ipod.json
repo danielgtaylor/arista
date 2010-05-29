@@ -101,7 +101,56 @@
                     96000
                 ]
             }
+        },
+        {
+            "vcodec": {
+                "passes": [
+                    "pass=qual quantizer=21 me=umh subme=6 ref=3 cabac=0 threads=0"
+                ], 
+                "container": "ffmux_mp4", 
+                "name": "x264enc", 
+                "height": [
+                    240, 
+                    240
+                ], 
+                "width": [
+                    320, 
+                    376
+                ], 
+                "rate": [
+                    1,
+                    30
+                ]
+            }, 
+            "container": "ffmux_mp4", 
+            "name": "Nano", 
+            "extension": "m4v", 
+            "icon": "file://ipod-nano.svg", 
+            "acodec": {
+                "passes": [
+                    "bitrate=128000 profile=LC"
+                ], 
+                "container": "ffmux_mp4", 
+                "name": "faac", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
         }
+
     ], 
     "model": "iPod / iPhone", 
     "icon": "file://ipod.svg"
