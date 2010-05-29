@@ -1,19 +1,19 @@
 {
-    "make": "Web", 
-    "model": "Browser", 
-    "description": "Encoders for World Wide Web", 
-    "version": "1.0", 
+    "make": "Generic", 
+    "model": "Web Browser", 
+    "description": "Media for World Wide Web", 
+    "version": "1.1", 
     "author": {
         "name": "Ferran Basora Roca", 
         "email": "fcsonline@gmail.com"
     }, 
     "icon": "file://web.svg",
-    "default": "Flash Video (FLV)", 
+    "default": "H.264", 
     "presets": [
         {
-            "name": "Flash Video (FLV)", 
+            "name": "Flash Video", 
             "extension": "flv", 
-            "icon": "file://flv.png",
+            "icon": "file://web-flv.png",
             "container": "flvmux", 
             "vcodec": {
                 "name": "x264enc", 
@@ -48,6 +48,86 @@
                 ], 
                 "passes": [
                     "bitrate=131072 profile=LC"
+                ]
+            }
+        },
+        {
+            "name": "H.264", 
+            "extension": "mp4", 
+            "container": "qtmux", 
+            "vcodec": {
+                "name": "x264enc", 
+                "container": "qtmux", 
+                "width": [
+                    120, 1280
+                ], 
+                "height": [
+                    120, 720
+                ], 
+                "rate": [
+                    1, 30
+                ], 
+                "passes": [
+                    "pass=qual quantizer=21 subme=6 cabac=0 threads=0"
+                ]
+            }, 
+            "acodec": {
+                "name": "faac", 
+                "container": "qtmux", 
+                "width": [
+                    8, 24
+                ], 
+                "depth": [
+                    8, 24
+                ], 
+                "rate": [
+                    8000, 96000
+                ], 
+                "channels": [
+                    1, 2
+                ], 
+                "passes": [
+                    "bitrate=131072 profile=LC"
+                ]
+            }
+        }, 
+        {
+            "name": "WebM", 
+            "extension": "webm", 
+            "container": "webmmux", 
+            "vcodec": {
+                "name": "vp8enc", 
+                "container": "webmmux", 
+                "width": [
+                    120, 1280
+                ], 
+                "height": [
+                    120, 720
+                ], 
+                "rate": [
+                    1, 30
+                ], 
+                "passes": [
+                    "quality=5"
+                ]
+            }, 
+            "acodec": {
+                "name": "vorbisenc", 
+                "container": "webmmux", 
+                "width": [
+                    8, 24
+                ], 
+                "depth": [
+                    8, 24
+                ], 
+                "rate": [
+                    8000, 96000
+                ], 
+                "channels": [
+                    1, 2
+                ], 
+                "passes": [
+                    "quality=0.3"
                 ]
             }
         }
