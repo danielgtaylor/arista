@@ -122,6 +122,8 @@ class Transcoder(gobject.GObject):
                    (gobject.TYPE_PYOBJECT,         # bus
                     gobject.TYPE_PYOBJECT)),       # message
         "complete": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, tuple()),
+        "error": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                 (gobject.TYPE_PYOBJECT,)),        # error
     }
     
     def __init__(self, options):
@@ -137,12 +139,20 @@ class Transcoder(gobject.GObject):
         
         self.enc_pass = 0
         
+        self._percent_cached = 0
+        self._percent_cached_time = 0
+        
         def _got_info(info, is_media):
             self.info = info
             self.emit("discovered", info, is_media)
             
             if info.is_video or info.is_audio:
-                self._setup_pass()
+                try:
+                    self._setup_pass()
+                except PipelineException, e:
+                    self.emit("error", str(e))
+                    return
+                    
                 self.start()
         
         self.info = None
@@ -573,6 +583,13 @@ class Transcoder(gobject.GObject):
         percent = pos / float(duration)
         if percent <= 0.0:
             return 0.0, _("Unknown")
+        
+        if self._percent_cached == percent and time.time() - self._percent_cached_time > 5:
+            self.pipe.post_message(gst.message_new_eos(self.pipe))
+        
+        if self._percent_cached != percent:
+            self._percent_cached = percent
+            self._percent_cached_time = time.time()
         
         total = 1.0 / percent * (time.time() - self.start_time)
         rem = total - (time.time() - self.start_time)

@@ -842,6 +842,7 @@ class MainWindow(object):
                                    gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
         dialog.set_property("local-only", False)
         dialog.set_property("do-overwrite-confirmation", True)
+        dialog.set_current_folder(os.path.dirname(inpath))
         dialog.set_current_name(default_out)
         response = dialog.run()
         dialog.hide()
@@ -1169,6 +1170,9 @@ class MainWindow(object):
         dialog.hide()
         if response == gtk.RESPONSE_ACCEPT:
             filename = dialog.get_filename()
+            client = gconf.client_get_default()
+            client.set_string(CONFIG_PATH + "/last_open_path",
+                              os.path.dirname(filename))
             devices = arista.presets.extract(open(filename))
             arista.presets.reset()
             self.setup_devices()

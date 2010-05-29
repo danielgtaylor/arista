@@ -6,41 +6,43 @@
 	Generate test files in various formats and transcode them to all available
 	output devices and qualities.
 """
-
 import os
-import os.path
-import arista
+import subprocess
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-if os.path.exists("tests"):
-	os.system("rm -rf tests")
+import arista; arista.init()
 
-os.system("./generate_tests.py")
+if not os.path.exists("tests"):
+	os.system("./utils/generate_tests.py")
 	
 files = os.listdir("tests")
 
 status = []
 
-for id, plugin in arista.plugins.get().items():
-	for file in files:
-		print plugin["make"] + " " + plugin["model"] + ": " + file
-		cmd = "./transcode -s -o transcodetest tests/%s %s" % (file, id)
-		print cmd
-		ret = os.system(cmd)
-		if ret:
-			status.append([file, plugin, True])
+try:
+	for id, device in arista.presets.get().items():
+		for file in files:
+			print device.make + " " + device.model + ": " + file
+			cmd = "./arista-transcode -q -d %s tests/%s test_output" % (id, file)
+			print cmd
+			ret = subprocess.call(cmd, shell=True)
+			if ret:
+				status.append([file, device, True])
+			else:
+				status.append([file, device, False])
+
+	print "Report"
+	print "======"
+
+	for file, device, failed in status:
+		if failed:
+			print device.make + " " + device.model + " (" + \
+															file + "): Failed"
 		else:
-			status.append([file, plugin, False])
+			print device.make + " " + device.model + " (" + \
+															file + "): Succeeded"
 
-print "Report"
-print "======"
-
-for file, plugin, failed in status:
-	if failed:
-		print plugin["make"] + " " + plugin["model"] + " (" + \
-														file + "): Failed"
-	else:
-		print plugin["make"] + " " + plugin["model"] + " (" + \
-														file + "): Succeeded"
-
-print "Tests completed."
-
+	print "Tests completed."
+except KeyboardInterrupt:
+	pass

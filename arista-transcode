@@ -56,7 +56,7 @@ transcoder = None
 loop = None
 interrupted = False
 
-def print_status(enc):
+def print_status(enc, options):
     """
         Print the current status to the terminal with the estimated time
         remaining.
@@ -77,14 +77,15 @@ def print_status(enc):
     try:
         percent, time_rem = enc.status
 
-        msg = _("Encoding... %(percent)i%% (%(time)s remaining)") % {
-            "percent": int(percent * 100),
-            "time": time_rem,
-        }
-        sys.stdout.write("\b" * len(status_msg))
-        sys.stdout.write(msg)
-        sys.stdout.flush()
-        status_msg = msg
+        if not options.quiet:
+            msg = _("Encoding... %(percent)i%% (%(time)s remaining)") % {
+                "percent": int(percent * 100),
+                "time": time_rem,
+            }
+            sys.stdout.write("\b" * len(status_msg))
+            sys.stdout.write(msg)
+            sys.stdout.flush()
+            status_msg = msg
     except arista.transcoder.TranscoderStatusException, e:
         print str(e)
     
@@ -112,14 +113,24 @@ def complete(transcoder, options):
     transcoder.stop()
     gobject.idle_add(loop.quit)
 
+def error(transcoder, errorstr, options):
+    print errorstr
+    transcoder.stop()
+    gobject.idle_add(loop.quit)
+
 def check_interrupted():
     """
         Check whether we have been interrupted by Ctrl-C and stop the
         transcoder.
     """
     if interrupted:
-        source = transcoder.pipe.get_by_name("source")
-        source.send_event(gst.event_new_eos())
+        try:
+            source = transcoder.pipe.get_by_name("source")
+            source.send_event(gst.event_new_eos())
+        except:
+            # Something pretty bad happened... just exit!
+            gobject.idle_add(loop.quit)
+            
         return False
     return True
 
@@ -265,11 +276,12 @@ if __name__ == "__main__":
             parser.print_help()
             raise SystemExit(1)
         
-        print _("Encoding %(filename)s for %(device)s (%(preset)s)") % {
-            "filename": os.path.basename(args[0]),
-            "device": options.device,
-            "preset": options.preset or _("default"),
-        }
+        if not options.quiet:
+            print _("Encoding %(filename)s for %(device)s (%(preset)s)") % {
+                "filename": os.path.basename(args[0]),
+                "device": options.device,
+                "preset": options.preset or _("default"),
+            }
         
         device = devices[options.device]
         
@@ -288,9 +300,9 @@ if __name__ == "__main__":
         transcoder.connect("discovered", discovered, options)
         transcoder.connect("pass-setup", pass_setup, options)
         transcoder.connect("complete", complete, options)
+        transcoder.connect("error", error, options)
         
-        if not options.quiet:
-            gobject.timeout_add(500, print_status, transcoder)
+        gobject.timeout_add(500, print_status, transcoder, options)
         
         signal.signal(signal.SIGINT, signal_handler)
         gobject.timeout_add(50, check_interrupted)
