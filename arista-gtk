@@ -582,8 +582,7 @@ class MainWindow(object):
         
         self.default_device = 0
         for x, (id, device) in enumerate(sorted(arista.presets.get().items(),
-                                   lambda x, y: cmp(x[1].make + x[1].model,
-                                                    y[1].make + y[1].model))):
+                                   lambda x, y: cmp(x[1].name, y[1].name))):
             iter = model.append()
             
             image = _get_icon_pixbuf(device.icon, width, height)
