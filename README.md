@@ -4,7 +4,7 @@ A simple preset-based transcoder for the GNOME Desktop and a small script for
 terminal-based transcoding. Settings are chosen based on output device and 
 quality preset.
 
-    http://www.transcoder.org/
+ * [Official website](http://www.transcoder.org/)
 
 Dependencies
 ------------
@@ -76,7 +76,7 @@ All active development has moved to GitHub.com. Code is managed through git and
 new bugs should be opened in the GitHub tracker. Translations and Answers
 are still managed on Launchpad. The GitHub page is here:
 
-    http://github.com/danielgtaylor/arista
+ * [Github project page](http://github.com/danielgtaylor/arista)
 
 You can grab a copy of the source code for Arista via:
 
@@ -87,7 +87,7 @@ keep your branch up to date via `git pull`
 
 The public website of this project is also open source, and can be found here:
 
-    http://github.com/danielgtaylor/arista-website
+ * [Website project page](http://github.com/danielgtaylor/arista-website)
 
 Feel free to fork it and contribute as well.
 
