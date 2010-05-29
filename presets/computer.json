@@ -6,9 +6,9 @@
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "version": "1.1", 
+    "version": "1.2", 
     "icon": "file://computer.svg", 
-    "default": "Normal", 
+    "default": "H.264", 
     "presets": [
         {
             "name": "Live Input", 
@@ -58,54 +58,7 @@
             }
         }, 
         {
-            "name": "Low (patent-free)", 
-            "container": "matroskamux", 
-            "extension": "mkv", 
-            "vcodec": {
-                "passes": [
-                    "border=0 quality=15 keyframe-freq=27"
-                ], 
-                "container": "matroskamux", 
-                "name": "theoraenc", 
-                "height": [
-                    240, 
-                    480
-                ], 
-                "width": [
-                    320, 
-                    640
-                ], 
-                "rate": [
-                    1,
-                    25
-                ]
-            }, 
-            "acodec": {
-                "passes": [
-                    "quality=0.3"
-                ], 
-                "container": "matroskamux", 
-                "name": "vorbisenc", 
-                "depth": [
-                    8, 
-                    24
-                ], 
-                "channels": [
-                    1, 
-                    2
-                ], 
-                "width": [
-                    8, 
-                    24
-                ], 
-                "rate": [
-                    8000, 
-                    96000
-                ]
-            }
-        }, 
-        {
-            "name": "Normal", 
+            "name": "H.264", 
             "container": "qtmux", 
             "extension": "mp4", 
             "vcodec": {
@@ -172,7 +125,7 @@
                 ]
             }, 
             "container": "matroskamux", 
-            "name": "Normal (patent-free)", 
+            "name": "Theora", 
             "extension": "mkv", 
             "acodec": {
                 "passes": [
@@ -199,190 +152,42 @@
             }
         }, 
         {
+            "name": "WebM", 
+            "extension": "webm", 
+            "container": "webmmux", 
             "vcodec": {
-                "passes": [
-                    "pass=qual quantizer=18 me=umh subme=6 ref=3 bframes=3 8x8dct=1 threads=0"
-                ], 
-                "container": "qtmux", 
-                "name": "x264enc", 
-                "height": [
-                    240, 
-                    1080
-                ], 
+                "name": "vp8enc", 
+                "container": "webmmux", 
                 "width": [
-                    320, 
-                    1920
+                    120, 1920
+                ], 
+                "height": [
+                    120, 1080
                 ], 
                 "rate": [
-                    1,
-                    30
+                    1, 60
+                ], 
+                "passes": [
+                    "quality=6"
                 ]
             }, 
-            "container": "qtmux", 
-            "name": "High", 
-            "extension": "mp4", 
             "acodec": {
-                "passes": [
-                    "bitrate=256000"
-                ], 
-                "container": "qtmux", 
-                "name": "faac", 
-                "depth": [
-                    8, 
-                    24
-                ], 
-                "channels": [
-                    1, 
-                    6
-                ], 
-                "width": [
-                    8, 
-                    24
-                ], 
-                "rate": [
-                    8000,
-                    96000
-                ]
-            }
-        }, 
-        {
-            "vcodec": {
-                "passes": [
-                    "border=0 quality=16 keyframe-freq=25"
-                ], 
-                "container": "matroskamux", 
-                "name": "theoraenc", 
-                "height": [
-                    240, 
-                    1080
-                ], 
-                "width": [
-                    320, 
-                    1920
-                ], 
-                "rate": [
-                    1, 
-                    30
-                ]
-            }, 
-            "container": "matroskamux", 
-            "name": "Live Input (patent-free)", 
-            "extension": "mkv", 
-            "acodec": {
-                "passes": [
-                    "quality=0.5"
-                ], 
-                "container": "matroskamux", 
                 "name": "vorbisenc", 
+                "container": "webmmux", 
+                "width": [
+                    8, 24
+                ], 
                 "depth": [
-                    8, 
-                    24
+                    8, 24
+                ], 
+                "rate": [
+                    8000, 96000
                 ], 
                 "channels": [
-                    1, 
-                    2
+                    1, 2
                 ], 
-                "width": [
-                    8, 
-                    24
-                ], 
-                "rate": [
-                    8000, 
-                    96000
-                ]
-            }
-        }, 
-        {
-            "vcodec": {
                 "passes": [
-                    "pass=qual quantizer=27 subme=4 threads=0"
-                ], 
-                "container": "qtmux", 
-                "name": "x264enc", 
-                "height": [
-                    240, 
-                    480
-                ], 
-                "width": [
-                    320, 
-                    640
-                ], 
-                "rate": [
-                    1, 
-                    25
-                ]
-            }, 
-            "container": "qtmux", 
-            "name": "Low", 
-            "extension": "mp4", 
-            "acodec": {
-                "passes": [
-                    "bitrate=128000 profile=LC"
-                ], 
-                "container": "qtmux", 
-                "name": "faac", 
-                "depth": [
-                    8, 
-                    24
-                ], 
-                "channels": [
-                    1, 
-                    6
-                ], 
-                "width": [
-                    8, 
-                    24
-                ], 
-                "rate": [
-                    8000,
-                    96000
-                ]
-            }
-        }, 
-        {
-            "vcodec": {
-                "passes": [
-                    "border=0 quality=58 keyframe-freq=30"
-                ], 
-                "container": "matroskamux", 
-                "name": "theoraenc", 
-                "height": [
-                    240, 
-                    1080
-                ], 
-                "width": [
-                    320, 
-                    1920
-                ], 
-                "rate": [
-                    1, 
-                    30
-                ]
-            }, 
-            "container": "matroskamux", 
-            "name": "High (patent-free)", 
-            "extension": "mkv", 
-            "acodec": {
-                "passes": [
-                    "quality=0.8"
-                ], 
-                "container": "matroskamux", 
-                "name": "vorbisenc", 
-                "depth": [
-                    8, 
-                    24
-                ], 
-                "channels": [
-                    1, 
-                    2
-                ], 
-                "width": [
-                    8, 
-                    24
-                ], 
-                "rate": [
-                    8000, 
-                    96000
+                    "quality=0.4"
                 ]
             }
         }
