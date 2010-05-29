@@ -1,66 +1,19 @@
 {
-    "version": "1.1", 
+    "version": "1.2", 
     "description": "H.264/AAC for Apple iPod / iPhone", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "default": "Normal", 
+    "default": "iPhone / iPod Touch", 
     "make": "Apple", 
-    "presets": [
-        {
-            "vcodec": {
-                "passes": [
-                    "pass=qual quantizer=27 subme=4 cabac=0 threads=0"
-                ], 
-                "container": "ffmux_mp4", 
-                "name": "x264enc", 
-                "height": [
-                    240, 
-                    480
-                ], 
-                "width": [
-                    320, 
-                    640
-                ], 
-                "rate": [
-                    1,
-                    25
-                ]
-            }, 
-            "container": "ffmux_mp4", 
-            "name": "Low", 
-            "extension": "m4v", 
-            "acodec": {
-                "passes": [
-                    "bitrate=96000 profile=LC"
-                ], 
-                "container": "ffmux_mp4", 
-                "name": "faac", 
-                "depth": [
-                    8, 
-                    24
-                ], 
-                "channels": [
-                    1, 
-                    2
-                ], 
-                "width": [
-                    8, 
-                    24
-                ], 
-                "rate": [
-                    8000,
-                    96000
-                ]
-            }
-        }, 
+    "presets": [ 
         {
             "vcodec": {
                 "passes": [
                     "pass=qual quantizer=21 me=umh subme=6 ref=3 cabac=0 threads=0"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "x264enc", 
                 "height": [
                     240, 
@@ -75,14 +28,15 @@
                     30
                 ]
             }, 
-            "container": "ffmux_mp4", 
-            "name": "Normal", 
+            "container": "qtmux", 
+            "name": "iPod Classic", 
             "extension": "m4v", 
+            "icon": "file://ipod-video.svg",
             "acodec": {
                 "passes": [
                     "bitrate=128000 profile=LC"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "faac", 
                 "depth": [
                     8, 
@@ -107,7 +61,55 @@
                 "passes": [
                     "pass=qual quantizer=21 me=umh subme=6 ref=3 cabac=0 threads=0"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
+                "name": "x264enc", 
+                "height": [
+                    240, 
+                    480
+                ], 
+                "width": [
+                    320, 
+                    640
+                ], 
+                "rate": [
+                    1,
+                    30
+                ]
+            }, 
+            "container": "qtmux", 
+            "name": "iPhone / iPod Touch", 
+            "extension": "m4v", 
+            "icon": "file://ipod-iphone.svg",
+            "acodec": {
+                "passes": [
+                    "bitrate=128000 profile=LC"
+                ], 
+                "container": "qtmux", 
+                "name": "faac", 
+                "depth": [
+                    8, 
+                    24
+                ], 
+                "channels": [
+                    1, 
+                    2
+                ], 
+                "width": [
+                    8, 
+                    24
+                ], 
+                "rate": [
+                    8000,
+                    96000
+                ]
+            }
+        },
+        {
+            "vcodec": {
+                "passes": [
+                    "pass=qual quantizer=21 me=umh subme=6 ref=3 cabac=0 threads=0"
+                ], 
+                "container": "qtmux", 
                 "name": "x264enc", 
                 "height": [
                     240, 
@@ -122,15 +124,15 @@
                     30
                 ]
             }, 
-            "container": "ffmux_mp4", 
-            "name": "Nano", 
+            "container": "qtmux", 
+            "name": "iPod Nano", 
             "extension": "m4v", 
             "icon": "file://ipod-nano.svg", 
             "acodec": {
                 "passes": [
                     "bitrate=128000 profile=LC"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "faac", 
                 "depth": [
                     8, 
@@ -152,6 +154,6 @@
         }
 
     ], 
-    "model": "iPod / iPhone", 
-    "icon": "file://ipod.svg"
+    "model": "iPhone / iPod", 
+    "icon": "file://ipod-touch.svg"
 }
