@@ -1,5 +1,5 @@
 {
-    "version": "1.0", 
+    "version": "1.1", 
     "description": "H.264/AAC for Playstation 3", 
     "author": {
         "name": "Daniel G. Taylor", 
@@ -13,7 +13,7 @@
                 "passes": [
                     "pass=cbr bitrate=1024 subme=4 threads=0"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "x264enc", 
                 "height": [
                     240, 
@@ -28,14 +28,14 @@
                     30
                 ]
             }, 
-            "container": "ffmux_mp4", 
+            "container": "qtmux", 
             "name": "Low", 
             "extension": "mp4", 
             "acodec": {
                 "passes": [
                     "bitrate=128000 profile=LC"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "faac", 
                 "depth": [
                     8, 
@@ -60,7 +60,7 @@
                 "passes": [
                     "pass=cbr bitrate=1536 me=umh subme=6 ref=2 threads=0"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "x264enc", 
                 "height": [
                     240, 
@@ -75,14 +75,14 @@
                     30
                 ]
             }, 
-            "container": "ffmux_mp4", 
+            "container": "qtmux", 
             "name": "Normal", 
             "extension": "mp4", 
             "acodec": {
                 "passes": [
                     "bitrate=196000 profile=LC"
                 ], 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "name": "faac", 
                 "depth": [
                     8, 
