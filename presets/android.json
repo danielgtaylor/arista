@@ -2,22 +2,22 @@
     "make": "Generic", 
     "model": "Android Phone", 
     "description": "Presets for all known Android phones", 
-    "version": "1.0", 
+    "version": "1.1", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "default": "Nexus One", 
+    "default": "Nexus One / Desire", 
     "icon": "file://android.svg", 
     "presets": [
         {
-            "name": "Nexus One", 
-            "container": "ffmux_mp4", 
+            "name": "Nexus One / Desire", 
+            "container": "qtmux", 
             "extension": "mp4", 
             "icon": "file://android-nexus-one.svg", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "width": [
                     320, 
                     800
@@ -36,7 +36,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "width": [
                     8, 
                     24
@@ -60,12 +60,12 @@
         },
         {
             "name": "Droid / Milestone", 
-            "container": "ffmux_mp4", 
+            "container": "qtmux", 
             "extension": "mp4", 
             "icon": "file://android-droid.png", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "width": [
                     320, 
                     854
@@ -84,7 +84,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "width": [
                     8, 
                     24
@@ -108,12 +108,12 @@
         },
         {
             "name": "G1 / Dream", 
-            "container": "ffmux_mp4", 
+            "container": "qtmux", 
             "extension": "mp4", 
             "icon": "file://android-g1.png", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "width": [
                     320, 
                     854
@@ -132,7 +132,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "ffmux_mp4", 
+                "container": "qtmux", 
                 "width": [
                     8, 
                     24
