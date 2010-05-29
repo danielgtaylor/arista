@@ -33,6 +33,13 @@ import os.path
 import sys
 import time
 
+try:
+    import multiprocessing
+    CPU_COUNT = multiprocessing.cpu_count()
+except ImportError:
+    # Older version of python... just default to one to be safe
+    CPU_COUNT = 1
+
 import gobject
 import gst
 
@@ -380,7 +387,9 @@ class Transcoder(gobject.GObject):
             # Setup the video encoder and options
             # =================================================================
             vencoder = "%s %s" % (self.preset.vcodec.name,
-                                  self.preset.vcodec.passes[self.enc_pass])
+                                  self.preset.vcodec.passes[self.enc_pass] % {
+                                    "threads": CPU_COUNT,
+                                  })
             
             deint = ""
             if self.options.deinterlace:
@@ -444,7 +453,7 @@ class Transcoder(gobject.GObject):
                 elif current < aminvalue:
                     for acap in self.acaps:
                         acap[attribute] = amin
-
+            
             # =================================================================
             # Add audio transcoding pipeline to command
             # =================================================================
@@ -452,7 +461,9 @@ class Transcoder(gobject.GObject):
                        self.preset.acodec.passes[ \
                             len(self.preset.vcodec.passes) - \
                             self.enc_pass - 1 \
-                       ]
+                       ] % {
+                            "threads": CPU_COUNT,
+                       }
                 
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
                    "audioresample ! %s ! %s ! %s" % \
