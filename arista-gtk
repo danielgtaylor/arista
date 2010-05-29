@@ -534,6 +534,11 @@ class MainWindow(object):
                 model.set_value(iter, 0, theme.load_icon(icon, size, 0))
                 model.set_value(iter, 1, _("Choose file..."))
                 
+                iter = model.append()
+                icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
+                model.set_value(iter, 0, theme.load_icon(icon, size, 0))
+                model.set_value(iter, 1, _("Choose directory..."))
+                
                 self.source.set_active(0)
                 self.source.connect("changed", self.on_source_changed)
                 
@@ -673,6 +678,10 @@ class MainWindow(object):
         """
             The source combo box or file chooser button has changed, update!
         """
+        theme = gtk.icon_theme_get_default()
+        size = gtk.ICON_SIZE_MENU
+        width, height = gtk.icon_size_lookup(size)
+        
         iter = widget.get_active_iter()
         model = widget.get_model()
         item = model.get_value(iter, 1)
@@ -693,7 +702,6 @@ class MainWindow(object):
                                   os.path.dirname(filename))
                 pos = widget.get_active()
                 newiter = model.insert(pos)
-                theme = gtk.icon_theme_get_default()
                 icon = _get_filename_icon(filename)
                 if icon:
                     model.set_value(newiter, 0, icon.load_icon())
@@ -710,7 +718,36 @@ class MainWindow(object):
                     widget.set_active(pos - 1)
                 else:
                     widget.set_active(0)
-        
+        elif item == _("Choose directory..."):
+            dialog = gtk.FileChooserDialog(title=_("Choose Source Directory..."),
+                        action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                        buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                                 gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
+            dialog.set_property("local-only", False)
+            dialog.set_current_folder(self.last_open_path)
+            response = dialog.run()
+            dialog.hide()
+            if response == gtk.RESPONSE_ACCEPT:
+                if self.fileiter:
+                    model.remove(self.fileiter)
+                directory = dialog.get_current_folder()
+                client = gconf.client_get_default()
+                client.set_string(CONFIG_PATH + "/last_open_path", directory)
+                pos = widget.get_active() - 1
+                newiter = model.insert(pos)
+                icon = icon = _get_icon_pixbuf("stock://gtk-directory", width, height)
+                model.set_value(newiter, 0, icon)
+                model.set_value(newiter, 1, os.path.basename(directory.rstrip("/")))
+                model.set_value(newiter, 2, directory)
+                self.fileiter = newiter
+                widget.set_active(pos)
+            else:
+                if self.fileiter:
+                    pos = widget.get_active()
+                    widget.set_active(pos - 2)
+                else:
+                    widget.set_active(0)
+                
         # Reset the custom input options
         self.options.reset()
     
@@ -783,7 +820,36 @@ class MainWindow(object):
         self.presets.set_sensitive(False)
         
         can_encode = preset.check_elements(self.preset_ready)
-    
+
+    def get_default_output_name(self, inname, preset):
+        """
+            Get the default recommended output filename given an input path
+            and a preset. The original extension is removed, then the new
+            preset extension is added. If such a path already exists then
+            numbers are added before the extension until a non-existing path
+            is found to exist.
+        """
+        if "." in inname:
+            default_out = ".".join(inname.split(".")[:-1]) + "." + preset.extension
+        else:
+            default_out = inname + "." + preset.extension
+        
+        while os.path.exists(default_out):
+            parts = default_out.split(".")
+            name, ext = ".".join(parts[:-1]), parts[-1]
+            
+            result = RE_ENDS_NUM.search(name)
+            if result:
+                value = result.group("number")
+                name = name[:-len(value)]
+                number = int(value) + 1
+            else:
+                number = 1
+                
+            default_out = "%s%d.%s" % (name, number, ext)
+        
+        return default_out
+
     def preset_ready(self, preset, can_encode):
         """
             Called when a preset is ready to be encoded after checking for
@@ -816,48 +882,52 @@ class MainWindow(object):
         iter = self.devices.get_active_iter()
         device = self.devices.get_model().get_value(iter, 2)
         
-        if "." in inname:
-            default_out = ".".join(inname.split(".")[:-1]) + "." + preset.extension
-        else:
-            default_out = inname + "." + preset.extension
-        
-        while os.path.exists(default_out):
-            parts = default_out.split(".")
-            name, ext = ".".join(parts[:-1]), parts[-1]
-            
-            result = RE_ENDS_NUM.search(name)
-            if result:
-                value = result.group("number")
-                name = name[:-len(value)]
-                number = int(value) + 1
-            else:
-                number = 1
-                
-            default_out = "%s%d.%s" % (name, number, ext)
-        
-        dialog = gtk.FileChooserDialog(title = _("Choose Output File..."),
+        filenames = []
+        if os.path.isfile(inpath):
+            default_out = self.get_default_output_name(inpath, preset)
+            dialog = gtk.FileChooserDialog(title = _("Choose Output File..."),
                         action = gtk.FILE_CHOOSER_ACTION_SAVE,
                         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                    gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
-        dialog.set_property("local-only", False)
-        dialog.set_property("do-overwrite-confirmation", True)
-        dialog.set_current_folder(os.path.dirname(inpath))
-        dialog.set_current_name(default_out)
-        response = dialog.run()
-        dialog.hide()
-        if response == gtk.RESPONSE_ACCEPT:
-            filename = dialog.get_filename()
-            
+            dialog.set_property("local-only", False)
+            dialog.set_property("do-overwrite-confirmation", True)
+            dialog.set_current_folder(os.path.dirname(inpath))
+            dialog.set_current_name(os.path.basename(default_out))
+            response = dialog.run()
+            dialog.hide()
+            if response == gtk.RESPONSE_ACCEPT:
+                filenames.append((inpath, dialog.get_filename()))
+        else:
+            dialog = gtk.FileChooserDialog(title = _("Choose Output Directory..."),
+                        action = gtk.FILE_CHOOSER_ACTION_CREATE_FOLDER,
+                        buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                                   gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
+            dialog.set_property("local-only", False)
+            dialog.set_property("do-overwrite-confirmation", True)
+            dialog.set_current_folder(inpath)
+            response = dialog.run()
+            dialog.hide()
+            if response == gtk.RESPONSE_ACCEPT:
+                outdir = dialog.get_current_folder()
+                for root, dirs, files in os.walk(inpath):
+                    for fname in files:
+                        full_path = os.path.join(root, fname)
+                        filenames.append((full_path, os.path.join(outdir, os.path.basename(self.get_default_output_name(full_path, preset)))))
+        
+        for inpath, outpath in filenames:
             # Setup the transcode job options
             self.options.uri = inpath
             self.options.preset = preset
-            self.options.output_uri = filename
+            self.options.output_uri = outpath
             
             self.queue.append(self.options)
-
-            # Reset the options for the next item so we don't inadvertently
-            # change the queued option data!
-            self.options = arista.transcoder.TranscoderOptions()
+            
+            # Reset options for next item, but copy relevant data
+            options = arista.transcoder.TranscoderOptions()
+            options.subfile = self.options.subfile
+            options.font = self.options.font
+            options.deinterlace = self.options.deinterlace
+            self.options = options
             
             iter = self.queue_model.append()
             width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
@@ -867,9 +937,13 @@ class MainWindow(object):
             self.queue_model.set_value(iter, 1, _("%(model)s (%(preset)s): %(filename)s") % {
                 "model": device.model,
                 "preset": preset.name,
-                "filename": os.path.basename(filename),
+                "filename": os.path.basename(outpath),
             })
             self.queue_model.set_value(iter, 2, self.queue[-1])
+        
+        # Reset the options for the next item so we don't inadvertently
+        # change the queued option data!
+        self.options = arista.transcoder.TranscoderOptions()
         
         gtk.gdk.threads_leave()
     
