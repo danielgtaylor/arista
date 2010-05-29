@@ -168,14 +168,14 @@
                     1, 60
                 ], 
                 "passes": [
-                    "quality=6"
+                    "quality=6 threads=%(threads)s speed=1"
                 ]
             }, 
             "acodec": {
                 "name": "vorbisenc", 
                 "container": "webmmux", 
                 "width": [
-                    8, 24
+                    8, 32
                 ], 
                 "depth": [
                     8, 24
