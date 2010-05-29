@@ -418,24 +418,31 @@ class Transcoder(gobject.GObject):
             element = gst.element_factory_make(self.preset.acodec.name,
                                                "aencoder")
             
-            # TODO: Add rate limits based on encoder sink below
+            fields = {}
             for cap in element.get_pad("sink").get_caps():
-                for field in ["width", "depth", "channels"]:
+                for field in ["width", "depth", "rate", "channels"]:
                     if cap.has_field(field):
+                        if field not in fields:
+                            fields[field] = [0, 0]
                         value = cap[field]
                         if isinstance(value, gst.IntRange):
                             vmin, vmax = value.low, value.high
                         else:
                             vmin, vmax = value, value
                         
-                        cur = getattr(self.preset.acodec, field)
-                        if cur[0] < vmin:
-                            cur = (vmin, cur[1])
-                            setattr(self.preset.acodec, field, cur)
-                    
-                        if cur[1] > vmax:
-                            cur = (cur[0], vmax)
-                            setattr(self.preset.acodec, field, cur)
+                        if vmin < fields[field][0]:
+                            fields[field][0] = vmin
+                        if vmax > fields[field][1]:
+                            fields[field][1] = vmax
+            
+            for name, (amin, amax) in fields.items():
+                cur = getattr(self.preset.acodec, field)
+                if cur[0] < amin:
+                    cur = (amin, cur[1])
+                    setattr(self.preset.acodec, field, cur)
+                if cur[1] > amax:
+                    cur = (cur[0], amax)
+                    setattr(self.preset.acodec, field, cur)
             
             # =================================================================
             # Prepare audio capabilities
@@ -444,14 +451,10 @@ class Transcoder(gobject.GObject):
                 current = getattr(self.info, "audio" + attribute)
                 amin, amax = getattr(self.preset.acodec, attribute)
                 
-                aminvalue = amin
-                amaxvalue = amax
-                
-                if current > amaxvalue:
-                    for acap in self.acaps:
-                        acap[attribute] = amax
-                elif current < aminvalue:
-                    for acap in self.acaps:
+                for acap in self.acaps:
+                    if amin < amax:
+                        acap[attribute] = gst.IntRange(amin, amax)
+                    else:
                         acap[attribute] = amin
             
             # =================================================================
