@@ -8,7 +8,7 @@
         "email": "fcsonline@gmail.com"
     }, 
     "icon": "file://web.svg",
-    "default": "H.264", 
+    "default": "WebM", 
     "presets": [
         {
             "name": "Flash Video", 
@@ -95,6 +95,7 @@
             "name": "WebM", 
             "extension": "webm", 
             "container": "webmmux", 
+            "icon": "file://web-webm.svg", 
             "vcodec": {
                 "name": "vp8enc", 
                 "container": "webmmux", 
