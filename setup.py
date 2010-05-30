@@ -49,8 +49,10 @@ Features
 * Presets for iPod, computer, DVD player, PSP, and more
 * Live preview to see encoded quality
 * Automatically discover available DVD drives and media
-* Rip straight from DVD media easily (requires libdvdcss)
-* Automatically discover and record from V4L devices
+* Rip straight from DVD media easily
+* Automatically discover and record from Video4Linux devices
+* Support for H.264, WebM, FLV, Ogg, DivX and more
+* Batch processing of entire directories easily
 * Simple terminal client for scripting
 
 Requirements
@@ -61,11 +63,13 @@ you need to be using at least Ubuntu 9.04 (Jaunty). The GStreamer plugins
 required depend on the presets available, but at this time you should have
 gst-plugins-good, gst-plugins-bad, gst-plugins-ugly, and gst-ffmpeg. If you are
 on Ubuntu don't forget to install the multiverse packages.
+
+Note: WebM support requires at least GStreamer's gst-plugins-bad-0.10.19.
 """,
     author = "Daniel G. Taylor",
     author_email = "dan@programmer-art.org",
     url = "http://programmer-art.org/projects/arista-transcoder",
-    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.3.tar.gz",
+    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.4.tar.gz",
     packages = [
         "arista",
     ],

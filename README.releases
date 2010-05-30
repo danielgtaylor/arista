@@ -5,15 +5,15 @@ This file describes what steps should be taken to make a new release of Arista.
 Pre-Release
 -----------
 
- * Download new translation files from launchpad and commit to bzr
+ * Download new translation files from launchpad and commit to git
  * Version bump in arista/__init__.py and ui/about.ui
  * Updated README
- * Update setup.py and debian/* to make sure they are up to date for the release
+ * Update setup.py to make sure it is up to date for the release
 
 Release
 -------
 
- * Tag bzr revision with version, e.g. 'arista-0.9.1'
+ * Tag git revision with version, e.g. '0.9.1', and push with --tags
  * Create the source distribution: setup.py sdist
  * Upload the resulting dist/arista-*.tar.gz to Programmer-art.org
  * Turn the next milestone into a release on launchpad and upload tarball
