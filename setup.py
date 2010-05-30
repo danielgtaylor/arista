@@ -41,7 +41,7 @@ use by making the complex task of encoding for various devices simple. Pick your
 input, pick your target device, choose a file to save to and go.
 
 Arista has been in development since early 2008 as a side project and was just
-recently polished to make it release-worthy. The 0.8 release is the first release available to the public. Please see http://www.launchpad.net/arista for information on helping out.
+recently polished to make it release-worthy. The 0.8 release is the first release available to the public. Please see http://github.com/danielgtaylor/arista for information on helping out.
 
 Features
 ---------
