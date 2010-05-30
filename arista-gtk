@@ -1101,7 +1101,11 @@ class MainWindow(object):
         """
         if pynotify and not entry.force_stopped:
             icon = arista.utils.get_path("presets/" + entry.options.preset.device.icon[7:])
-            notice = pynotify.Notification(_("Job done"), _("Conversion of %s to %s %s finished") % (os.path.basename(entry.options.output_uri), entry.options.preset.device, entry.options.preset.name), icon)
+            notice = pynotify.Notification(_("Job done"), _("Conversion of %(filename)s to %(device)s %(preset)s finished") % {
+                "filename": os.path.basename(entry.options.output_uri),
+                "device": entry.options.preset.device,
+                "preset": entry.options.preset.name,
+            }, icon)
             notice.show()
         iter = self.queue_model.get_iter_first()
         if self.queue_view.get_selection().iter_is_selected(iter):
