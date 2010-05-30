@@ -899,7 +899,7 @@ class MainWindow(object):
                 filenames.append((inpath, dialog.get_filename()))
         else:
             dialog = gtk.FileChooserDialog(title = _("Choose Output Directory..."),
-                        action = gtk.FILE_CHOOSER_ACTION_CREATE_FOLDER,
+                        action = gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
                         buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                    gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
             dialog.set_property("local-only", False)
