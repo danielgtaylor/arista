@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-29 20:07-0400\n"
+"POT-Creation-Date: 2010-06-01 17:02-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -272,7 +272,7 @@ msgstr ""
 
 #: arista-gtk:1104
 #, python-format
-msgid "Conversion of %(output_name)s to %(device)s %(preset)s finished"
+msgid "Conversion of %(filename)s to %(device)s %(preset)s finished"
 msgstr ""
 
 #: arista-gtk:1168
@@ -506,15 +506,11 @@ msgid "Additional information :"
 msgstr ""
 
 #: arista/__init__.py:54
-msgid "0.9.4"
+msgid "0.9.4.1"
 msgstr ""
 
 #: arista/__init__.py:55
 msgid "Daniel G. Taylor <dan@programmer-art.org>"
-msgstr ""
-
-#: arista/inputs.py:215
-msgid "Not mounted."
 msgstr ""
 
 #: arista/presets.py:81
@@ -622,4 +618,16 @@ msgstr ""
 #: arista/utils.py:81
 #, python-format
 msgid "Can't find %(path)s in any known prefix!"
+msgstr ""
+
+#: arista/inputs/haldisco.py:279 arista/inputs/udevdisco.py:215
+msgid "Not mounted."
+msgstr ""
+
+#: arista/inputs/__init__.py:40
+msgid "Falling back to HAL device discovery"
+msgstr ""
+
+#: arista/inputs/__init__.py:44
+msgid "Couldn't import udev- or HAL-based device discovery!"
 msgstr ""
