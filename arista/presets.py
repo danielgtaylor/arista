@@ -39,8 +39,12 @@
     <http://www.gnu.org/licenses/>.
 """
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 import gettext
-import json
 import logging
 import os
 import sys
