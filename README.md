@@ -15,6 +15,7 @@ Dependencies
  * python-gconf
  * python-gstreamer
  * python-pynotify (optional)
+ * python-simplejson (if using python 2.5 or older)
  * gstreamer-ffmpeg
  * gstreamer-plugins-base
  * gstreamer-plugins-good
