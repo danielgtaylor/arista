@@ -1,6 +1,5 @@
 recursive-include presets *.json *.svg *.png
 recursive-include ui *.ui *.svg
 recursive-include locale *.pot *.po *.mo
-recursive-include debian *
-include . AUTHORS LICENSE TODO arista.desktop
+include . AUTHORS LICENSE TODO README.md arista.desktop
 
