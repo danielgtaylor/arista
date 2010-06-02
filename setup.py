@@ -72,6 +72,7 @@ Note: WebM support requires at least GStreamer's gst-plugins-bad-0.10.19.
     download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.4.1.tar.gz",
     packages = [
         "arista",
+        "arista.inputs",
     ],
     scripts = [
         "arista-gtk",
