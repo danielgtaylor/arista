@@ -15,6 +15,9 @@ if version < '2.2.3':
 
 data_files = [
     (os.path.join("share", "applications"), ["arista.desktop"]),
+    (os.path.join("share", "doc", "arista"), [
+        "README.md", "LICENSE", "AUTHORS"
+    ]),
 ]
 
 for (prefix, path) in [("arista", "presets"), 
@@ -24,7 +27,8 @@ for (prefix, path) in [("arista", "presets"),
         to_add = []
         
         for filename in files:
-            to_add.append(os.path.join(root, filename))
+            if filename != "README":
+                to_add.append(os.path.join(root, filename))
             
         if to_add:
             data_files.append((os.path.join("share", prefix, root), to_add))
