@@ -883,7 +883,7 @@ class MainWindow(object):
         device = self.devices.get_model().get_value(iter, 2)
         
         filenames = []
-        if os.path.isfile(inpath):
+        if not os.path.isdir(inpath):
             default_out = self.get_default_output_name(inpath, preset)
             dialog = gtk.FileChooserDialog(title = _("Choose Output File..."),
                         action = gtk.FILE_CHOOSER_ACTION_SAVE,
