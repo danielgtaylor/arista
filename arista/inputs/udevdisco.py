@@ -106,8 +106,11 @@ class V4LDevice(InputSource):
         """
             Get the video4linux version of this device.
         """
-        # TODO: return the actual version
-        return "2"
+        if self.device.has_property("ID_V4L_VERSION"):
+            return self.device.get_property("ID_V4L_VERSION")
+        else:
+            # Default to version 2
+            return "2"
 
 class InputFinder(gobject.GObject):
     """
@@ -222,7 +225,7 @@ if __name__ == "__main__":
         print drive.nice_label + ": " + device
     
     for device, capture in finder.capture_devices.items():
-        print capture.nice_label + ": " + device
+        print capture.nice_label + " V4Lv" + str(capture.version) + ": " + device
     
     loop = gobject.MainLoop()
     loop.run()
