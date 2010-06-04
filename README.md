@@ -67,7 +67,7 @@ Sometimes it may be useful to generate a test file:
 
 Creating New Device Presets
 ---------------------------
-New device presets can be created via the [create preset](http://www.transcoder.org/presets/creat/ "Create a new Arista Transcoder preset")
+New device presets can be created via the [create preset](http://www.transcoder.org/presets/create/ "Create a new Arista Transcoder preset")
 page on the website or by specifying information about yourself and 
 the device you wish to support along with presets that describe how to create a
 proper gstreamer pipeline to encode for the device in a JSON file. 
