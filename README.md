@@ -6,14 +6,27 @@ quality preset.
 
  * [Official website](http://www.transcoder.org/)
 
+Features
+--------
+ * Presets for Android, iPod, computer, DVD player, PSP, and more
+ * Live preview to see encoded quality
+ * Automatically discover available DVD drives and media
+ * Rip straight from DVD media easily
+ * Automatically discover and record from Video4Linux devices
+ * Support for H.264, WebM, FLV, Ogg, DivX and more
+ * Batch processing of entire directories easily
+ * Simple terminal client for scripting
+ * Nautilus extension for right-click file conversion
+
 Dependencies
 ------------
- * python-gudev
  * python-cairo
  * python-gobject
  * python-gtk >=2.16
  * python-gconf
  * python-gstreamer
+ * python-gudev
+ * python-nautilus (if using Nautilus extension)
  * python-pynotify (optional)
  * python-rsvg (if using KDE)
  * python-simplejson (if using python 2.5 or older)
@@ -35,8 +48,13 @@ If you are using Ubuntu 9.04 (Jaunty) or later, make sure to install with:
 
 Don't forget to use sudo if necessary. This will install the arista python 
 module to your python site-packages or dist-packages path, install the arista 
-programs into sys.prefix/bin and install all data files into 
+programs into sys.prefix/bin, instal the nautilus extensions into 
+sys.prefix/lib/nautilus/extensions-2.0/python and install all data files into 
 sys.prefix/share/arista.
+
+You can also choose to install the Nautilus extension per-user by placing it 
+into the user's home directory under ~/.nautilus/python-extensions. Note
+that you must restart Nautilus for such changes to take effect!
 
 Usage
 -----
@@ -54,10 +72,15 @@ An example of using the terminal client:
 
     arista-transcode --device=ipod --preset=low test.mp4
 
-Other usefule terminal options:
+Other useful terminal options:
 
     arista-transcode --info
     arista-transcode --info ipod
+
+There is also a Nautilus extension installed by default. You can right-click on
+any media file and select "Convert for device..." in the menu. This menu
+contains all your installed presets and will launch Arista to convert the
+selected file or files.
 
 Generating a Test File
 ----------------------
@@ -70,13 +93,14 @@ Creating New Device Presets
 New device presets can be created via the [create preset](http://www.transcoder.org/presets/create/ "Create a new Arista Transcoder preset")
 page on the website or by specifying information about yourself and 
 the device you wish to support along with presets that describe how to create a
-proper gstreamer pipeline to encode for the device in a JSON file. 
+proper gstreamer pipeline to encode for the device in a JSON file.
 
 Contributing
 ------------
 All active development has moved to GitHub.com. Code is managed through git and
-new bugs should be opened in the GitHub tracker. Translations and Answers
-are still managed on Launchpad. The GitHub page is here:
+new bugs should be opened in the GitHub tracker. Translations are still managed
+on Launchpad using a bazaar tracking branch of this git repository. The 
+GitHub page is here:
 
  * [Github project page](http://github.com/danielgtaylor/arista)
 

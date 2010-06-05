@@ -18,6 +18,7 @@ data_files = [
     (os.path.join("share", "doc", "arista"), [
         "README.md", "LICENSE", "AUTHORS"
     ]),
+    (os.path.join("lib", "nautilus", "extensions-2.0", "python"), ["arista-nautilus.py"]),
 ]
 
 for (prefix, path) in [("arista", "presets"), 
@@ -50,7 +51,7 @@ recently polished to make it release-worthy. The 0.8 release is the first releas
 Features
 ---------
 
-* Presets for iPod, computer, DVD player, PSP, and more
+* Presets for Android, iPod, computer, DVD player, PSP, and more
 * Live preview to see encoded quality
 * Automatically discover available DVD drives and media
 * Rip straight from DVD media easily
@@ -58,6 +59,7 @@ Features
 * Support for H.264, WebM, FLV, Ogg, DivX and more
 * Batch processing of entire directories easily
 * Simple terminal client for scripting
+* Nautilus extension for right-click file conversion
 
 Requirements
 ---------------
