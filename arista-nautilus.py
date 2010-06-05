@@ -129,13 +129,13 @@ class MediaConvertExtension(nautilus.MenuProvider):
             the right-click menu is invoked. If we are looking at a media
             file then let's show the new menu item!
         """
-        # We currently handle only one file
-        if len(files) != 1:
-            return
-        
-        # Check if this is actually a media file
-        if files[0].get_mime_type() not in SUPPORTED_FORMATS:
-            return
+        # Check if this is actually a media file and it is local
+        for f in files:
+            if f.get_mime_type() not in SUPPORTED_FORMATS:
+                return
+            
+            if not f.get_uri().startswith("file://"):
+                return
         
         # Create the new menu item, with a submenu of devices each with a 
         # submenu of presets for that particular device.
@@ -161,19 +161,19 @@ class MediaConvertExtension(nautilus.MenuProvider):
                         preset.name,
                         "%s: %s" % (device.name, preset.name))
                 preset_item.connect("activate", self.callback,
-                                    files[0].get_uri()[7:], shortname,
-                                    preset.name)
+                                    [f.get_uri()[7:] for f in files],
+                                    shortname, preset.name)
                 presets.append_item(preset_item)
             
             devices.append_item(item)
         
         return menu,
     
-    def callback(self, menu, filename, device_name, preset_name):
+    def callback(self, menu, files, device_name, preset_name):
         """
             Called when a menu item is clicked. Start a transcode job for
             the selected device and preset, and show the user the progress.
         """
-        command = "arista-transcode -d %s -p \"%s\" \"%s\" /home/dan/test.out" % (device_name, preset_name, filename)
+        command = "arista-transcode -d %s -p \"%s\" %s" % (device_name, preset_name, " ".join(["\"%s\"" % f for f in files]))
         os.system("gnome-terminal -e '%s'" % command)
 
