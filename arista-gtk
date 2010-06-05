@@ -1024,13 +1024,12 @@ class MainWindow(object):
         else:
             self.last_open_path = DEFAULT_OPEN_PATH
     
-    def on_queue_entry_discovered(self, queue, entry):
+    def on_queue_entry_discovered(self, queue, entry, info, is_media):
         """
             The queue entry has been discovered, see if it is a valid input
             file, if not show an error and remove it from the queue.
         """
-        if not entry.transcoder.info.is_video and \
-           not entry.transcoder.info.is_audio:
+        if not info.is_video and info.is_audio:
             _log.error(_("Input %(infile)s contains no valid streams!") % {
                 "infile": entry.transcoder.infile,
             })
