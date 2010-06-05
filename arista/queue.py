@@ -84,9 +84,16 @@ class TranscodeQueue(gobject.GObject):
         "entry-added": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                        (gobject.TYPE_PYOBJECT,)),      # QueueEntry
         "entry-discovered": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                            (gobject.TYPE_PYOBJECT,    # QueueEntry
+                             gobject.TYPE_PYOBJECT,    # info
+                             gobject.TYPE_PYOBJECT)),  # is_media
+        "entry-pass-setup": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                             (gobject.TYPE_PYOBJECT,)), # QueueEntry
         "entry-start": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                        (gobject.TYPE_PYOBJECT,)),      # QueueEntry
+        "entry-error": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                       (gobject.TYPE_PYOBJECT,         # QueueEntry
+                        gobject.TYPE_PYOBJECT,)),      # errorstr
         "entry-complete": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                           (gobject.TYPE_PYOBJECT,)),   # QueueEntry
     }
@@ -182,17 +189,23 @@ class TranscodeQueue(gobject.GObject):
             item.transcoder.connect("complete", self._on_complete)
             
             def discovered(transcoder, info, is_media):
-                self.emit("entry-discovered", item)
+                self.emit("entry-discovered", item, info, is_media)
                 if not is_media:
+                    self.emit("entry-error", item, _("Not a recognized media file!"))
                     self._queue.pop(0)
                     self.pipe_running = False
             
             def pass_setup(transcoder):
+                self.emit("entry-pass-setup", item)
                 if transcoder.enc_pass == 0:
                     self.emit("entry-start", item)
             
+            def error(transcoder, errorstr):
+                self.emit("entry-error", item, errorstr)
+            
             item.transcoder.connect("discovered", discovered)
             item.transcoder.connect("pass-setup", pass_setup)
+            item.transcoder.connect("error", error)
             self.pipe_running = True
         return True
     
