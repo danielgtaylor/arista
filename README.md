@@ -52,7 +52,7 @@ To use the terminal client please see:
 
 An example of using the terminal client:
 
-    arista-transcode --device=ipod --preset=low test.mp4 test-ipod.m4v
+    arista-transcode --device=ipod --preset=low test.mp4
 
 Other usefule terminal options:
 
