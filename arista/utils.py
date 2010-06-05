@@ -29,9 +29,12 @@
 import gettext
 import logging
 import os
+import re
 import sys
 
 _ = gettext.gettext
+
+RE_ENDS_NUM = re.compile(r'^.*(?P<number>[0-9]+)$')
 
 def get_search_paths():
     """
@@ -81,4 +84,44 @@ def get_path(*parts, **kwargs):
         raise IOError(_("Can't find %(path)s in any known prefix!") % {
             "path": path,
         })
+
+def generate_output_path(filename, preset, to_be_created=[],
+                         device_name=""):
+    """
+        Generate a new output filename from an input filename and preset.
+        
+        @type filename: str
+        @param filename: The input file name
+        @type preset: arista.presets.Preset
+        @param preset: The preset being encoded
+        @type to_be_created: list
+        @param to_be_created: A list of filenames that will be created and
+                              should not be overwritten, useful if you are
+                              processing many items in a queue
+        @type device_name: str
+        @param device_name: Device name to appent to output filename, e.g.
+                            myvideo-ipod.m4v
+        @rtype: str
+        @return: A new unique generated output path
+    """
+    name, ext = os.path.splitext(filename)
+    if device_name:
+        name += "-" + device_name
+    default_out = name + "." + preset.extension
+    
+    while os.path.exists(default_out) or default_out in to_be_created:
+        parts = default_out.split(".")
+        name, ext = ".".join(parts[:-1]), parts[-1]
+        
+        result = RE_ENDS_NUM.search(name)
+        if result:
+            value = result.group("number")
+            name = name[:-len(value)]
+            number = int(value) + 1
+        else:
+            number = 1
+            
+        default_out = "%s%d.%s" % (name, number, ext)
+    
+    return default_out
 
