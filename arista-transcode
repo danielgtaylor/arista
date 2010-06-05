@@ -65,7 +65,7 @@ def print_status(enc, options):
     global interrupted
     percent = 0.0
     
-    if interrupted:
+    if interrupted or not enc:
         return True
     
     if enc.state == gst.STATE_NULL and interrupted:
@@ -91,32 +91,54 @@ def print_status(enc, options):
     
     return (percent < 100)
 
-def discovered(transcoder, info, is_media, options):
-    if not is_media:
-        print _("No audio or video streams found in input!")
-        raise SystemExit(1)
-
-def pass_setup(transcoder, options):
+def entry_start(queue, entry, options):
     if not options.quiet:
-        if transcoder.enc_pass > 0:
-            print # blank line
-            
-        print _("Starting pass %(pass)d of %(total)d") % {
-            "pass": transcoder.enc_pass + 1,
-            "total": transcoder.preset.pass_count,
+        print _("Encoding %(filename)s for %(device)s (%(preset)s)") % {
+            "filename": os.path.basename(entry.options.uri),
+            "device": options.device,
+            "preset": options.preset or _("default"),
         }
+    
+    gobject.timeout_add(500, print_status, entry.transcoder, options)
 
-def complete(transcoder, options):
+def entry_pass_setup(queue, entry, options):
+    if not options.quiet:
+        if entry.transcoder.enc_pass > 0:
+            print # blank line
+        
+        info = entry.transcoder.info
+        preset = entry.transcoder.preset
+        if (info.is_video and len(preset.vcodec.passes) > 1) or \
+                             (info.is_audio and len(preset.vcodec.passes) > 1):
+            print _("Starting pass %(pass)d of %(total)d") % {
+                "pass": entry.transcoder.enc_pass + 1,
+                "total": entry.transcoder.preset.pass_count,
+            }
+
+def entry_complete(queue, entry, options):
     if not options.quiet:
         print
         
-    transcoder.stop()
-    gobject.idle_add(loop.quit)
+    entry.transcoder.stop()
+    
+    if len(queue) == 1:
+        # We are the last item!
+        gobject.idle_add(loop.quit)
 
-def error(transcoder, errorstr, options):
-    print errorstr
-    transcoder.stop()
-    gobject.idle_add(loop.quit)
+def entry_error(queue, entry, errorstr, options):
+    if not options.quiet:
+        print _("Encoding %(filename)s for %(device)s (%(preset)s) failed!") % {
+                "filename": os.path.basename(entry.options.uri),
+                "device": options.device,
+                "preset": options.preset or _("default"),
+            }
+        print errorstr
+        
+    entry.transcoder.stop()
+    
+    if len(queue) == 1:
+        # We are the last item!
+        gobject.idle_add(loop.quit)
 
 def check_interrupted():
     """
@@ -145,7 +167,7 @@ def signal_handler(signum, frame):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 if __name__ == "__main__":
-    parser = OptionParser(usage = _("%prog [options] infile outfile"),
+    parser = OptionParser(usage = _("%prog [options] infile [infile infile ...]"),
                           version = _("Arista Transcoder " + arista.__version__))
     parser.add_option("-i", "--info", dest = "info", action = "store_true",
                       default = False, 
@@ -159,6 +181,8 @@ if __name__ == "__main__":
                       help = _("Preset to encode to [default]"))
     parser.add_option("-d", "--device", dest = "device", default = "computer",
                       help = _("Device to encode to [computer]"))
+    parser.add_option("-o", "--output", dest = "output", default = None,
+                      help = _("Output file name [auto]"), metavar = "FILENAME")
     parser.add_option("-s", "--source-info", dest = "source_info",
                       action = "store_true", default = False, 
                       help = _("Show information about input file and exit"))
@@ -278,16 +302,9 @@ if __name__ == "__main__":
         for arg in args:
             arista.presets.extract(open(arg))
     else:
-        if len(args) != 2:
+        if len(args) < 1:
             parser.print_help()
             raise SystemExit(1)
-        
-        if not options.quiet:
-            print _("Encoding %(filename)s for %(device)s (%(preset)s)") % {
-                "filename": os.path.basename(args[0]),
-                "device": options.device,
-                "preset": options.preset or _("default"),
-            }
         
         device = devices[options.device]
         
@@ -298,17 +315,32 @@ if __name__ == "__main__":
                 if preset.name == options.preset:
                     break
         
-        opts = TranscoderOptions(args[0], preset, args[1], 
-                                 subfile = options.subtitle, 
-                                 font = options.font)
+        outputs = []
+        queue = arista.queue.TranscodeQueue()
+        for arg in args:
+            if len(args) == 1 and options.output:
+                output = options.output
+            else:
+                output = arista.utils.generate_output_path(arg, preset,
+                             to_be_created=outputs, device_name=options.device)
+            
+            outputs.append(output)
         
-        transcoder = arista.transcoder.Transcoder(opts)
-        transcoder.connect("discovered", discovered, options)
-        transcoder.connect("pass-setup", pass_setup, options)
-        transcoder.connect("complete", complete, options)
-        transcoder.connect("error", error, options)
+            opts = TranscoderOptions(arg, preset, output,
+                                     subfile = options.subtitle, 
+                                     font = options.font)
+            
+            queue.append(opts)
         
-        gobject.timeout_add(500, print_status, transcoder, options)
+        queue.connect("entry-start", entry_start, options)
+        queue.connect("entry-pass-setup", entry_pass_setup, options)
+        queue.connect("entry-error", entry_error, options)
+        queue.connect("entry-complete", entry_complete, options)
+        
+        if len(queue) > 1:
+            print _("Processing %(job_count)d jobs...") % {
+                "job_count": len(queue),
+            }
         
         signal.signal(signal.SIGINT, signal_handler)
         gobject.timeout_add(50, check_interrupted)
