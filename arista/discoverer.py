@@ -158,7 +158,11 @@ class Discoverer(gst.Pipeline):
                 self.typefind = typefind
                 self.typefind.connect("have-type", self._have_type_cb)
             
-            element.connect("unknown-type", self._unknown_type_cb)
+            try:
+                element.connect("unknown-type", self._unknown_type_cb)
+            except TypeError:
+                # Element doesn't support unknown-type signal?
+                pass
         except AttributeError:
             # Probably not the decodebin, just ignore
             pass
