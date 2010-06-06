@@ -400,10 +400,15 @@ class Transcoder(gobject.GObject):
                     "subfile": self.options.subfile
                 }
             
+            vmux = premux
+            if container in ["qtmux", "webmmux", "ffmux_dvd", "matroskamux"]:
+                if premux.startswith("mux"):
+                    vmux += "video_%d"
+            
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
                    "%s %s videoscale ! %s ! %s%s ! tee " \
                    "name=videotee ! queue ! %s" % \
-                   (deint, sub, self.vcaps.to_string(), vbox, vencoder, premux)
+                   (deint, sub, self.vcaps.to_string(), vbox, vencoder, vmux)
             
         if self.info.is_audio and self.preset.acodec and \
            self.enc_pass == len(self.preset.vcodec.passes) - 1:
@@ -462,10 +467,15 @@ class Transcoder(gobject.GObject):
                        ] % {
                             "threads": CPU_COUNT,
                        }
-                
+            
+            amux = premux
+            if container in ["qtmux", "webmmux", "ffmux_dvd", "matroskamux"]:
+                if premux.startswith("mux"):
+                    amux += "audio_%d"
+            
             cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
                    "audioresample ! %s ! %s ! %s" % \
-                   (self.acaps.to_string(), aencoder, premux)
+                   (self.acaps.to_string(), aencoder, amux)
         
         # =====================================================================
         # Build the pipeline and get ready!
