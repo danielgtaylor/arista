@@ -25,6 +25,8 @@ Class and functions for getting multimedia information about files
 Modified to support dvd://device@title style URIs using dvdreadsrc.
 Modified to support v4l://device style URIs using v4lsrc.
 Modified to support v4l2://device style URIs using v4l2src.
+
+Modified to use uridecodebin instead of decodebin
 """
 
 import gettext
@@ -129,38 +131,37 @@ class Discoverer(gst.Pipeline):
         self._max_interleave = max_interleave
         
         if filename.startswith("dvd://"):
-            parts = filename[6:].split("@")
-            self.src = gst.element_factory_make("dvdreadsrc")
-            self.src.set_property("device", parts[0])
-            if len(parts) > 1:
-                self.src.set_property("title", int(parts[1]))
+            filename = filename.split("@")[0]
+            # TODO: Somehow select title/chapter in source?
         elif filename.startswith("v4l://"):
-            self.src = gst.element_factory_make("v4lsrc")
-            self.src.set_property("device", filename[6:])
+            pass
         elif filename.startswith("v4l2://"):
-            self.src = gst.element_factory_make("v4l2src")
-            self.src.set_property("device", filename[7:])
+            pass
+        elif filename.startswith("file://"):
+            pass
         else:
-            if not os.path.isfile(filename):
-                self.debug("File '%s' does not exist, finished" % filename)
-                self.finished = True
-                return
+            filename = "file://" + filename
         
-            # the initial elements of the pipeline
-            self.src = gst.element_factory_make("filesrc")
-            self.src.set_property("location", filename)
-            self.src.set_property("blocksize", 1000000)
-        
-        self.dbin = gst.element_factory_make("decodebin")
-        self.add(self.src, self.dbin)
-        self.src.link(self.dbin)
-        self.typefind = self.dbin.get_by_name("typefind")
+        self.dbin = gst.element_factory_make("uridecodebin")
+        self.dbin.set_property("uri", filename)
+        self.add(self.dbin)
 
+        self.dbin.connect("element-added", self._element_added_cb)
         # callbacks
-        self.typefind.connect("have-type", self._have_type_cb)
-        self.dbin.connect("new-decoded-pad", self._new_decoded_pad_cb)
+        self.dbin.connect("pad-added", self._new_decoded_pad_cb)
         self.dbin.connect("no-more-pads", self._no_more_pads_cb)
-        self.dbin.connect("unknown-type", self._unknown_type_cb)
+
+    def _element_added_cb(self, bin, element):
+        try:
+            typefind = element.get_by_name("typefind")
+            if typefind:
+                self.typefind = typefind
+                self.typefind.connect("have-type", self._have_type_cb)
+            
+            element.connect("unknown-type", self._unknown_type_cb)
+        except AttributeError:
+            # Probably not the decodebin, just ignore
+            pass
 
     def _timed_out_or_eos(self):
         if (not self.is_audio and not self.is_video) or \
@@ -331,7 +332,7 @@ class Discoverer(gst.Pipeline):
             if self._nomorepads and ((not self.is_audio) or self.audiocaps):
                 self._finished(True)
 
-    def _new_decoded_pad_cb(self, dbin, pad, is_last):
+    def _new_decoded_pad_cb(self, dbin, pad):
         # Does the file contain got audio or video ?
         caps = pad.get_caps()
         gst.info("caps:%s" % caps.to_string())
@@ -342,10 +343,10 @@ class Discoverer(gst.Pipeline):
         else:
             self.warning("got a different caps.. %s" % caps.to_string())
             return
-        if is_last and not self.is_video and not self.is_audio:
-            self.debug("is last, not video or audio")
-            self._finished(False)
-            return
+        #if is_last and not self.is_video and not self.is_audio:
+        #    self.debug("is last, not video or audio")
+        #    self._finished(False)
+        #    return
         # we connect a fakesink to the new pad...
         pad.info("adding queue->fakesink")
         fakesink = gst.element_factory_make("fakesink", "fakesink%d-%s" % 
