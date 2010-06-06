@@ -105,6 +105,11 @@ def generate_output_path(filename, preset, to_be_created=[],
         @return: A new unique generated output path
     """
     name, ext = os.path.splitext(filename)
+    
+    # Is this a special URI? Let's just use the basename then!
+    if name.startswith("dvd://") or name.startswith("v4l://") or name.startswith("v4l2://"):
+        name = os.path.basename(name)
+    
     if device_name:
         name += "-" + device_name
     default_out = name + "." + preset.extension
