@@ -199,22 +199,17 @@ class Transcoder(gobject.GObject):
             @return: Source to prepend to gst-launch style strings.
         """
         if self.infile.startswith("dvd://"):
+            filename = self.infile.split("@")[0]
             if self.options.deinterlace is None:
                 self.options.deinterlace = True
-            parts = self.infile[6:].split("@")
-            if len(parts) > 1:
-                title = parts[1]
-                src = "dvdreadsrc device=\"%s\" title=\"%s\"" % (parts[0], parts[1])
-            else:
-                src = "dvdreadsrc device=\"%s\"" % parts[0]
-        elif self.infile.startswith("v4l://"):
-            src = "v4lsrc device=\"%s\"" % self.infile[6:]
-        elif self.infile.startswith("v4l2://"):
-            src = "v4l2src device=\"%s\"" % self.infile[7:]
+        elif self.infile.startswith("v4l://") or self.infile.startswith("v4l2://"):
+            filename = self.infile
+        elif self.infile.startswith("file://"):
+            filename = self.infile
         else:
-            src = "filesrc location=\"%s\"" % self.infile
-        
-        return src + " name=source"
+            filename = "file://" + self.infile
+            
+        return "uridecodebin uri=\"%s\" name=dmux" % filename
     
     def _setup_pass(self):
         """
@@ -260,7 +255,7 @@ class Transcoder(gobject.GObject):
         
         src = self._get_source()
         
-        cmd = "%s ! decodebin2 name=dmux %s filesink name=sink " \
+        cmd = "%s %s filesink name=sink " \
               "location=\"%s\"" % (src, mux_str, self.options.output_uri)
             
         if self.info.is_video and self.preset.vcodec:
