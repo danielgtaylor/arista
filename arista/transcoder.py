@@ -33,12 +33,16 @@ import os.path
 import sys
 import time
 
+# Default to 2 CPUs as most seem to be dual-core these days
+CPU_COUNT = 2
 try:
     import multiprocessing
-    CPU_COUNT = multiprocessing.cpu_count()
+    try:
+        CPU_COUNT = multiprocessing.cpu_count()
+    except NotImplementedError:
+        pass
 except ImportError:
-    # Older version of python... just default to one to be safe
-    CPU_COUNT = 1
+    pass
 
 import gobject
 import gst
