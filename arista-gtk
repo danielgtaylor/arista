@@ -352,7 +352,9 @@ class MainWindow(object):
         output device, and preset for transcoding as well as managing the
         transcoding queue.
     """
-    def __init__(self):
+    def __init__(self, runoptions):
+        self.runoptions = runoptions
+        
         ui_path = arista.utils.get_path("ui", "main.ui")
         
         # Load the GUI
@@ -468,6 +470,34 @@ class MainWindow(object):
         self.hbox_progress.hide()
         self.image_preview.show_all()
         self.window.show()
+        
+        # Are we using the simplified interface? Hide stuff!
+        if self.runoptions.simple:
+            self.builder.get_object("menubar").hide()
+            self.toolbar.hide()
+            self.builder.get_object("vbox3").hide()
+            self.window.resize(320, 240)
+            
+            device = arista.presets.get()[self.runoptions.device]
+        
+            if not self.runoptions.preset:
+                preset = device.presets[device.default]
+            else:
+                for (id, preset) in device.presets.items():
+                    if preset.name == options.preset:
+                        break
+            
+            outputs = []
+            for fname in self.runoptions.files:
+                output = arista.utils.generate_output_path(fname, preset,
+                             to_be_created=outputs,
+                             device_name=self.runoptions.device)
+            
+                outputs.append(output)
+            
+                opts = arista.transcoder.TranscoderOptions(fname, preset, output)
+            
+                self.queue.append(opts)
     
     def setup_source(self, *args):
         """
@@ -959,6 +989,12 @@ class MainWindow(object):
         """
         entry.stop()
         
+        if self.runoptions.simple and len(self.queue) == 1:
+            # This is the last item in the simplified GUI, so we are done and
+            # should exit as soon as possible!
+            gobject.idle_add(gtk.main_quit)
+            return
+        
         # Hide live preview while we wait for the item to finish
         self.image_preview.show()
         self.preview.hide()
@@ -1114,6 +1150,12 @@ class MainWindow(object):
             # TODO: Show a dialog or something for people with no notifications
             pass
         
+        if self.runoptions.simple and len(self.queue) == 1:
+            # This is the last item in the simplified GUI, so we are done and
+            # should exit as soon as possible!
+            gobject.idle_add(gtk.main_quit)
+            return
+        
         iter = self.queue_model.get_iter_first()
         if self.queue_view.get_selection().iter_is_selected(iter):
             self.update_remove(False)
@@ -1135,10 +1177,18 @@ class MainWindow(object):
                 "preset": entry.options.preset.name,
             }, icon)
             notice.show()
+        
+        if self.runoptions.simple and len(self.queue) == 1:
+            # This is the last item in the simplified GUI, so we are done and
+            # should exit as soon as possible!
+            gobject.idle_add(gtk.main_quit)
+            return
+        
         iter = self.queue_model.get_iter_first()
-        if self.queue_view.get_selection().iter_is_selected(iter):
-            self.update_remove(False)
-        self.queue_model.remove(iter)
+        if iter:
+            if self.queue_view.get_selection().iter_is_selected(iter):
+                self.update_remove(False)
+            self.queue_model.remove(iter)
         self.image_preview.show()
         self.preview.hide()
         self.hbox_progress.hide()
@@ -1565,14 +1615,22 @@ class AboutDialog(object):
         self.window.destroy()
 
 if __name__ == "__main__":
-    parser = OptionParser(usage = _("%prog [options]"),
+    parser = OptionParser(usage = _("%prog [options] [file1 file2 file3 ...]"),
                           version = _("Arista Transcoder GUI " + \
                                       arista.__version__))
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
                       help = _("Show verbose (debug) output"))
+    parser.add_option("-p", "--preset", dest = "preset", default = None,
+                      help = _("Preset to encode to [default]"))
+    parser.add_option("-d", "--device", dest = "device", default = "computer",
+                      help = _("Device to encode to [computer]"))
+    parser.add_option("-s", "--simple", dest = "simple", action = "store_true",
+                      default = False, help = _("Simple UI"))
     
     options, args = parser.parse_args()
+    
+    options.files = args
     
     logging.basicConfig(level = options.verbose and logging.DEBUG \
                         or logging.INFO, format = "%(name)s [%(lineno)d]: " \
@@ -1610,7 +1668,7 @@ if __name__ == "__main__":
     icon_path = arista.utils.get_path("ui", "icon.svg")
     gtk.window_set_default_icon_from_file(icon_path)
     
-    main = MainWindow()
+    main = MainWindow(options)
     
     client = gconf.client_get_default()
     try:
