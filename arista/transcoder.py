@@ -203,9 +203,20 @@ class Transcoder(gobject.GObject):
             @return: Source to prepend to gst-launch style strings.
         """
         if self.infile.startswith("dvd://"):
-            filename = self.infile.split("@")[0]
+            parts = self.infile.split("@")
+            device = parts[0][6:]
+            
+            title = 1
+            if len(parts) > 1:
+                try:
+                    title = int(parts[1])
+                except:
+                    title = 1
+            
             if self.options.deinterlace is None:
                 self.options.deinterlace = True
+            
+            return "dvdreadsrc device=\"%s\" title=%d ! decodebin2 name=dmux" % (device, title)
         elif self.infile.startswith("v4l://") or self.infile.startswith("v4l2://"):
             filename = self.infile
         elif self.infile.startswith("file://"):
