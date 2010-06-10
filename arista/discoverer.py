@@ -237,10 +237,7 @@ class Discoverer(gst.Pipeline):
 
     def print_info(self):
         """prints out the information on the given file"""
-        if not self.finished:
-            return
-        if not self.mimetype:
-            print _("Unknown media type")
+        if not self.finished or not (self.is_audio or self.is_video):
             return
         print _("Mime Type :\t"), self.mimetype
         if not self.is_video and not self.is_audio:
