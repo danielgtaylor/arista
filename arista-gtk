@@ -402,6 +402,7 @@ class MainWindow(object):
         # Setup the transcoding queue and watch for events
         self.queue = arista.queue.TranscodeQueue()
         self.queue.connect("entry-discovered", self.on_queue_entry_discovered)
+        self.queue.connect("entry-error", self.on_queue_entry_error)
         self.queue.connect("entry-complete", self.on_queue_entry_complete)
         
         self.queue_model = gtk.ListStore(gtk.gdk.Pixbuf,         # Stock image
@@ -878,7 +879,6 @@ class MainWindow(object):
         else:
             inpath = self.source.get_filename()
             inname = os.path.basename(inpath)
-        
         iter = self.devices.get_active_iter()
         device = self.devices.get_model().get_value(iter, 2)
         
@@ -1093,6 +1093,35 @@ class MainWindow(object):
         
         self.hbox_progress.show()
         self.update_pause(True)
+    
+    def on_queue_entry_error(self, queue, entry, error_str):
+        """
+            An entry in the queue has had an error. Update the queue model
+            and inform the user.
+        """
+        entry.transcoder.stop()
+        
+        if pynotify and not entry.force_stopped:
+            icon = arista.utils.get_path("ui/error.svg")
+            notice = pynotify.Notification(_("Error!"), _("Conversion of %(filename)s to %(device)s %(preset)s failed! Reason: %(reason)s") % {
+                "filename": os.path.basename(entry.options.output_uri),
+                "device": entry.options.preset.device,
+                "preset": entry.options.preset.name,
+                "reason": error_str,
+            }, icon)
+            notice.show()
+        else:
+            # TODO: Show a dialog or something for people with no notifications
+            pass
+        
+        iter = self.queue_model.get_iter_first()
+        if self.queue_view.get_selection().iter_is_selected(iter):
+            self.update_remove(False)
+        self.queue_model.remove(iter)
+        self.image_preview.show()
+        self.preview.hide()
+        self.hbox_progress.hide()
+        self.update_pause(False)
     
     def on_queue_entry_complete(self, queue, entry):
         """
