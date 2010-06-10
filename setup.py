@@ -36,7 +36,7 @@ for (prefix, path) in [("arista", "presets"),
 
 setup(
     name = "arista",
-    version = "0.9.4.1",
+    version = "0.9.5",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========
@@ -75,7 +75,7 @@ Note: WebM support requires at least GStreamer's gst-plugins-bad-0.10.19.
     author = "Daniel G. Taylor",
     author_email = "dan@programmer-art.org",
     url = "http://www.transcoder.org/",
-    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.4.1.tar.gz",
+    download_url = "http://programmer-art.org/media/releases/arista-transcoder/arista-0.9.5.tar.gz",
     packages = [
         "arista",
         "arista.inputs",
