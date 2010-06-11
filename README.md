@@ -20,12 +20,13 @@ Features
 
 Dependencies
 ------------
+ * python >=2.4
  * python-cairo
  * python-gobject
  * python-gtk >=2.16
  * python-gconf
  * python-gstreamer
- * python-gudev
+ * python-gudev or python-dbus with HAL
  * python-nautilus (if using Nautilus extension)
  * python-pynotify (optional)
  * python-rsvg (if using KDE)
