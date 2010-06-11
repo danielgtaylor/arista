@@ -87,7 +87,7 @@ Generating a Test File
 ----------------------
 Sometimes it may be useful to generate a test file:
 
-    gst-launch-0.10 videotestsrc num-buffers=500 ! x264enc ! mp4mux ! filesink location=test.mp4
+    gst-launch-0.10 videotestsrc num-buffers=500 ! x264enc ! qtmux ! filesink location=test.mp4
 
 Creating New Device Presets
 ---------------------------
