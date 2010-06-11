@@ -130,9 +130,25 @@ class Discoverer(gst.Pipeline):
         self._timeoutid = 0
         self._max_interleave = max_interleave
         
+        self.dbin = None
         if filename.startswith("dvd://"):
-            filename = filename.split("@")[0]
-            # TODO: Somehow select title/chapter in source?
+            parts = filename.split("@")
+            if len(parts) > 1:
+                # Specific chapter was requested, so we need to use a different
+                # source to manually specify the title to decode.
+                self.src = gst.element_factory_make("dvdreadsrc")
+                self.src.set_property("device", parts[0][6:])
+                self.src.set_property("title", int(parts[1]))
+                self.dbin = gst.element_factory_make("decodebin2")
+                
+                self.add(self.src, self.dbin)
+                self.src.link(self.dbin)
+                
+                self.typefind = self.dbin.get_by_name("typefind")
+                self.typefind.connect("have-type", self._have_type_cb)
+                
+                self.dbin.connect("new-decoded-pad", self._new_decoded_pad_cb)
+                self.dbin.connect("no-more-pads", self._no_more_pads_cb)
         elif filename.startswith("v4l://"):
             pass
         elif filename.startswith("v4l2://"):
@@ -142,14 +158,19 @@ class Discoverer(gst.Pipeline):
         else:
             filename = "file://" + filename
         
-        self.dbin = gst.element_factory_make("uridecodebin")
-        self.dbin.set_property("uri", filename)
-        self.add(self.dbin)
+        if not self.dbin:
+            # No custom source was setup, so let's use the uridecodebin!
+            self.dbin = gst.element_factory_make("uridecodebin")
+            self.dbin.set_property("uri", filename)
+            self.add(self.dbin)
 
-        self.dbin.connect("element-added", self._element_added_cb)
-        # callbacks
-        self.dbin.connect("pad-added", self._new_decoded_pad_cb)
-        self.dbin.connect("no-more-pads", self._no_more_pads_cb)
+            self.dbin.connect("element-added", self._element_added_cb)
+            self.dbin.connect("pad-added", self._new_decoded_pad_cb)
+            self.dbin.connect("no-more-pads", self._no_more_pads_cb)
+
+    @property
+    def length(self):
+        return max(self.videolength, self.audiolength)
 
     def _element_added_cb(self, bin, element):
         try:
@@ -333,7 +354,7 @@ class Discoverer(gst.Pipeline):
             if self._nomorepads and ((not self.is_audio) or self.audiocaps):
                 self._finished(True)
 
-    def _new_decoded_pad_cb(self, dbin, pad):
+    def _new_decoded_pad_cb(self, dbin, pad, extra=None):
         # Does the file contain got audio or video ?
         caps = pad.get_caps()
         gst.info("caps:%s" % caps.to_string())

@@ -153,23 +153,77 @@ class Transcoder(gobject.GObject):
         self._percent_cached = 0
         self._percent_cached_time = 0
         
-        def _got_info(info, is_media):
-            self.info = info
-            self.emit("discovered", info, is_media)
+        if options.uri.startswith("dvd://") and len(options.uri.split("@")) < 2:
+            # This is a DVD and no title is yet selected... find the best
+            # candidate by searching for the longest title!
+            self.options.uri += "@1"
+            self.dvd_infos = []
             
-            if info.is_video or info.is_audio:
-                try:
-                    self._setup_pass()
-                except PipelineException, e:
-                    self.emit("error", str(e))
-                    return
+            def _got_info(info, is_media):
+                self.dvd_infos.append([discoverer, info])
+                parts = self.options.uri.split("@")
+                fname = parts[0]
+                title = int(parts[1])
+                if title >= 8:
+                    # We've checked 8 titles, let's give up and pick the
+                    # most likely to be the main feature.
+                    longest = 0
+                    self.info = None
+                    for disco, info in self.dvd_infos:
+                        if info.length > longest:
+                            self.discoverer = disco
+                            self.info = info
+                            longest = info.length
                     
-                self.start()
+                    if not self.info:
+                        self.emit("error", _("No valid DVD title found!"))
+                        return
+                    
+                    self.options.uri = self.info.filename
+                    
+                    _log.debug(_("Longest title found is %(filename)s") % {
+                        "filename": self.options.uri,
+                    })
+                    
+                    self.emit("discovered", self.info, self.info.is_video or self.info.is_audio)
+                    
+                    if self.info.is_video or self.info.is_audio:
+                        try:
+                            self._setup_pass()
+                        except PipelineException, e:
+                            self.emit("error", str(e))
+                            return
+                        
+                        self.start()
+                        return
+                
+                self.options.uri = fname + "@" + str(title + 1)
+                self.discoverer = discoverer.Discoverer(options.uri)
+                self.discoverer.connect("discovered", _got_info)
+                self.discoverer.discover()
+            
+            self.discoverer = discoverer.Discoverer(options.uri)
+            self.discoverer.connect("discovered", _got_info)
+            self.discoverer.discover()
         
-        self.info = None
-        self.discoverer = discoverer.Discoverer(options.uri)
-        self.discoverer.connect("discovered", _got_info)
-        self.discoverer.discover()
+        else:
+            def _got_info(info, is_media):
+                self.info = info
+                self.emit("discovered", info, is_media)
+                
+                if info.is_video or info.is_audio:
+                    try:
+                        self._setup_pass()
+                    except PipelineException, e:
+                        self.emit("error", str(e))
+                        return
+                        
+                    self.start()
+            
+            self.info = None
+            self.discoverer = discoverer.Discoverer(options.uri)
+            self.discoverer.connect("discovered", _got_info)
+            self.discoverer.discover()
     
     @property
     def infile(self):
