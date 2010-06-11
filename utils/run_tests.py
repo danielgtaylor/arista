@@ -24,25 +24,25 @@ try:
 	for id, device in arista.presets.get().items():
 		for file in files:
 			print device.make + " " + device.model + ": " + file
-			cmd = "./arista-transcode -q -d %s tests/%s test_output" % (id, file)
+			cmd = "./arista-transcode -q -d %s -o test_output tests/%s" % (id, file)
 			print cmd
 			ret = subprocess.call(cmd, shell=True)
 			if ret:
 				status.append([file, device, True])
 			else:
 				status.append([file, device, False])
-
-	print "Report"
-	print "======"
-
-	for file, device, failed in status:
-		if failed:
-			print device.make + " " + device.model + " (" + \
-															file + "): Failed"
-		else:
-			print device.make + " " + device.model + " (" + \
-															file + "): Succeeded"
-
-	print "Tests completed."
 except KeyboardInterrupt:
 	pass
+
+print "Report"
+print "======"
+
+for file, device, failed in status:
+	if failed:
+		print device.make + " " + device.model + " (" + \
+														file + "): Failed"
+	else:
+		print device.make + " " + device.model + " (" + \
+														file + "): Succeeded"
+
+print "Tests completed."
