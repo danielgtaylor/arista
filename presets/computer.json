@@ -6,7 +6,7 @@
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "version": "1.4", 
+    "version": "1.5", 
     "icon": "file://computer.svg", 
     "default": "H.264", 
     "presets": [
@@ -170,7 +170,7 @@
                     1, 60
                 ], 
                 "passes": [
-                    "quality=6 threads=%(threads)s speed=1"
+                    "quality=6 threads=%(threads)s speed=2"
                 ]
             }, 
             "acodec": {
