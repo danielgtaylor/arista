@@ -36,6 +36,11 @@ Dependencies
  * gstreamer-plugins-good
  * gstreamer-plugins-bad
  * gstreamer-plugins-ugly
+ 
+Debian users may need to install these additional dependencies:
+
+ * gstreamer0.10-lame
+ * gstreamer0.10-plugins-really-bad
 
 Installation
 ------------
