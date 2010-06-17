@@ -233,6 +233,7 @@ class Device(object):
                     "passes": preset.vcodec.passes,
                     "width": preset.vcodec.width,
                     "height": preset.vcodec.height,
+                    "transform": preset.vcodec.transform,
                 },
             })
         
@@ -279,6 +280,7 @@ class Device(object):
                     "passes": vcodec.get("passes", []),
                     "width": vcodec.get("width", []),
                     "height": vcodec.get("height", []),
+                    "transform": vcodec.get("transform", ""),
                 }),
                 "device": device,
             })
@@ -426,11 +428,12 @@ class VideoCodec(Codec):
     """
         Settings for encoding video.
     """
-    def __init__(self, name=None, container=None, rate=None, passes=None, width=None, height=None):
+    def __init__(self, name=None, container=None, rate=None, passes=None, width=None, height=None, transform=None):
         Codec.__init__(self, name=name, container=container, passes=passes)
         self.rate = rate and rate or (Fraction("1"), Fraction("60"))
         self.width = width and width or (2, 1920)
         self.height = height and height or (2, 1080)
+        self.transform = transform
 
 def load(filename):
     """

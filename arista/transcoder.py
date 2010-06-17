@@ -459,6 +459,10 @@ class Transcoder(gobject.GObject):
             if self.options.deinterlace:
                 deint = " ffdeinterlace ! "
             
+            transform = ""
+            if self.preset.vcodec.transform:
+                transform = self.preset.vcodec.transform + " ! "
+            
             sub = ""
             if self.options.subfile:
                 # Render subtitles onto the video stream
@@ -475,9 +479,10 @@ class Transcoder(gobject.GObject):
                     vmux += "video_%d"
             
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
-                   "%s %s videoscale ! %s ! %s%s ! tee " \
+                   "%s %s %s videoscale ! %s ! %s%s ! tee " \
                    "name=videotee ! queue ! %s" % \
-                   (deint, sub, self.vcaps.to_string(), vbox, vencoder, vmux)
+                   (deint, transform, sub, self.vcaps.to_string(), vbox,
+                    vencoder, vmux)
             
         if self.info.is_audio and self.preset.acodec and \
            self.enc_pass == len(self.preset.vcodec.passes) - 1:
