@@ -1,17 +1,24 @@
 #!/usr/bin/env python
 
 import os
+import py_compile
+import sys
+
 from glob import glob
 
 from distutils.core import setup
+from distutils.command.install_data import install_data
+from distutils.dist import DistributionMetadata
 
 # Patch distutils if it can't cope with the "classifiers" or
 # "download_url" keywords
 from sys import version
 if version < '2.2.3':
-    from distutils.dist import DistributionMetadata
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
+
+if not hasattr(DistributionMetadata, "zip_safe"):
+    DistributionMetadata.zip_safe = True
 
 data_files = [
     (os.path.join("share", "applications"), ["arista.desktop"]),
@@ -33,6 +40,19 @@ for (prefix, path) in [("arista", "presets"),
             
         if to_add:
             data_files.append((os.path.join("share", prefix, root), to_add))
+
+class AristaInstall(install_data):
+    def run(self):
+        # Do the normal install steps
+        install_data.run(self)
+        
+        # Byte compile any python files that were installed as data files
+        for path, fnames in data_files:
+            for fname in fnames:
+                if fname.endswith(".py"):
+                    full = os.path.join(sys.prefix, path, fname)
+                    print "byte-compiling %s" % full
+                    py_compile.compile(full)
 
 setup(
     name = "arista",
@@ -113,5 +133,8 @@ Note: WebM support requires at least GStreamer's gst-plugins-bad-0.10.19.
         "Topic :: Utilities",
     ],
     zip_safe = False,
+    cmdclass = {
+        "install_data": AristaInstall,
+    },
 )
 
