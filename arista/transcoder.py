@@ -86,7 +86,8 @@ class TranscoderOptions(object):
         subtitles, etc.
     """
     def __init__(self, uri = None, preset = None, output_uri = None, 
-                 subfile = None, font = "Sans Bold 16", deinterlace = None):
+                 subfile = None, subfile_charset = None, font = "Sans Bold 16",
+                 deinterlace = None):
         """
             @type uri: str
             @param uri: The URI to the input file, device, or stream
@@ -96,15 +97,20 @@ class TranscoderOptions(object):
             @param output_uri: The URI to the output file, device, or stream
             @type subfile: str
             @param subfile: The location of the subtitle file
+            @type subfile_charset: str
+            @param subfile_charset: Subtitle file character encoding, e.g.
+                                    'utf-8' or 'latin-1'
             @type font: str
             @param font: Pango font description
             @type deinterlace: bool
             @param deinterlace: Force deinterlacing of the input data
         """
-        self.reset(uri, preset, output_uri, subfile, font, deinterlace)
+        self.reset(uri, preset, output_uri, subfile, subfile_charset, font,
+                   deinterlace)
     
     def reset(self, uri = None, preset = None, output_uri = None,
-              subfile = None, font = "Sans Bold 16", deinterlace = None):
+              subfile = None, subfile_charset = None, font = "Sans Bold 16",
+              deinterlace = None):
         """
             Reset the input options to nothing.
         """
@@ -112,6 +118,7 @@ class TranscoderOptions(object):
         self.preset = preset
         self.output_uri = output_uri
         self.subfile = subfile
+        self.subfile_charset = subfile_charset
         self.font = font
         self.deinterlace = deinterlace
 
@@ -465,12 +472,19 @@ class Transcoder(gobject.GObject):
             
             sub = ""
             if self.options.subfile:
+                charset = ""
+                if self.options.subfile_charset:
+                    charset = "subtitle-encoding=\"%s\"" % \
+                                                self.options.subfile_charset
+                
                 # Render subtitles onto the video stream
                 sub = "textoverlay font-desc=\"%(font)s\" name=txt ! " % {
                     "font": self.options.font,
                 }
-                cmd += " filesrc location=\"%(subfile)s\" ! subparse ! txt." % {
-                    "subfile": self.options.subfile
+                cmd += " filesrc location=\"%(subfile)s\" ! subparse " \
+                       "%(subfile_charset)s ! txt." % {
+                    "subfile": self.options.subfile,
+                    "subfile_charset": charset,
                 }
             
             vmux = premux

@@ -175,6 +175,8 @@ if __name__ == "__main__":
                                "[false]"))
     parser.add_option("-S", "--subtitle", dest = "subtitle", default = None,
                       help = _("Subtitle file to render"))
+    parser.add_option("--subtitle-encoding", dest = "subtitle_encoding",
+                      default = None, help = _("Subtitle file encoding"))
     parser.add_option("-f", "--font", dest = "font", default = "Sans Bold 16",
                       help = _("Font to use when rendering subtitles"))
     parser.add_option("-p", "--preset", dest = "preset", default = None,
@@ -327,7 +329,8 @@ if __name__ == "__main__":
             outputs.append(output)
         
             opts = TranscoderOptions(arg, preset, output,
-                                     subfile = options.subtitle, 
+                                     subfile = options.subtitle,
+                                     subfile_charset = options.subtitle_encoding,
                                      font = options.font)
             
             queue.append(opts)
