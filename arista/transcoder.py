@@ -378,18 +378,23 @@ class Transcoder(gobject.GObject):
                 width = int((float(hmax) / oheight) * owidth)
             
             # Add any required padding
+            # TODO: Remove the extra colorspace conversion when no longer
+            #       needed, but currently xvidenc and possibly others will fail
+            #       without it!
             vbox = ""
             if width < wmin and height < hmin:
                 wpx = (wmin - width) / 2
                 hpx = (hmin - height) / 2
-                vbox = "videobox left=%i right=%i top=%i bottom=%i ! " % \
+                vbox = "videobox left=%i right=%i top=%i bottom=%i ! ffmpegcolorspace ! " % \
                        (-wpx, -wpx, -hpx, -hpx)
             elif width < wmin:
                 px = (wmin - width) / 2
-                vbox = "videobox left=%i right=%i ! " % (-px, -px)
+                vbox = "videobox left=%i right=%i ! ffmpegcolorspace ! " % \
+                       (-px, -px)
             elif height < hmin:
                 px = (hmin - height) / 2
-                vbox = "videobox top=%i bottom=%i ! " % (-px, -px)
+                vbox = "videobox top=%i bottom=%i ! ffmpegcolorspace ! " % \
+                       (-px, -px)
             
             try:
                 if self.info.videocaps[0].has_key("pixel-aspect-ratio"):
