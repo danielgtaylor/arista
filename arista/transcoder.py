@@ -369,11 +369,18 @@ class Transcoder(gobject.GObject):
             owidth, oheight = self.info.videowidth, self.info.videoheight
             width, height = owidth, oheight
             
-            # Scale width / height down
-            if owidth > wmax:
+            # Scale width / height to fit requested min/max
+            if owidth < wmin:
+                width = wmin
+                height = int((float(wmin) / owidth) * oheight)
+            elif owidth > wmax:
                 width = wmax
                 height = int((float(wmax) / owidth) * oheight)
-            if height > hmax:
+            
+            if height < hmin:
+                height = hmin
+                width = int((float(hmin) / oheight) * owidth)
+            elif height > hmax:
                 height = hmax
                 width = int((float(hmax) / oheight) * owidth)
             
