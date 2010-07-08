@@ -163,7 +163,7 @@ class Transcoder(gobject.GObject):
         if options.uri.startswith("dvd://") and len(options.uri.split("@")) < 2:
             # This is a DVD and no title is yet selected... find the best
             # candidate by searching for the longest title!
-            self.options.uri += "@1"
+            self.options.uri += "@0"
             self.dvd_infos = []
             
             def _got_info(info, is_media):
