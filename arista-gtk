@@ -563,12 +563,12 @@ class MainWindow(object):
                 iter = model.append()
                 icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
                 model.set_value(iter, 0, theme.load_icon(icon, size, 0))
-                model.set_value(iter, 1, _("Choose file..."))
+                model.set_value(iter, 1, _("Choose File..."))
                 
                 iter = model.append()
                 icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
                 model.set_value(iter, 0, theme.load_icon(icon, size, 0))
-                model.set_value(iter, 1, _("Choose directory..."))
+                model.set_value(iter, 1, _("Choose Directory..."))
                 
                 self.source.set_active(0)
                 self.source.connect("changed", self.on_source_changed)
@@ -579,9 +579,9 @@ class MainWindow(object):
                 self.finder_disc_lost = self.finder.connect("disc-lost",
                                                         self.on_disc_lost)
             else:
-                self.source = gtk.FileChooserButton(_("Choose file..."))
+                self.source = gtk.FileChooserButton(_("Choose File..."))
         else:
-            self.source = gtk.FileChooserButton(_("Choose file..."))
+            self.source = gtk.FileChooserButton(_("Choose File..."))
         
         # Add properties button to set source properties like subtitles
         source_prop_image = gtk.Image()
@@ -716,7 +716,7 @@ class MainWindow(object):
         iter = widget.get_active_iter()
         model = widget.get_model()
         item = model.get_value(iter, 1)
-        if item == _("Choose file..."):
+        if item == _("Choose File..."):
             dialog = gtk.FileChooserDialog(title=_("Choose Source File..."),
                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                                  gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
@@ -749,7 +749,7 @@ class MainWindow(object):
                     widget.set_active(pos - 1)
                 else:
                     widget.set_active(0)
-        elif item == _("Choose directory..."):
+        elif item == _("Choose Directory..."):
             dialog = gtk.FileChooserDialog(title=_("Choose Source Directory..."),
                         action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
