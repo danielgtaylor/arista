@@ -273,13 +273,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button_stop">
-                            <property name="label">gtk-stop</property>
+                          <object class="GtkButton" id="button_cancel">
+                            <property name="label">gtk-cancel</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_stop_clicked"/>
+                            <signal name="clicked" handler="on_cancel_clicked"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>

@@ -373,7 +373,7 @@ class MainWindow(object):
         self.presets = _new_combo_with_image([gobject.TYPE_PYOBJECT])
         self.hbox_progress = self.builder.get_object("hbox_progress")
         self.progress = self.builder.get_object("progressbar")
-        self.button_stop = self.builder.get_object("button_stop")
+        self.button_cancel = self.builder.get_object("button_cancel")
         self.preview = self.builder.get_object("video_preview")
         self.settings_frame = self.builder.get_object("settings_frame")
         self.preview_frame = self.builder.get_object("preview_frame")
@@ -1302,7 +1302,7 @@ class MainWindow(object):
         
         self.update_remove(bool(selected))
     
-    def on_stop_clicked(self, widget):
+    def on_cancel_clicked(self, widget):
         """
             The user clicked the stop button, so stop processing the entry.
         """
