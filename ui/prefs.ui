@@ -212,14 +212,6 @@
                         </child>
                       </object>
                     </child>
-                    <child type="label">
-                      <object class="GtkLabel" id="label7">
-                        <property name="visible">True</property>
-                        <property name="ypad">6</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Information&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </object>
-                    </child>
                   </object>
                   <packing>
                     <property name="position">0</property>
