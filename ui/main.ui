@@ -27,7 +27,7 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menuitem_add">
-                        <property name="label">_Add to queue</property>
+                        <property name="label">_Add to Queue...</property>
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_underline">True</property>
@@ -38,7 +38,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menuitem_remove">
-                        <property name="label" translatable="yes">_Remove from queue</property>
+                        <property name="label" translatable="yes">_Remove from Queue</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="use_underline">True</property>
@@ -64,7 +64,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menuitem_install">
-                        <property name="label" translatable="yes">_Install device preset</property>
+                        <property name="label" translatable="yes">_Install Device Preset...</property>
                         <property name="visible">True</property>
                         <property name="sensitive">True</property>
                         <property name="use_underline">True</property>
@@ -105,7 +105,7 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menuitem_properties">
-                        <property name="label" translatable="yes">_Source properties</property>
+                        <property name="label" translatable="yes">_Source Properties</property>
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="image">image2</property>
@@ -139,7 +139,7 @@
                     <child>
                       <object class="GtkCheckMenuItem" id="menuitem_toolbar">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Show _toolbar</property>
+                        <property name="label" translatable="yes">Show _Toolbar</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
                         <signal name="toggled" handler="on_show_toolbar_toggled"/>
