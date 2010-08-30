@@ -2,7 +2,7 @@
     "make": "Generic", 
     "model": "Web Browser", 
     "description": "Media for World Wide Web", 
-    "version": "1.2", 
+    "version": "1.3", 
     "author": {
         "name": "Ferran Basora Roca", 
         "email": "fcsonline@gmail.com"
@@ -54,10 +54,10 @@
         {
             "name": "H.264", 
             "extension": "mp4", 
-            "container": "qtmux", 
+            "container": "mp4mux faststart=1", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "qtmux", 
+                "container": "mp4mux faststart=1", 
                 "width": [
                     120, 1280
                 ], 
@@ -73,7 +73,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "qtmux", 
+                "container": "mp4mux faststart=1", 
                 "width": [
                     8, 24
                 ], 

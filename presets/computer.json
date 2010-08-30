@@ -6,20 +6,20 @@
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "version": "1.5", 
+    "version": "1.6", 
     "icon": "file://computer.svg", 
     "default": "H.264", 
     "presets": [
         {
             "name": "Live Input", 
-            "container": "qtmux", 
+            "container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://computer-live.svg", 
             "vcodec": {
                 "passes": [
                     "pass=cbr bitrate=2048 subme=4 threads=0"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "x264enc", 
                 "height": [
                     240, 
@@ -38,7 +38,7 @@
                 "passes": [
                     "bitrate=192000"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "faac", 
                 "depth": [
                     8, 
@@ -60,13 +60,13 @@
         }, 
         {
             "name": "H.264", 
-            "container": "qtmux", 
+            "container": "mp4mux", 
             "extension": "mp4", 
             "vcodec": {
                 "passes": [
                     "pass=qual quantizer=21 me=umh subme=6 ref=3 threads=0"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "x264enc", 
                 "height": [
                     240, 
@@ -85,7 +85,7 @@
                 "passes": [
                     "bitrate=192000"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "faac", 
                 "depth": [
                     8, 
