@@ -2,7 +2,7 @@
     "make": "Generic", 
     "model": "Android Phone", 
     "description": "Presets for all known Android phones", 
-    "version": "1.1", 
+    "version": "1.2", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
@@ -12,12 +12,12 @@
     "presets": [
         {
             "name": "Nexus One / Desire", 
-            "container": "qtmux", 
+            "container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://android-nexus-one.svg", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     320, 
                     800
@@ -36,7 +36,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     8, 
                     24
@@ -60,12 +60,12 @@
         },
         {
             "name": "Droid / Milestone", 
-            "container": "qtmux", 
+            "container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://android-droid.png", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     320, 
                     854
@@ -84,7 +84,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     8, 
                     24
@@ -108,12 +108,12 @@
         },
         {
             "name": "G1 / Dream", 
-            "container": "qtmux", 
+            "container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://android-g1.png", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     320, 
                     854
@@ -132,7 +132,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     8, 
                     24
