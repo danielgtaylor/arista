@@ -1138,7 +1138,12 @@ class MainWindow(object):
         entry.transcoder.stop()
         
         if pynotify and not entry.force_stopped:
-            icon = arista.utils.get_path("ui/error.svg")
+            theme = gtk.icon_theme_get_default()
+            icon_info = theme.lookup_icon("dialog-error", 64, 0)
+            if icon_info:
+                icon = icon_info.get_filename()
+            else:
+                icon = ""
             notice = pynotify.Notification(_("Error!"), _("Conversion of %(filename)s to %(device)s %(preset)s failed! Reason: %(reason)s") % {
                 "filename": os.path.basename(entry.options.output_uri),
                 "device": entry.options.preset.device,
