@@ -107,6 +107,51 @@
             }
         },
         {
+            "name": "Galaxy Spica / GT-I5700 / Galaxy Lite", 
+            "author": {
+				"name": "Christian Kakesa", 
+				"email": "christian.kakesa@gmail.com"
+			}, 
+			"container": "ffmux_mp4", 
+            "extension": "mp4", 
+            "icon": "file://android-spica.png", 
+            "vcodec": {
+                "name": "x264enc", 
+                "container": "qtmux", 
+                "width": [
+                    320, 720
+                ], 
+                "height": [
+                    240, 480
+                ], 
+                "rate": [
+                    1, 30
+                ], 
+                "passes": [
+                    "pass=qual quantizer=21 me=umh subme=6 ref=6 interlaced=false cabac=0 threads=0"
+                ]
+            }, 
+            "acodec": {
+                "name": "faac", 
+                "container": "qtmux", 
+                "width": [
+                    8, 16
+                ], 
+                "depth": [
+                    8, 16
+                ], 
+                "rate": [
+                    8000, 44100
+                ], 
+                "channels": [
+                    1, 2
+                ], 
+                "passes": [
+                    "bitrate=128000 profile=LC"
+                ]
+            }
+        },
+        {
             "name": "G1 / Dream", 
             "container": "mp4mux", 
             "extension": "mp4", 
