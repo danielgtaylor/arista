@@ -112,12 +112,12 @@
 				"name": "Christian Kakesa", 
 				"email": "christian.kakesa@gmail.com"
 			}, 
-			"container": "ffmux_mp4", 
+			"container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://android-spica.png", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     320, 720
                 ], 
@@ -128,12 +128,12 @@
                     1, 30
                 ], 
                 "passes": [
-                    "pass=qual quantizer=21 me=umh subme=6 ref=6 interlaced=false cabac=0 threads=0"
+                    "pass=qual quantizer=21 me=umh subme=6 ref=3 interlaced=false cabac=0 threads=0"
                 ]
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     8, 16
                 ], 
