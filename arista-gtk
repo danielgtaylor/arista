@@ -1175,7 +1175,11 @@ class MainWindow(object):
             An entry in the queue is finished. Update the queue model.
         """
         if pynotify and not entry.force_stopped:
-            icon = arista.utils.get_path("presets/" + entry.options.preset.device.icon[7:])
+            try:
+                icon = arista.utils.get_path("presets/" + entry.options.preset.device.icon[7:])
+            except IOError:
+                icon = ""
+            
             notice = pynotify.Notification(_("Job done"), _("Conversion of %(filename)s to %(device)s %(preset)s finished") % {
                 "filename": os.path.basename(entry.options.output_uri),
                 "device": entry.options.preset.device,
