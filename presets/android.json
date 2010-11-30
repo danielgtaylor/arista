@@ -2,7 +2,7 @@
     "make": "Generic", 
     "model": "Android Phone", 
     "description": "Presets for all known Android phones", 
-    "version": "1.2", 
+    "version": "1.3", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
@@ -196,6 +196,51 @@
                 ], 
                 "passes": [
                     "bitrate=128000 profile=LC"
+                ]
+            }
+        },
+        {
+            "name": "Droid X", 
+            "author": {
+                "name": "Vick", 
+                "email": "vick.satar@gmail.com"
+            }, 
+            "extension": "mp4", 
+            "container": "qtmux", 
+            "icon": "file://droidx.png", 
+            "vcodec": {
+                "name": "x264enc", 
+                "container": "qtmux", 
+                "width": [
+                    320, 1280
+                ], 
+                "height": [
+                    240, 720
+                ], 
+                "rate": [
+                    1, 30
+                ], 
+                "passes": [
+                    "pass=qual quantizer=18 subme=6 cabac=0 threads=0"
+                ]
+            }, 
+            "acodec": {
+                "name": "faac", 
+                "container": "qtmux", 
+                "width": [
+                    8, 24
+                ], 
+                "depth": [
+                    8, 24
+                ], 
+                "rate": [
+                    8000, 96000
+                ], 
+                "channels": [
+                    1, 2
+                ], 
+                "passes": [
+                    "bitrate=131072 profile=LC"
                 ]
             }
         }
