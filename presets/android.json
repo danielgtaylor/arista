@@ -2,12 +2,12 @@
     "make": "Generic", 
     "model": "Android Phone", 
     "description": "Presets for all known Android phones", 
-    "version": "1.3", 
+    "version": "1.4", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "default": "Nexus One / Desire", 
+    "default": "Samsung Galaxy S", 
     "icon": "file://android.svg", 
     "presets": [
         {
@@ -206,11 +206,11 @@
                 "email": "vick.satar@gmail.com"
             }, 
             "extension": "mp4", 
-            "container": "qtmux", 
+            "container": "mp4mux", 
             "icon": "file://droidx.png", 
             "vcodec": {
                 "name": "x264enc", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     320, 1280
                 ], 
@@ -226,7 +226,7 @@
             }, 
             "acodec": {
                 "name": "faac", 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "width": [
                     8, 24
                 ], 
@@ -241,6 +241,51 @@
                 ], 
                 "passes": [
                     "bitrate=131072 profile=LC"
+                ]
+            }
+        }, 
+        {
+            "name": "Samsung Galaxy S", 
+            "author": {
+                "name": "Pierre Pericard", 
+                "email": "pierre.pericard@gmail.com"
+            }, 
+            "extension": "mp4", 
+            "icon": "file://android-galaxy-s.png", 
+            "container": "mp4mux", 
+            "vcodec": {
+                "name": "x264enc", 
+                "container": "mp4mux", 
+                "width": [
+                    120, 800
+                ], 
+                "height": [
+                    120, 480
+                ], 
+                "rate": [
+                    1, 30
+                ], 
+                "passes": [
+                    "pass=qual quantizer=21 me=umh subme=6 ref=3 cabac=0 threads=0"
+                ]
+            }, 
+            "acodec": {
+                "name": "faac", 
+                "container": "mp4mux", 
+                "width": [
+                    8, 32
+                ], 
+                "depth": [
+                    8, 24
+                ], 
+                "rate": [
+                    8000, 96000
+                ], 
+                "channels": [
+                    1, 2
+                ], 
+                "passes": [
+                    "bitrate=327680"
                 ]
             }
         }
