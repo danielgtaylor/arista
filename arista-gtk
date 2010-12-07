@@ -749,6 +749,15 @@ class MainWindow(object):
                     widget.set_active(pos - 1)
                 else:
                     widget.set_active(0)
+
+            # Reset the custom input options
+            self.options.reset()
+
+            # Find a subtitle file with same filename
+            subfilename = filename[0:filename.rfind(".")]+".srt" 
+            if os.path.exists(subfilename):
+                self.options.subfile = subfilename
+
         elif item == _("Choose Directory..."):
             dialog = gtk.FileChooserDialog(title=_("Choose Source Directory..."),
                         action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
@@ -779,8 +788,8 @@ class MainWindow(object):
                 else:
                     widget.set_active(0)
                 
-        # Reset the custom input options
-        self.options.reset()
+            # Reset the custom input options
+            self.options.reset()
     
     def on_device_changed(self, widget):
         """
