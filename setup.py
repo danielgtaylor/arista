@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import py_compile
 import sys
 
 from glob import glob
@@ -9,6 +8,7 @@ from glob import glob
 from distutils.core import setup
 from distutils.command.install_data import install_data
 from distutils.dist import DistributionMetadata
+from distutils.util import byte_compile
 
 # Patch distutils if it can't cope with the "classifiers" or
 # "download_url" keywords
@@ -25,7 +25,7 @@ data_files = [
     (os.path.join("share", "doc", "arista"), [
         "README.md", "LICENSE", "AUTHORS"
     ]),
-    (os.path.join("lib", "nautilus", "extensions-2.0", "python"), ["arista-nautilus.py"]),
+    (os.path.join("share", "nautilus-python", "extensions"), ["arista-nautilus.py"]),
 ]
 
 for (prefix, path) in [("arista", "presets"), 
@@ -50,9 +50,9 @@ class AristaInstall(install_data):
         for path, fnames in data_files:
             for fname in fnames:
                 if fname.endswith(".py"):
-                    full = os.path.join(sys.prefix, path, fname)
+                    full = os.path.join(self.root + sys.prefix, path, fname)
                     print "byte-compiling %s" % full
-                    py_compile.compile(full)
+                    byte_compile([full], prefix=self.root, base_dir=sys.prefix)
 
 setup(
     name = "arista",
