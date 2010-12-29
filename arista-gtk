@@ -477,6 +477,7 @@ class MainWindow(object):
             self.toolbar.hide()
             self.builder.get_object("vbox3").hide()
             self.window.resize(320, 240)
+            self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
             
             device = arista.presets.get()[self.runoptions.device]
         
