@@ -8,4 +8,5 @@ Terminal=false
 Type=Application
 Icon=/usr/share/arista/ui/icon.svg
 Categories=AudioVideo;GNOME;GTK;
+MimeType=x-content/video-dvd;x-content/video-vcd;x-content/video-svcd;
 
