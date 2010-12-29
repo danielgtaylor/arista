@@ -46,6 +46,9 @@ class AristaInstall(install_data):
         # Do the normal install steps
         install_data.run(self)
         
+        if self.root is None:
+            self.root = ''
+        
         # Byte compile any python files that were installed as data files
         for path, fnames in data_files:
             for fname in fnames:
