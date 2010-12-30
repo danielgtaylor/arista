@@ -285,7 +285,6 @@ class Transcoder(gobject.GObject):
             filename = self.infile
         else:
             filename = "files://" + os.path.abspath(self.infile)
-            print "filename " + filename
             
         return "uridecodebin uri=\"%s\" name=dmux" % filename
     
