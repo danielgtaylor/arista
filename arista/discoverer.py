@@ -156,7 +156,7 @@ class Discoverer(gst.Pipeline):
         elif filename.startswith("file://"):
             pass
         else:
-            filename = "file://" + filename
+            filename = "file://" + os.path.abspath(filename)
         
         if not self.dbin:
             # No custom source was setup, so let's use the uridecodebin!
