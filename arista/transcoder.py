@@ -85,7 +85,7 @@ class TranscoderOptions(object):
         Options pertaining to the input/output location, presets, 
         subtitles, etc.
     """
-    def __init__(self, uri = None, preset = None, output_uri = None, 
+    def __init__(self, uri = None, preset = None, output_uri = None, ssa = False,
                  subfile = None, subfile_charset = None, font = "Sans Bold 16",
                  deinterlace = None):
         """
@@ -105,10 +105,10 @@ class TranscoderOptions(object):
             @type deinterlace: bool
             @param deinterlace: Force deinterlacing of the input data
         """
-        self.reset(uri, preset, output_uri, subfile, subfile_charset, font,
+        self.reset(uri, preset, output_uri, ssa,subfile, subfile_charset, font,
                    deinterlace)
     
-    def reset(self, uri = None, preset = None, output_uri = None,
+    def reset(self, uri = None, preset = None, output_uri = None, ssa = False,
               subfile = None, subfile_charset = None, font = "Sans Bold 16",
               deinterlace = None):
         """
@@ -117,6 +117,7 @@ class TranscoderOptions(object):
         self.uri = uri
         self.preset = preset
         self.output_uri = output_uri
+        self.ssa = ssa
         self.subfile = subfile
         self.subfile_charset = subfile_charset
         self.font = font
@@ -497,6 +498,15 @@ class Transcoder(gobject.GObject):
                        "%(subfile_charset)s ! txt." % {
                     "subfile": self.options.subfile,
                     "subfile_charset": charset,
+                }
+
+            if self.options.ssa is True:             
+                # Render subtitles onto the video stream
+                sub = "textoverlay font-desc=\"%(font)s\" name=txt ! " % {
+                    "font": self.options.font,
+                }
+                cmd += " filesrc location=\"%(infile)s\" ! matroskademux name=demux ! ssaparse ! txt. " % {
+                    "infile": self.infile,
                 }
             
             vmux = premux
