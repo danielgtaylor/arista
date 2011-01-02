@@ -502,7 +502,10 @@ class Transcoder(gobject.GObject):
 
             if self.options.ssa is True:             
                 # Render subtitles onto the video stream
-                cmd += " filesrc location=\"%(infile)s\" ! matroskademux name=d ! queue ! ffdec_h264 ! ffmpegcolorspace ! r.   d. ! queue ! assrender name=r " % {
+                sub = "textoverlay font-desc=\"%(font)s\" name=txt ! " % {
+                    "font": self.options.font,
+                }
+                cmd += " filesrc location=\"%(infile)s\" ! matroskademux name=demux ! ssaparse ! txt. " % {
                     "infile": self.infile,
                 }
             
