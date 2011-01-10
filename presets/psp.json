@@ -33,7 +33,7 @@
             "extension": "mp4", 
             "acodec": {
                 "passes": [
-                    "bitrate=128000 profile=LC"
+                    "bitrate=131072 profile=LC"
                 ], 
                 "container": "mp4mux", 
                 "name": "faac", 
@@ -80,7 +80,7 @@
             "extension": "mp4", 
             "acodec": {
                 "passes": [
-                    "bitrate=96000 profile=LC"
+                    "bitrate=98304 profile=LC"
                 ], 
                 "container": "mp4mux", 
                 "name": "faac", 
