@@ -1,5 +1,5 @@
 {
-    "version": "1.1", 
+    "version": "1.2", 
     "description": "H.264/AAC for Playstation portable", 
     "author": {
         "name": "Daniel G. Taylor", 
@@ -11,35 +11,35 @@
         {
             "vcodec": {
                 "passes": [
-                    "pass=qual quantizer=27 subme=4 threads=0"
+                    "profile=main speed-preset=slower bitrate=576 vbv-buf-capacity=500 pass=qual cabac=true dct8x8=false ref=3 bframes=3 b-pyramid=false weightb=true trellis=true me=umh subme=6 psy-tune=film threads=0"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "x264enc", 
                 "height": [
-                    272, 
+                    128, 
                     272
                 ], 
                 "width": [
-                    480, 
+                    320, 
                     480
                 ], 
                 "rate": [
-                    1,
-                    25
+                    15,
+                    30
                 ]
             }, 
-            "container": "qtmux", 
-            "name": "Low", 
+            "container": "mp4mux", 
+            "name": "Normal", 
             "extension": "mp4", 
             "acodec": {
                 "passes": [
-                    "bitrate=96000 profile=LC"
+                    "bitrate=131072 profile=LC"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "faac", 
                 "depth": [
                     8, 
-                    24
+                    16
                 ], 
                 "channels": [
                     1, 
@@ -47,7 +47,7 @@
                 ], 
                 "width": [
                     8, 
-                    24
+                    16
                 ], 
                 "rate": [
                     48000,
@@ -58,35 +58,35 @@
         {
             "vcodec": {
                 "passes": [
-                    "pass=qual quantizer=21 me=umh subme=6 ref=2 threads=0"
+                    "profile=main speed-preset=faster bitrate=448 vbv-buf-capacity=500 pass=qual cabac=true dct8x8=false ref=3 bframes=3 b-pyramid=false weightb=true trellis=true me=umh subme=6 threads=0"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "x264enc", 
                 "height": [
-                    272, 
-                    272
+                    64, 
+                    208
                 ], 
                 "width": [
-                    480, 
-                    480
+                    128, 
+                    368
                 ], 
                 "rate": [
-                    1,
-                    30
+                    15,
+                    25
                 ]
             }, 
-            "container": "qtmux", 
-            "name": "Normal", 
+            "container": "mp4mux", 
+            "name": "Low", 
             "extension": "mp4", 
             "acodec": {
                 "passes": [
-                    "bitrate=128000 profile=LC"
+                    "bitrate=98304 profile=LC"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "faac", 
                 "depth": [
                     8, 
-                    24
+                    16
                 ], 
                 "channels": [
                     1, 
@@ -94,7 +94,7 @@
                 ], 
                 "width": [
                     8, 
-                    24
+                    16
                 ], 
                 "rate": [
                     48000,
