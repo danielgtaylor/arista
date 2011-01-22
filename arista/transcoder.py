@@ -87,7 +87,7 @@ class TranscoderOptions(object):
     """
     def __init__(self, uri = None, preset = None, output_uri = None, ssa = False,
                  subfile = None, subfile_charset = None, font = "Sans Bold 16",
-                 deinterlace = None):
+                 deinterlace = None, crop = None):
         """
             @type uri: str
             @param uri: The URI to the input file, device, or stream
@@ -104,13 +104,16 @@ class TranscoderOptions(object):
             @param font: Pango font description
             @type deinterlace: bool
             @param deinterlace: Force deinterlacing of the input data
+            @type crop: int tuple
+            @param crop: How much should be cropped on each side
+                                    (top, right, bottom, left)
         """
         self.reset(uri, preset, output_uri, ssa,subfile, subfile_charset, font,
-                   deinterlace)
+                   deinterlace, crop)
     
     def reset(self, uri = None, preset = None, output_uri = None, ssa = False,
               subfile = None, subfile_charset = None, font = "Sans Bold 16",
-              deinterlace = None):
+              deinterlace = None, crop = None):
         """
             Reset the input options to nothing.
         """
@@ -122,6 +125,7 @@ class TranscoderOptions(object):
         self.subfile_charset = subfile_charset
         self.font = font
         self.deinterlace = deinterlace
+        self.crop = crop
 
 # =============================================================================
 # The Transcoder
@@ -362,12 +366,20 @@ class Transcoder(gobject.GObject):
                             setattr(self.preset.vcodec, field, cur)
             
             # =================================================================
-            # Calculate video width/height and add black bars if necessary
+            # Calculate video width/height, crop and add black bars if necessary
             # =================================================================
+            vcrop = ""
+            crop = [0, 0, 0, 0]
+            if self.options.crop:
+                crop = self.options.crop
+                vcrop = "videocrop top=%i right=%i bottom=%i left=%i ! "  % \
+                        (crop[0], crop[1], crop[2], crop[3])
+            
             wmin, wmax = self.preset.vcodec.width
             hmin, hmax = self.preset.vcodec.height
             
-            owidth, oheight = self.info.videowidth, self.info.videoheight
+            owidth = self.info.videowidth - crop[1] - crop[3]
+            oheight = self.info.videoheight - crop[0] - crop[2]
             width, height = owidth, oheight
             
             # Scale width / height to fit requested min/max
@@ -515,9 +527,9 @@ class Transcoder(gobject.GObject):
                     vmux += "video_%d"
             
             cmd += " dmux. ! queue ! ffmpegcolorspace ! videorate !" \
-                   "%s %s %s videoscale ! %s ! %s%s ! tee " \
+                   "%s %s %s %s videoscale ! %s ! %s%s ! tee " \
                    "name=videotee ! queue ! %s" % \
-                   (deint, transform, sub, self.vcaps.to_string(), vbox,
+                   (deint, vcrop, transform, sub, self.vcaps.to_string(), vbox,
                     vencoder, vmux)
             
         if self.info.is_audio and self.preset.acodec and \
