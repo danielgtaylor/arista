@@ -182,6 +182,9 @@ if __name__ == "__main__":
                       default = None, help = _("Subtitle file encoding"))
     parser.add_option("-f", "--font", dest = "font", default = "Sans Bold 16",
                       help = _("Font to use when rendering subtitles"))
+    parser.add_option("-c", "--crop", dest = "crop", default = None, nargs=4, type=int,
+                      help = _("Amount of pixels to crop before transcoding     " \
+                               "Specify as: Top Right Bottom Left, default: None"))
     parser.add_option("-p", "--preset", dest = "preset", default = None,
                       help = _("Preset to encode to [default]"))
     parser.add_option("-d", "--device", dest = "device", default = "computer",
@@ -319,6 +322,12 @@ if __name__ == "__main__":
             for (id, preset) in device.presets.items():
                 if preset.name == options.preset:
                     break
+
+    if options.crop:
+        for c in options.crop:
+            if c < 0:
+                print _("All parameters to --crop/-c must be non negative integers. %i is negative, aborting.") % c
+                raise SystemExit()
         
         outputs = []
         queue = arista.queue.TranscodeQueue()
@@ -335,7 +344,8 @@ if __name__ == "__main__":
                                      ssa=options.ssa,
                                      subfile = options.subtitle,
                                      subfile_charset = options.subtitle_encoding,
-                                     font = options.font)
+                                     font = options.font,
+                                     crop = options.crop)
             
             queue.append(opts)
         
