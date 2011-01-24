@@ -16,7 +16,7 @@
     
     License
     -------
-    Copyright 2008 - 2010 Daniel G. Taylor <dan@programmer-art.org>
+    Copyright 2008 - 2011 Daniel G. Taylor <dan@programmer-art.org>
     
     This file is part of Arista.
 
@@ -51,6 +51,6 @@ def init():
     import transcoder
     import utils
 
-__version__ = _("0.9.6")
+__version__ = _("0.9.7")
 __author__ = _("Daniel G. Taylor <dan@programmer-art.org>")
 

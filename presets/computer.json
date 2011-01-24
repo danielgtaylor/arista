@@ -6,12 +6,12 @@
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "version": "1.6", 
+    "version": "1.7", 
     "icon": "file://computer.svg", 
-    "default": "H.264", 
+    "default": "WebM", 
     "presets": [
         {
-            "name": "Live Input", 
+            "name": "Live Input H.264", 
             "container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://computer-live.svg", 

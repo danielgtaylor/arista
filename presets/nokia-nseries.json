@@ -123,6 +123,7 @@
             "container": "qtmux", 
             "name": "N900 H.264", 
             "extension": "m4v", 
+            "icon": "file://nokia-n900.svg", 
             "acodec": {
                 "passes": [
                     "bitrate=128000 profile=LC"
@@ -155,6 +156,7 @@
             },
             "extension": "mp4",
             "container": "qtmux", 
+            "icon": "file://nokia-n900.svg", 
             "vcodec": {
                 "name": "xvidenc", 
                 "container": "qtmux", 

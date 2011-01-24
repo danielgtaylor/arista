@@ -1,5 +1,5 @@
 {
-    "version": "1.1", 
+    "version": "1.0", 
     "description": "H.264/AAC for Playstation 3", 
     "author": {
         "name": "Daniel G. Taylor", 
@@ -8,38 +8,39 @@
     "default": "Normal", 
     "make": "Sony", 
     "presets": [
-        {
+         {
             "vcodec": {
                 "passes": [
-                    "pass=cbr bitrate=1024 subme=4 threads=0"
+                    "profile=main speed-preset=slower bitrate=576 vbv-buf-capacity=500 pass=qual cabac=true dct8x8=false ref=3 bframes=3 b-pyramid=false weightb=true trellis=true me=umh subme=6 psy-tune=film threads=0"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "x264enc", 
                 "height": [
-                    240, 
-                    480
+                    128, 
+                    272
                 ], 
                 "width": [
                     320, 
-                    720
+                    480
                 ], 
                 "rate": [
-                    1,
+                    15,
                     30
                 ]
             }, 
-            "container": "qtmux", 
-            "name": "Low", 
+            "container": "mp4mux", 
+            "name": "PSP", 
             "extension": "mp4", 
+            "icon": "file://psp.svg",
             "acodec": {
                 "passes": [
-                    "bitrate=128000 profile=LC"
+                    "bitrate=131072 profile=LC"
                 ], 
-                "container": "qtmux", 
+                "container": "mp4mux", 
                 "name": "faac", 
                 "depth": [
                     8, 
-                    24
+                    16
                 ], 
                 "channels": [
                     1, 
@@ -47,11 +48,11 @@
                 ], 
                 "width": [
                     8, 
-                    24
+                    16
                 ], 
                 "rate": [
-                    8000,
-                    96000
+                    48000,
+                    48000
                 ]
             }
         }, 
@@ -76,8 +77,9 @@
                 ]
             }, 
             "container": "qtmux", 
-            "name": "Normal", 
+            "name": "PS3", 
             "extension": "mp4", 
+            "icon": "file://ps3.svg",
             "acodec": {
                 "passes": [
                     "bitrate=196000 profile=LC"
@@ -103,6 +105,6 @@
             }
         }
     ], 
-    "model": "Playstation 3", 
+    "model": "Playstation", 
     "icon": "file://ps3.svg"
 }

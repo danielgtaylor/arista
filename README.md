@@ -1,4 +1,4 @@
-Arista Transcoder 0.9.6
+Arista Transcoder 0.9.7
 =======================
 A simple preset-based transcoder for the GNOME Desktop and a small script for 
 terminal-based transcoding. Settings are chosen based on output device and 
