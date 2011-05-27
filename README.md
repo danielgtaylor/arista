@@ -36,11 +36,17 @@ Dependencies
  * gstreamer-plugins-good
  * gstreamer-plugins-bad
  * gstreamer-plugins-ugly
- 
+
 Debian users may need to install these additional dependencies:
 
  * gstreamer0.10-lame
  * gstreamer0.10-plugins-really-bad
+
+Fedora users first need to enable RPM Fusion repo because they won't have dependencies for Arista (http://rpmfusion.org/). Then install these additional dependencies:
+
+ * gnome-python2-rsvg
+ * nautilus-python (if using Nautilus extension)
+ * gstreamer-plugins-bad-nonfree
 
 Installation
 ------------
