@@ -414,6 +414,15 @@ class MainWindow(object):
         client.notify_add(CONFIG_PATH + "/show_toolbar", 
                           self.on_gconf_show_toolbar)
         
+        try:
+            value = client.get_value(CONFIG_PATH + "/last_open_path")
+            if value and os.path.exists(value):
+                self.last_open_path = value
+            else:
+                self.last_open_path = DEFAULT_OPEN_PATH
+        except ValueError:
+            self.last_open_path = DEFAULT_OPEN_PATH
+        
         # Show the interface!
         self.preview.hide()
         self.hbox_progress.hide()
