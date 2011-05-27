@@ -49,13 +49,16 @@ class AristaInstall(install_data):
         if self.root is None:
             self.root = ''
         
-        # Byte compile any python files that were installed as data files
-        for path, fnames in data_files:
-            for fname in fnames:
-                if fname.endswith(".py"):
-                    full = os.path.join(self.root + sys.prefix, path, fname)
-                    print "byte-compiling %s" % full
-                    byte_compile([full], prefix=self.root, base_dir=sys.prefix)
+        if hasattr(sys, "dont_write_bytecode") and sys.dont_write_bytecode:
+            print "byte-compiling disabled"
+        else:
+            # Byte compile any python files that were installed as data files
+            for path, fnames in data_files:
+                for fname in fnames:
+                    if fname.endswith(".py"):
+                        full = os.path.join(self.root + sys.prefix, path, fname)
+                        print "byte-compiling %s" % full
+                        byte_compile([full], prefix=self.root, base_dir=sys.prefix)
 
 setup(
     name = "arista",
