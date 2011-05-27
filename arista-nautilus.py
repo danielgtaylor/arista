@@ -14,7 +14,7 @@
     
     License
     -------
-    Copyright 2010 Daniel G. Taylor <dan@programmer-art.org>
+    Copyright 2011 Daniel G. Taylor <dan@programmer-art.org>
     
     This file is part of Arista.
 
@@ -174,6 +174,6 @@ class MediaConvertExtension(nautilus.MenuProvider):
             Called when a menu item is clicked. Start a transcode job for
             the selected device and preset, and show the user the progress.
         """
-        command = "arista-gtk  --simple -d %s -p \"%s\" %s &" % (device_name, preset_name, " ".join(["\"%s\"" % f for f in files]))
+        command = "arista-gtk --simple -d %s -p \"%s\" %s &" % (device_name, preset_name, " ".join(["\"%s\"" % f for f in files]))
         os.system(command)
 
