@@ -106,24 +106,24 @@
         {
             "vcodec": {
                 "passes": [
-                    "pass=qual quantizer=23  me=umh subme=6 cabac=0 threads=0"
+                    "pass=qual quantizer=23  me=umh subme=6 cabac=0 threads=0 profile=baseline"
                 ], 
                 "container": "qtmux", 
                 "name": "x264enc", 
-                "height": [
-                    480, 480
-                ], 
                 "width": [
-                    800, 800
+                    120, 848
+                ], 
+                "height": [
+                    120, 480
                 ], 
                 "rate": [
-                    25, 25
+                    1, 30
                 ]
             }, 
             "container": "qtmux", 
             "name": "N900 H.264", 
             "extension": "m4v", 
-            "icon": "file://nokia-n900.svg", 
+            "icon": "file://nokia-n900.svg",
             "acodec": {
                 "passes": [
                     "bitrate=128000 profile=LC"
@@ -154,9 +154,9 @@
                 "name": "Abimanyu G",
                 "email": "me@abimanyu.in"
             },
+            "icon": "file://nokia-n900.svg",
             "extension": "mp4",
             "container": "qtmux", 
-            "icon": "file://nokia-n900.svg", 
             "vcodec": {
                 "name": "xvidenc", 
                 "container": "qtmux", 
