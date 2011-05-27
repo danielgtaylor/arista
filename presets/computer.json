@@ -1,12 +1,12 @@
 {
     "make": "Generic", 
     "model": "Computer", 
-    "description": "H.264/AAC or Theora/Vorbis for the computer", 
+    "description": "WebM, H.264/AAC and Theora/Vorbis for the computer", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "version": "1.7", 
+    "version": "1.8", 
     "icon": "file://computer.svg", 
     "default": "WebM", 
     "presets": [
