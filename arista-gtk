@@ -888,12 +888,6 @@ class MainWindow(object):
         if len(self.queue):
             self.stop_processing_entry(self.queue[0])
     
-    def on_queue_row_changed(self, model, path, iter):
-        pass
-    
-    def on_queue_row_deleted(self, model, path):
-        pass
-    
     def on_install_device(self, widget):
         dialog = gtk.FileChooserDialog(title=_("Choose Source File..."),
                         buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
