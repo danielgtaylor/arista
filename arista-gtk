@@ -1677,6 +1677,280 @@ class AddDialog(object):
         self.window.destroy()
         
         gtk.gdk.threads_leave()
+    
+    def on_new_clicked(self, widget):
+        webbrowser.open("http://www.transcoder.org/presets/create")
+    
+    def on_info_clicked(self, widget):
+        """
+            Display a very simple dialog showing information about a device
+            preset. Currently shown are:
+            
+             * Icon
+             * Name
+             * Description
+             * Author
+             * Version
+            
+        """
+        model, iter = self.presets_view.get_selection().get_selected()
+        
+        device, preset = model.get_value(iter, 2)
+        
+        dialog = PresetDialog(preset)
+        return
+        
+        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
+        
+        image = _get_icon_pixbuf(preset.icon, width, height)
+        
+        dialog = gtk.AboutDialog()
+        dialog.set_name("%(device)s %(preset)s" % {
+            "device": device.name,
+            "preset": preset.name,
+        })
+        dialog.set_version(preset.version or device.version)
+        dialog.set_copyright(str(preset.author) or str(device.author))
+        dialog.set_comments(preset.description or device.description)
+        
+        if image:
+            dialog.set_logo(image)
+        
+        dialog.run()
+        
+        dialog.destroy()
+
+class PresetDialog(object):
+    """
+        Arista Preset Dialog
+        ====================
+        A dialog for viewing and editing preset properties.
+    """
+    CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG2 PS", "MPEG2 TS", "DVD (VOB)", "Matroska", "Ogg"]
+    MUXER_TO_CONTAINER = {
+        "webmmux": 0,
+        "ffmux_webm": 0,
+        "mp4mux": 1,
+        "ffmux_mp4": 1,
+        "qtmux": 2,
+        "ffmux_mov": 2,
+        "avimux": 3,
+        "ffmux_avi": 3,
+        "mpegpsmux": 4,
+        "mpegtsmux": 5,
+        "ffmux_mpegts": 5,
+        "ffmux_vob": 6,
+        "ffmux_dvd": 6,
+        "matroskamux": 7,
+        "ffmux_matroska": 7,
+        "oggmux": 8,
+        "ffmux_ogg": 8,
+    }
+    CONTAINER_TO_MUXER = {
+        "WebM": "webmmux",
+        "MP4": "mp4mux",
+        "MOV": "qtmux",
+        "AVI": "avimux",
+        "MPEG2 PS": "mpegpsmux",
+        "MPEG2 TS": "mpegtsmux",
+        "DVD (VOB)": "ffmux_dvd",
+        "Matroska": "matroskamux",
+        "Ogg": "oggmux",
+    }
+    ENCODER_TO_VCODEC = {
+        "vp8enc": "VP8",
+        "x264enc": "H.264",
+        "xvidenc": "MPEG4 / DivX / XviD",
+        "mpeg2enc": "MPEG2",
+        "theoraenc": "Theora",
+    }
+    ENCODER_TO_ACODEC = {
+        "faac": "AAC",
+        "lame": "MP3",
+        "vorbisenc": "Vorbis",
+        "ffenc_ac3": "AC3",
+    }
+    EFFECT_LIST = ["None", "Rotate clockwise", "Rotate counter-clockwise", "Flip vertical", "Flip horizontal"]
+    EFFECT_TO_STRING = {
+        "None": "",
+        "Rotate clockwise": "videoflip method=clockwise",
+        "Rotate counter-clockwise": "videoflip method=counterclockwise",
+        "Flip vertical": "videoflip method=vertical-flip",
+        "Flip horizontal": "videoflip method=horizontal-flip",
+    }
+    
+    def __init__(self, preset):
+        ui_path = arista.utils.get_path("ui", "preset.ui")
+        
+        self.builder = gtk.Builder()
+        self.builder.add_from_file(ui_path)
+        
+        self.window = self.builder.get_object("preset_dialog")
+        
+        self.image = self.builder.get_object("image_icon")
+        self.short_name = self.builder.get_object("entry_short_name")
+        self.description = self.builder.get_object("entry_description")
+        self.make = self.builder.get_object("entry_make")
+        self.model = self.builder.get_object("entry_model")
+        self.preset_name = self.builder.get_object("entry_preset")
+        self.author_name = self.builder.get_object("entry_author_name")
+        self.author_email = self.builder.get_object("entry_author_email")
+        self.version = self.builder.get_object("entry_version")
+        self.container = self.builder.get_object("combo_container")
+        
+        self.video_codec = self.builder.get_object("combo_video_codec")
+        self.video_options = self.builder.get_object("entry_video_options")
+        self.width_min = self.builder.get_object("spin_width_min")
+        self.width_max = self.builder.get_object("spin_width_max")
+        self.height_min = self.builder.get_object("spin_height_min")
+        self.height_max = self.builder.get_object("spin_height_max")
+        self.framerate_min = self.builder.get_object("spin_framerate_min")
+        self.framerate_max = self.builder.get_object("spin_framerate_max")
+        self.effect = self.builder.get_object("combo_effect")
+        
+        self.audio_codec = self.builder.get_object("combo_audio_codec")
+        self.audio_options = self.builder.get_object("entry_audio_options")
+        self.channels_min = self.builder.get_object("spin_channels_min")
+        self.channels_max = self.builder.get_object("spin_channels_max")
+        
+        # Set general values
+        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
+        image = _get_icon_pixbuf(preset.icon or preset.device.icon, width, height)
+        self.image.set_from_pixbuf(image)
+        
+        self.short_name.set_text(".".join(os.path.basename(preset.device.filename).split(".")[:-1]))
+        self.description.set_text(preset.description or preset.device.description)
+        self.make.set_text(preset.device.make)
+        self.model.set_text(preset.device.model)
+        self.preset_name.set_text(preset.name)
+        self.author_name.set_text(preset.author.name or preset.device.author.name)
+        self.author_email.set_text(preset.author.email or preset.device.author.email)
+        self.version.set_text(preset.version or preset.device.version)
+        
+        # Setup list models for combo boxes
+        cstore = gtk.ListStore(gobject.TYPE_STRING)
+        self.container.set_model(cstore)
+        text_cell = gtk.CellRendererText()
+        self.container.pack_start(text_cell, True)
+        self.container.add_attribute(text_cell, 'text', 0)
+        
+        # Setup possible containers
+        for attr in self.CONTAINER_LIST:
+            iter = cstore.append()
+            cstore.set_value(iter, 0, attr)
+        
+        vstore = gtk.ListStore(gobject.TYPE_STRING)
+        self.video_codec.set_model(vstore)
+        text_cell = gtk.CellRendererText()
+        self.video_codec.pack_start(text_cell, True)
+        self.video_codec.add_attribute(text_cell, 'text', 0)
+        
+        astore = gtk.ListStore(gobject.TYPE_STRING)
+        self.audio_codec.set_model(astore)
+        text_cell = gtk.CellRendererText()
+        self.audio_codec.pack_start(text_cell, True)
+        self.audio_codec.add_attribute(text_cell, 'text', 0)
+        
+        # Set active container
+        self.container.set_active(self.MUXER_TO_CONTAINER.get(preset.container, 0))
+        
+        # Update codec combos to show valid codecs for selected container
+        self.update_codecs(self.CONTAINER_LIST[self.MUXER_TO_CONTAINER[preset.container]])
+        
+        for widget, codec in [(self.video_codec, self.ENCODER_TO_VCODEC[preset.vcodec.name]), (self.audio_codec, self.ENCODER_TO_ACODEC[preset.acodec.name])]:
+            for i, row in enumerate(widget.get_model()):
+                if row[0] == codec:
+                    widget.set_active(i)
+        
+        # Set codec values
+        #self.video_codec.set_active(preset.vcodec.name)
+        self.video_options.set_text(";".join(preset.vcodec.passes))
+        self.width_min.set_value(preset.vcodec.width[0])
+        self.width_max.set_value(preset.vcodec.width[1])
+        self.height_min.set_value(preset.vcodec.height[0])
+        self.height_max.set_value(preset.vcodec.height[1])
+        self.framerate_min.set_value(preset.vcodec.rate[0])
+        self.framerate_max.set_value(preset.vcodec.rate[1])
+        
+        self.audio_options.set_text(";".join(preset.acodec.passes))
+        self.channels_min.set_value(preset.acodec.channels[0])
+        self.channels_max.set_value(preset.acodec.channels[1])
+        
+        # Setup effects
+        estore = gtk.ListStore(gobject.TYPE_STRING)
+        self.effect.set_model(estore)
+        text_cell = gtk.CellRendererText()
+        self.effect.pack_start(text_cell, True)
+        self.effect.add_attribute(text_cell, 'text', 0)
+        
+        for attr in self.EFFECT_LIST:
+            iter = estore.append()
+            estore.set_value(iter, 0, attr)
+        
+        self.effect.set_active(0)
+        
+        self.builder.connect_signals(self)
+        
+        self.preset = preset
+        
+        self.window.show_all()
+    
+    def on_close_clicked(self, widget):
+        self.window.destroy()
+    
+    def on_container_changed(self, widget):
+        iter = self.container.get_active_iter()
+        container = self.container.get_model().get_value(iter, 0)
+        self.update_codecs(container)
+    
+    def update_codecs(self, container):
+        vcodecs = {
+            "WebM": ["VP8"],
+            "MP4": ["H.264", "MPEG4 / DivX / XviD"],
+            "MOV": ["H.264", "MPEG4 / DivX / XviD"],
+            "AVI": ["H.264", "MPEG4 / DivX / XviD"],
+            "MPEG2 PS": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "MPEG"],
+            "MPEG2 TS": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "MPEG"],
+            "DVD (VOB)": ["MPEG2"],
+            "Matroska": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "VP8", "Theora"],
+            "Ogg": ["Theora"],
+        }.get(container, ["No known codecs"])
+        
+        acodecs = {
+            "WebM": ["Vorbis"],
+            "MP4": ["AAC", "MP3"],
+            "MOV": ["AAC", "MP3"],
+            "AVI": ["AAC", "MP3", "Vorbis"],
+            "MPEG2 PS": ["AAC", "MP3"],
+            "MPEG2 TS": ["AAC", "MP3"],
+            "DVD (VOB)": ["MP3"],
+            "Matroska": ["AAC", "MP3", "Vorbis"],
+            "Ogg": ["Vorbis"],
+        }.get(container, ["No known codecs"])
+        
+        for widget, codecs in [(self.video_codec, vcodecs), (self.audio_codec, acodecs)]:
+            iter = widget.get_active_iter()
+            model = widget.get_model()
+            selected = iter and model.get_value(iter, 0) or ""
+            new_selected = 0
+            model.clear()
+            
+            for i, codec in enumerate(codecs):
+                iter = model.append()
+                model.set_value(iter, 0, codec)
+                if codec == selected:
+                    new_selected = i
+                    
+            widget.set_active(new_selected)
+    
+    def on_vcodec_changed(self, widget):
+        iter = self.video_codec.get_active_iter()
+        vcodec = iter and self.video_codec.get_model().get_value(iter, 0) or None
+        
+        
+    
+    def on_acodec_changed(self, widget):
+        pass
 
 class AboutDialog(object):
     """

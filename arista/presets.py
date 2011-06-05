@@ -101,7 +101,7 @@ class Author(object):
         self.email = email
     
     def __repr__(self):
-        return "%s <%s>" % (self.name, self.email)
+        return (self.name or self.email) and "%s <%s>" % (self.name, self.email) or ""
 
 class Device(object):
     """
@@ -261,8 +261,14 @@ class Device(object):
             vcodec = preset.get("vcodec", {})
             device.presets[preset.get("name", "")] = Preset(**{
                 "name": preset.get("name", ""),
+                "description": preset.get("description", ""),
+                "author": Author(
+                    name = preset.get("author", {}).get("name", ""),
+                    email = preset.get("author", {}).get("email", ""),
+                ),
                 "container": preset.get("container", ""),
                 "extension": preset.get("extension", ""),
+                "version": preset.get("version", ""),
                 "icon": preset.get("icon", ""),
                 "acodec": AudioCodec(**{
                     "name": acodec.get("name", ""),
@@ -293,7 +299,8 @@ class Preset(object):
         device.
     """
     def __init__(self, name = "", container = "", extension = "", 
-                 acodec = None, vcodec = None, device = None, icon = None):
+                 acodec = None, vcodec = None, device = None, icon = None,
+                 version = None, description = None, author = None):
         """
             @type name: str
             @param name: The name of the preset, e.g. "High Quality"
@@ -309,11 +316,14 @@ class Preset(object):
             @param device: A link back to the device this preset belongs to
         """
         self.name = name
+        self.description = description
+        self.author = author
         self.container = container
         self.extension = extension
         self.acodec = acodec
         self.vcodec = vcodec
         self.device = device
+        self.version = version
         self.icon = icon
     
     def __repr__(self):
@@ -469,8 +479,8 @@ def load_directory(directory):
         if filename.endswith("json"):
             try:
                 _presets[filename[:-5]] = load(os.path.join(directory, filename))
-            except:
-                _log.warning("Problem loading %s!" % filename)
+            except Exception, e:
+                _log.warning("Problem loading %s! %s" % (filename, str(e)))
     return _presets
 
 def get():
