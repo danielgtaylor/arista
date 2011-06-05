@@ -931,34 +931,6 @@ class PrefsDialog(object):
         self.check_show_live = self.builder.get_object("check_show_live")
         self.check_updates = self.builder.get_object("check_updates")
         self.spin_live_fps = self.builder.get_object("spin_live_fps")
-        self.presets_view = self.builder.get_object("treeview_presets")
-        
-        # Setup the preset information list
-        self.presets_model = gtk.ListStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING, 
-                                           gobject.TYPE_PYOBJECT)
-        
-        self.presets_view.set_model(self.presets_model)
-        
-        pixbuf_renderer = gtk.CellRendererPixbuf()
-        text_renderer = gtk.CellRendererText()
-        
-        column = gtk.TreeViewColumn(_("Information"))
-        column.pack_start(pixbuf_renderer, False)
-        column.set_attributes(pixbuf_renderer, pixbuf = 0)
-        column.pack_start(text_renderer)
-        column.set_attributes(text_renderer, markup = 1)
-        self.presets_view.append_column(column)
-        
-        items = arista.presets.get().items()
-        for (id, device) in sorted(items, lambda x,y: cmp(x[1].name, y[1].name)):
-            iter = self.presets_model.append()
-            self.presets_model.set_value(iter, 0, 
-                                         _get_icon_pixbuf(device.icon, 32, 32))
-            self.presets_model.set_value(iter, 1, "<b>%s</b>\n%s" % \
-                                         (device.name, device.description))
-            self.presets_model.set_value(iter, 2, device)
-        
-        self.presets_view.get_selection().select_path((0,))
         
         # Setup configuration system
         client = gconf.client_get_default()
@@ -1005,37 +977,6 @@ class PrefsDialog(object):
         
         # Show the window and go!
         self.window.show_all()
-    
-    def on_about(self, widget):
-        """
-            Display a very simple dialog showing information about a device
-            preset. Currently shown are:
-            
-             * Icon
-             * Name
-             * Description
-             * Author
-             * Version
-            
-        """
-        model, iter = self.presets_view.get_selection().get_selected()
-        device = model.get_value(iter, 2)
-        
-        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
-        image = _get_icon_pixbuf(device.icon, width, height)
-        
-        dialog = gtk.AboutDialog()
-        dialog.set_name(device.name)
-        dialog.set_version(device.version)
-        dialog.set_copyright(str(device.author))
-        dialog.set_comments(device.description)
-        
-        if image:
-            dialog.set_logo(image)
-        
-        dialog.run()
-        
-        dialog.destroy()
     
     def on_close(self, widget, response):
         """
