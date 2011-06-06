@@ -1667,7 +1667,7 @@ class PresetDialog(object):
         ====================
         A dialog for viewing and editing preset properties.
     """
-    CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG2 PS", "MPEG2 TS", "DVD (VOB)", "Matroska", "Ogg"]
+    CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG2 PS", "MPEG2 TS", "DVD (VOB)", "Matroska", "Ogg", "FLV"]
     MUXER_TO_CONTAINER = {
         "webmmux": 0,
         "ffmux_webm": 0,
@@ -1686,6 +1686,8 @@ class PresetDialog(object):
         "ffmux_matroska": 7,
         "oggmux": 8,
         "ffmux_ogg": 8,
+        "flvmux": 9,
+        "ffmux_flv": 9,
     }
     CONTAINER_TO_MUXER = {
         "WebM": "webmmux",
@@ -1697,6 +1699,7 @@ class PresetDialog(object):
         "DVD (VOB)": "ffmux_dvd",
         "Matroska": "matroskamux",
         "Ogg": "oggmux",
+        "FLV": "flvmux",
     }
     ENCODER_TO_VCODEC = {
         "vp8enc": "VP8",
@@ -1704,6 +1707,7 @@ class PresetDialog(object):
         "xvidenc": "MPEG4 / DivX / XviD",
         "mpeg2enc": "MPEG2",
         "theoraenc": "Theora",
+        "ffenc_flv": "FLV / Spark / H.263",
     }
     ENCODER_TO_ACODEC = {
         "faac": "AAC",
@@ -1855,6 +1859,7 @@ class PresetDialog(object):
             "DVD (VOB)": ["MPEG2"],
             "Matroska": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "VP8", "Theora"],
             "Ogg": ["Theora"],
+            "FLV": ["H.264", "FLV / Spark / H.263"],
         }.get(container, ["No known codecs"])
         
         acodecs = {
@@ -1867,6 +1872,7 @@ class PresetDialog(object):
             "DVD (VOB)": ["MP3"],
             "Matroska": ["AAC", "MP3", "Vorbis"],
             "Ogg": ["Vorbis"],
+            "FLV": ["MP3"],
         }.get(container, ["No known codecs"])
         
         for widget, codecs in [(self.video_codec, vcodecs), (self.audio_codec, acodecs)]:
