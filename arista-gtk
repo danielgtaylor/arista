@@ -49,16 +49,24 @@ import gtk
 if __name__ != "__main__":
     import gst
 
+_log = logging.getLogger("arista-gtk")
+
 try:
     import pynotify
     pynotify.init("icon-summary-body")
 except ImportError:
     pynotify = None
+    _log.info("Unable to import pynotify - desktop notifications disabled")
+
+try:
+    import webkit
+except ImportError:
+    webkit = None
+    _log.info("Unable to import webkit - in-app documentation disabled")
 
 import arista
 
 _ = gettext.gettext
-_log = logging.getLogger("arista-gtk")
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -1703,7 +1711,7 @@ class PresetDialog(object):
     }
     ENCODER_TO_VCODEC = {
         "vp8enc": "VP8",
-        "x264enc": "H.264",
+        "x264enc": "H.264 / AVC",
         "xvidenc": "MPEG4 / DivX / XviD",
         "mpeg2enc": "MPEG2",
         "theoraenc": "Theora",
@@ -1851,13 +1859,13 @@ class PresetDialog(object):
     def update_codecs(self, container):
         vcodecs = {
             "WebM": ["VP8"],
-            "MP4": ["H.264", "MPEG4 / DivX / XviD"],
-            "MOV": ["H.264", "MPEG4 / DivX / XviD"],
-            "AVI": ["H.264", "MPEG4 / DivX / XviD"],
-            "MPEG2 PS": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "MPEG"],
-            "MPEG2 TS": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "MPEG"],
+            "MP4": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
+            "MOV": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
+            "AVI": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
+            "MPEG2 PS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
+            "MPEG2 TS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
             "DVD (VOB)": ["MPEG2"],
-            "Matroska": ["H.264", "MPEG4 / DivX / XviD", "MPEG2", "VP8", "Theora"],
+            "Matroska": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2", "VP8", "Theora"],
             "Ogg": ["Theora"],
             "FLV": ["H.264", "FLV / Spark / H.263"],
         }.get(container, ["No known codecs"])
@@ -1894,10 +1902,60 @@ class PresetDialog(object):
         iter = self.video_codec.get_active_iter()
         vcodec = iter and self.video_codec.get_model().get_value(iter, 0) or None
         
-        
-    
     def on_acodec_changed(self, widget):
         pass
+    
+    def on_vcodec_help_clicked(self, widget):
+        iter = self.video_codec.get_active_iter()
+        vcodec = iter and self.video_codec.get_model().get_value(iter, 0) or None
+        self.on_codec_help(vcodec)
+    
+    def on_acodec_help_clicked(self, widget):
+        iter = self.audio_codec.get_active_iter()
+        acodec = iter and self.audio_codec.get_model().get_value(iter, 0) or None
+        self.on_codec_help(acodec)
+    
+    def on_codec_help(self, codec):
+        try:
+            html_path = arista.utils.get_path("help", "%s.html" % codec.split(" ")[0].lower())
+        except IOError:
+            html_path = arista.utils.get_path("help", "404.html")
+        
+        html_path = "file://" + html_path
+        
+        if webkit:
+            CodecHelpDialog(html_path)
+        else:
+            webbrowser.open(html_path)
+
+class CodecHelpDialog(object):
+    """
+        Arista Codec Help Dialog
+        ========================
+        A dialog showing various options for codecs.
+    """
+    def __init__(self, html_path):
+        ui_path = arista.utils.get_path("ui", "codec.ui")
+        
+        self.builder = gtk.Builder()
+        self.builder.add_from_file(ui_path)
+        
+        self.window = self.builder.get_object("codec_dialog")
+        
+        # Add web view to dialog
+        scrolled_window = self.builder.get_object("scrolledwindow")
+        self.webkit = webkit.WebView()
+        scrolled_window.add(self.webkit)
+        
+        # Load documentation for specific codec
+        self.webkit.load_uri(html_path)
+        
+        self.builder.connect_signals(self)
+        
+        self.window.show_all()
+    
+    def on_close(self, widget):
+        self.window.destroy()
 
 class AboutDialog(object):
     """

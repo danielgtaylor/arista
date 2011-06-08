@@ -1,0 +1,33 @@
+body {
+    font-size: 10pt;
+    margin: 1em;
+}
+
+h1 {
+    font-size: 150%;
+}
+
+h2 {
+    font-size: 120%;
+}
+
+pre {
+    margin-left: 1em;
+}
+
+code {
+    background-color: #eee;
+    border: 1px solid #ddd;
+    padding: 0.25em;
+}
+
+iframe {
+   padding: 0em;
+   margin: -1em -1em 0em -1em;
+}
+
+.options > ul {
+    list-style: none;
+    padding-left: 0px;
+}
+

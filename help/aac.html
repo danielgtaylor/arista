@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>AAC</h1>
+        <p>The MPEG2 / MPEG4 audio codec. Comparable to Vorbis.</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate to control file size. Default is 128000.<br/>
+                    <pre><code>bitrate=196000</code></pre>
+                </li>
+                <li>
+                   <strong>Profile</strong>><br/>
+                   Set the AAC encoding profile.<br/>
+                   <ul>
+                       <li>1: Main profile</li>
+                       <li>2: Low complexity profile (worst, default)</li>
+                       <li>3: Scalable sampling rate profile</li>
+                       <li>4: Long term prediction profile (best)</li>
+                   </ul>
+                   <pre><code>profile=4</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

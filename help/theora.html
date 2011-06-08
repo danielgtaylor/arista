@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>Theora</h1>
+        <p>Theora is an older-generation patent and royalty-free codec comparable to MPEG4 / DivX / XviD. It is based on VP3, which has mostly been superceded by VP8 (used in WebM).</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>Quality</strong> (0 - 63)<br/>
+                    Set a specific visual quality (recommended). Default is 48.<br/>
+                    <pre><code>quality=35</code></pre>
+                </li>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate in kbps to control file size. Default is unset.<br/>
+                    <pre><code>bitrate=512000</code></pre>
+                </li>
+                <li>
+                    <strong>Speed level</strong> (0 - 3)<br/>
+                    Set the amount of motion vector searching (and the speed of encoding). Default is 1.<br/>
+                    <pre><code>speed-level=2</code></pre>
+                </li>
+                <li>
+                    <strong>Multi-pass mode</strong><br/>
+                    Set the mode of operation for single or multiple passes.</br>
+                    <ul>
+                        <li>single-pass: single pass encoding (default)</li>
+                        <li>first-pass: first of two passes</li>
+                        <li>second-pass: second of two passes</li>
+                    </ul>
+                    <pre><code>multipass-mode=one-pass</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

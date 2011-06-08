@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>FLV / Spark / H.263</h1>
+        <p>FLV is an older-generation codec designed for Adobe Flash. It is comparable to MPEG4 / DivX / XviD and Theora. It is commonly only used in the Flash Video container and has been mostly replaced by H.264.</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>Quantizer</strong> (0 - 30)<br/>
+                    Set a specific visual quality (recommended). Default is 0.01.<br/>
+                    <pre><code>quality=10</code></pre>
+                </li>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate to control file size. Default is unset.<br/>
+                    <pre><code>bitrate=512000</code></pre>
+                </li>
+                <li>
+                    <strong>Pass</strong><br/>
+                    Set the mode of operation for single or multiple passes.</br>
+                    <ul>
+                        <li>cbr: single pass encoding (default)</li>
+                        <li>quant: constant quality mode (recommended)</li>
+                        <li>pass1: first of two passes</li>
+                        <li>pass2: second of two passes</li>
+                    </ul>
+                    <pre><code>pass=quant</code></pre>
+                </li>
+                <li>
+                    <strong>Threads</strong><br/>
+                    Use multiple threads when encoding.<br/>
+                    <pre><code>threads=2</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

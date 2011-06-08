@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <div class="options">
+            <h2>Common Options</h2>
+            <ul>
+                <li>
+                    <strong>Multi-pass encoding</strong><br/>
+                    Encode in multiple passes, which is useful for bitrate-based encoding. This can be achieved by putting a semicolon between options for differenc passes, for example:<br/>
+                    <pre><code>bitrate=??? pass=1; bitrate=??? pass=2</code></pre>
+                </li>
+                <li>
+                    <strong>Multi-threading</strong><br/>
+                    For encoders that support multi-threading (using multiple processor cores simultaneously), you can use a special variable which will be replaced by the number of CPU cores.<br/>
+                    <pre><code>%(threads)s</code></pre>
+                    If an encoder has the option <em>threads</em> then this would look like:<br/>
+                    <pre><code>threads=%(threads)s</code></pre>
+                </li>
+            </ul>
+        </div>
+    </body>
+</html>

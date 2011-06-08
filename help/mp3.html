@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>MP3</h1>
+        <p>An older-generation MPEG1 audio codec, now the most popular audio codec in the world. AAC and Vorbis are better quality, but nearly every device in existence supports MP3.</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>VBR Quality</strong> (0 - 9)<br/>
+                    Set a specific audio quality (recommended). Default is 4. Lower numbers are higher quality.<br/>
+                    <pre><code>vbr-quality=2</code></pre>
+                </li>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate in kbps to control file size. Default is 128.<br/>
+                    <pre><code>bitrate=196</code></pre>
+                </li>
+                <li>
+                   <strong>Variable Bitrate</strong> (number)<br/>
+                   Set bitrate mode.<br/>
+                   <ul>
+                       <li>none: constant bitrate (default)</li>
+                       <li>old: old VBR algorithm</li>
+                       <li>abr: VBR average bitrate</li>
+                       <li>new: Lame's new VBR algorithm (recommended)</li>
+                   </ul>
+                   <pre><code>vbr=new</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

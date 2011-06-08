@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>MPEG4 / DivX / XviD</h1>
+        <p>The original MPEG4 codec, now replaced by H.264. DivX and XviD are names of alternative implementations of the same codec. MPEG4 is still widely used and is widely supported by media players.</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>Quantizer</strong> (2 - 31)<br/>
+                    Set a specific visual quality (recommended). Lower is better. Default is 2. Must be used with pass=quant.<br/>
+                    <pre><code>quantizer=15</code></pre>
+                </li>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate to control file size. Default is 1800000.<br/>
+                    <pre><code>bitrate=512000</code></pre>
+                </li>
+                <li>
+                    <strong>Multi-pass mode</strong><br/>
+                    Set the mode of operation for single or multiple passes.</br>
+                    <ul>
+                        <li>cbr: constant bitrate (default)</li>
+                        <li>quant: constant quantizer / quality (recommended)</li>
+                        <li>pass1: first pass in two-pass mode</li>
+                        <li>pass2: second pass in two-pass mode</li>
+                    </ul>
+                    <pre><code>pass=quant</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>H.264 / AVC</h1>
+        <p>H.264 / AVC, also known as MPEG4 Part 10 is the latest MPEG video codec. It is comparable to VP8, and while somewhat better in quality it is encumbered by patents and royalty fees. It is currently the most widely supported format.</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>Quantizer</strong> (1 - 50)<br/>
+                    Set a specific visual quality (recommended). Default is 21. Must use with pass=quant.<br/>
+                    <pre><code>quantizer=23</code></pre>
+                </li>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate in kbps to control file size. Default is 2048 kbps. Must use with pass=cbr, pass1, or pass2.<br/>
+                    <pre><code>bitrate=512</code></pre>
+                </li>
+                <li>
+                    <strong>Profile</strong><br/>
+                    Set an encoding profile. This may override other options. Defautl is main.
+                    <ul>
+                        <li>baseline: H.264 Baseline Profile</li>
+                        <li>main: H.264 Main Profile</li>
+                        <li>high: H.264 High Profile</li>
+                    </ul>
+                    <pre><code>profile=baseline</code></pre>
+                </li>
+                <li>
+                    <strong>Speed Preset</strong>
+                    Set a speed preset. This automatically configures other options listed below. Default is medium.
+                    <ul>
+                        <li>ultrafast</li>
+                        <li>superfast</li>
+                        <li>veryfast</li>
+                        <li>faster</li>
+                        <li>fast</li>
+                        <li>medium</li>
+                        <li>slow</li>
+                        <li>slower</li>
+                        <li>veryslow</li>
+                    </ul>
+                    <pre><code>speed-preset=ultrafast</code></pre>
+                </li>
+                <li>
+                    <strong>CABAC</strong> (boolean)<br/>
+                    Choose between using CABAC or CAVLC. CABAC is better but not supported by all devices (e.g. the ones requiring H.264 Baseline profile). Default is true.<br/>
+                    <pre><code>cabac=false</code></pre>
+                </li>
+                <li>
+                    <strong>Motion estimation</strong><br/>
+                    Set a motion estimation method.<br/>
+                    <ul>
+                        <li>dia: diamond search (fastest, worst)</li>
+                        <li>hex: hexagon search (default)</li>
+                        <li>umh: uneven multi-hexagonal search (recommended)</li>
+                        <li>esa: exhaustive search (slowest, best)</li>
+                    </ul>
+                    <pre><code>me=umh</code></pre>
+                </li>
+                <li>
+                    <strong>Subpixel motion estimation</strong> (1 - 6)<br/>
+                    Set a subpixel motion estimation and partition decision quality. The higher the number the slower the encoding and better the final quality. Default is 1.<br/>
+                    <pre><code>subme=5</code></pre>
+                </li>
+                <li>
+                    <strong>Pass</strong><br/>
+                    Set the mode of operation for single or multiple passes.</br>
+                    <ul>
+                        <li>cbr: Constant bitrate (default)</li>
+                        <li>qual: Constant quality (recommended)</li>
+                        <li>pass1: first of two passes</li>
+                        <li>pass2: second of two passes</li>
+                    </ul>
+                    <pre><code>pass=qual</code></pre>
+                </li>
+                <li>
+                    <strong>Threads</strong><br/>
+                    Use multiple threads when encoding. Default is 0, which automatically chooses the best number for you.<br/>
+                    <pre><code>threads=2</code></pre>
+                </li>
+                <li>
+                    <strong>Reference frames</strong> (1 - 12)<br/>
+                    Set the number of reference frames. Using more will allow frames to reference parts of previous frames. Some devices can only use a limited amount of reference frames. Default is 1. Values over 3 are not recommended.<br/>
+                    <pre><code>ref=3</code></pre>
+                </li>
+                <li>
+                    <strong>B-frames</strong> (0 - 4)<br/>
+                    Set the number of bidirectional reference frames. Some devices don't support this feature. Default is 0. Recommended is 1 or 2.<br/>
+                    <pre><code>bframes=1</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <h1>MPEG2</h1>
+        <p>The MPEG2 video codec. Most widely known for its use on DVDs and digital cable systems. It is an older generation codec and its use is generally discouraged for modern applications.</p>
+        <div class="options">
+            <h2>Options</h2>
+            <ul>
+                <li>
+                    <strong>Format</strong> (0 - 13)<br/>
+                    Set a format for MPEG encoding<br/>
+                    <ul>
+                        <li>0: Generic MPEG-1 (default)</li>
+                        <li>1: Standard VCD</li>
+                        <li>2: User VCD</li>
+                        <li>3: Generic MPEG-2</li>
+                        <li>4: Standard SVCD</li>
+                        <li>5: User SVCD</li>
+                        <li>6: VCD Stills Sequence</li>
+                        <li>7: SVCD Stills Sequence</li>
+                        <li>8: DVD MPEG-2 for dvdauthor</li>
+                        <li>9: DVD MPEG-2</li>
+                        <li>10: ATSC 480i</li>
+                        <li>11: ATSC 480p</li>
+                        <li>12: ATSC 720p</li>
+                        <li>13: ATSC 1080i</li>
+                    </ul>
+                    <pre><code>format=3</code></pre>
+                </li>
+                <li>
+                    <strong>Bitrate</strong> (number)<br/>
+                    Set a specific bitrate in kbps to control file size. Default is 1125.<br/>
+                    <pre><code>bitrate=1500</code></pre>
+                </li>
+                <li>
+                    <strong>Quantization</strong><br/>
+                    Set the mode of operation for bitrate management</br>
+                    <ul>
+                        <li>-1: constant bitrate mode</li>
+                        <li>0: average bitrate mode (default)</li>
+                        <li>1 to 31: constant quality mode, with 1 being best</li>
+                    </ul>
+                    <pre><code>quantization=7</code></pre>
+                </li>
+            </ul>
+        </div>
+        <iframe src="common.html" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+    </body>
+</html>

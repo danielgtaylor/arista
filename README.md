@@ -36,6 +36,7 @@ Dependencies
  * gstreamer-plugins-good
  * gstreamer-plugins-bad
  * gstreamer-plugins-ugly
+ * python-webkit (for in-app documentation)
 
 Debian users may need to install these additional dependencies:
 
