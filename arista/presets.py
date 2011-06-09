@@ -215,8 +215,15 @@ class Device(object):
         
             data["presets"].append({
                 "name": preset.name,
+                "description": preset.description,
+                "author": {
+                    "name": preset.author.name,
+                    "email": preset.author.email,
+                },
                 "container": preset.container,
                 "extension": preset.extension,
+                "icon": preset.icon,
+                "version": preset.version,
                 "acodec": {
                     "name": preset.acodec.name,
                     "container": preset.acodec.container,
@@ -238,7 +245,14 @@ class Device(object):
             })
         
         return json.dumps(data, indent=4)
-
+    
+    def save(self):
+        """
+            Save this device and its presets to a file. The device.filename must
+            be set to a valid path or an error will be thrown.
+        """
+        open(self.filename, "w").write(self.json)
+    
     @staticmethod
     def from_json(data):
         parsed = json.loads(data)

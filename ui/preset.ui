@@ -78,6 +78,7 @@
     <property name="title" translatable="yes">Preset Properties</property>
     <property name="window_position">center</property>
     <property name="type_hint">dialog</property>
+    <signal name="destroy" handler="on_destroy" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -273,6 +274,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_description_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -292,6 +294,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_make_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -311,6 +314,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_model_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -330,6 +334,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_name_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -349,6 +354,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_author_name_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -368,6 +374,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_author_email_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -387,6 +394,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_version_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -573,6 +581,7 @@
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_channels_min</property>
                         <property name="numeric">True</property>
+                        <signal name="value-changed" handler="on_channels_min_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -604,6 +613,7 @@
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_channels_max</property>
                         <property name="numeric">True</property>
+                        <signal name="value-changed" handler="on_channels_max_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -776,6 +786,7 @@
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_width_min</property>
+                        <signal name="value-changed" handler="on_width_min_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -805,6 +816,7 @@
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_width_max</property>
+                        <signal name="value-changed" handler="on_width_max_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -866,6 +878,7 @@
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_height_min</property>
+                        <signal name="value-changed" handler="on_height_min_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -896,6 +909,7 @@
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_height_max</property>
+                        <signal name="value-changed" handler="on_height_max_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -931,6 +945,7 @@
                   <object class="GtkComboBox" id="combo_effect">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <signal name="changed" handler="on_effect_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -957,6 +972,7 @@
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_framerate_min</property>
                         <property name="digits">2</property>
+                        <signal name="value-changed" handler="on_framerate_min_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -988,6 +1004,7 @@
                         <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_framerate_max</property>
                         <property name="digits">2</property>
+                        <signal name="value-changed" handler="on_framerate_max_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

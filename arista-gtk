@@ -1717,19 +1717,44 @@ class PresetDialog(object):
         "theoraenc": "Theora",
         "ffenc_flv": "FLV / Spark / H.263",
     }
+    VCODEC_TO_ENCODER = {
+        "VP8": "vp8enc",
+        "H.264 / AVC": "x264enc",
+        "MPEG4 / DivX / XviD": "xvidenc",
+        "MPEG2": "mpeg2enc",
+        "Theora": "theoraenc",
+        "FLV / Spark / H.263": "ffenc_flv",
+    }
     ENCODER_TO_ACODEC = {
         "faac": "AAC",
         "lame": "MP3",
         "vorbisenc": "Vorbis",
         "ffenc_ac3": "AC3",
     }
+    ACODEC_TO_ENCODER = {
+        "Vorbis": "vorbisenc",
+        "AAC": "faac",
+        "MP3": "lame",
+        "AC3": "ffenc_ac3",
+    }
     EFFECT_LIST = ["None", "Rotate clockwise", "Rotate counter-clockwise", "Flip vertical", "Flip horizontal"]
-    EFFECT_TO_STRING = {
+    EFFECT_TO_ELEMENTS = {
         "None": "",
         "Rotate clockwise": "videoflip method=clockwise",
         "Rotate counter-clockwise": "videoflip method=counterclockwise",
         "Flip vertical": "videoflip method=vertical-flip",
         "Flip horizontal": "videoflip method=horizontal-flip",
+    }
+    ELEMENTS_TO_EFFECT = {
+        "": 0,
+        "videoflip method=clockwise": 1,
+        "videoflip method=1": 1,
+        "videoflip method=counterclockwise": 2,
+        "videoflip method=3": 2,
+        "videoflip method=vertical-flip": 3,
+        "videoflip method=5": 3,
+        "videoflip method=horizontal-flip": 4,
+        "videoflip method=4": 4,
     }
     
     def __init__(self, preset):
@@ -1816,7 +1841,6 @@ class PresetDialog(object):
                     widget.set_active(i)
         
         # Set codec values
-        #self.video_codec.set_active(preset.vcodec.name)
         self.video_options.set_text(";".join(preset.vcodec.passes))
         self.width_min.set_value(preset.vcodec.width[0])
         self.width_max.set_value(preset.vcodec.width[1])
@@ -1840,7 +1864,13 @@ class PresetDialog(object):
             iter = estore.append()
             estore.set_value(iter, 0, attr)
         
-        self.effect.set_active(0)
+        effect = self.ELEMENTS_TO_EFFECT.get(preset.vcodec.transform, 5)
+        # Handle custom effects we don't recognize
+        if effect == 5:
+            iter = estore.append()
+            estore.set_value(iter, 0, "Custom")
+            self.effect.set_sensitive(False)
+        self.effect.set_active(effect)
         
         self.builder.connect_signals(self)
         
@@ -1848,12 +1878,45 @@ class PresetDialog(object):
         
         self.window.show_all()
     
+    def on_destroy(self, widget):
+        _log.debug(_("Saving preset to disk..."))
+        self.preset.device.save()
+    
     def on_close_clicked(self, widget):
         self.window.destroy()
+    
+    def on_description_changed(self, widget):
+        self.preset.description = widget.get_text()
+    
+    def on_make_changed(self, widget):
+        self.preset.device.make = widget.get_text()
+    
+    def on_model_changed(self, widget):
+        self.preset.device.model = widget.get_text()
+    
+    def on_name_changed(self, widget):
+        # Update device presets dictionary
+        old_name = self.preset.name
+        del self.preset.device.presets[old_name]
+        self.preset.device.presets[widget.get_text()] = self.preset
+        # Set name on preset itself
+        self.preset.name = widget.get_text()
+    
+    def on_author_name_changed(self, widget):
+        self.preset.author.name = widget.get_text()
+    
+    def on_author_email_changed(self, widget):
+        self.preset.author.email = widget.get_text()
+    
+    def on_version_changed(self, widget):
+        self.preset.version = widget.get_text()
     
     def on_container_changed(self, widget):
         iter = self.container.get_active_iter()
         container = self.container.get_model().get_value(iter, 0)
+        
+        self.preset.container = self.CONTAINER_TO_MUXER[container]
+        
         self.update_codecs(container)
     
     def update_codecs(self, container):
@@ -1902,8 +1965,90 @@ class PresetDialog(object):
         iter = self.video_codec.get_active_iter()
         vcodec = iter and self.video_codec.get_model().get_value(iter, 0) or None
         
+        if vcodec and self.ENCODER_TO_VCODEC[self.preset.vcodec.name] != vcodec:
+            self.preset.vcodec.name = self.VCODEC_TO_ENCODER[vcodec]
+            self.video_options.set_text({
+                "VP8": "quality=6 threads=%(threads)s speed=2",
+                "H.264 / AVC": "pass=qual quantizer=21 me=umh subme=6 ref=3 threads=0",
+                "MPEG4 / DivX / XviD": "pass=quant quantizer=5 max-bframes=2 trellis=true",
+                "MPEG2": "format=3 quantisation=5",
+                "FLV / Spark / H.263": "bitrate=512000",
+            }.get(vcodec, ""))
+    
+    def on_width_min_changed(self, widget):
+        value = widget.get_value()
+        self.preset.vcodec.width[0] = value
+        
+        if self.width_max.get_value() < value:
+            self.width_max.set_value(value)
+    
+    def on_width_max_changed(self, widget):
+        value = widget.get_value()
+        self.preset.vcodec.width[1] = value
+        
+        if self.width_min.get_value() > value:
+            self.width_min.set_value(value)
+    
+    def on_height_min_changed(self, widget):
+        value = widget.get_value()
+        self.preset.vcodec.height[0] = value
+        
+        if self.height_max.get_value() < value:
+            self.height_max.set_value(value)
+    
+    def on_height_max_changed(self, widget):
+        value = widget.get_value()
+        self.preset.vcodec.height[1] = value
+        
+        if self.height_min.get_value() > value:
+            self.height_min.set_value(value)
+    
+    def on_framerate_min_changed(self, widget):
+        value = widget.get_value()
+        self.preset.vcodec.rate[0] = value
+        
+        if self.framerate_max.get_value() < value:
+            self.framerate_max.set_value(value)
+    
+    def on_framerate_max_changed(self, widget):
+        value = widget.get_value()
+        self.preset.vcodec.framerate[1] = value
+        
+        if self.framerate_min.get_value() > value:
+            self.framerate_min.set_value(value)
+    
+    def on_effect_changed(self, widget):
+        iter = self.effect.get_active_iter()
+        effect = iter and self.effect.get_model().get_value(iter, 0) or None
+        
+        if effect:
+            self.preset.vcodec.transform = self.EFFECT_TO_ELEMENTS[effect]
+    
     def on_acodec_changed(self, widget):
-        pass
+        iter = self.audio_codec.get_active_iter()
+        acodec = iter and self.audio_codec.get_model().get_value(iter, 0) or None
+        
+        if acodec and self.ENCODER_TO_ACODEC[self.preset.acodec.name] != acodec:
+            self.preset.acodec.name = self.ACODEC_TO_ENCODER[acodec]
+            self.audio_options.set_text({
+                "Vorbis": "quality=0.5",
+                "AAC": "profile=4 bitrate=128000",
+                "MP3": "vbr=new vbr-quality=4",
+            }.get(vcodec, ""))
+    
+    def on_channels_min_changed(self, widget):
+        value = widget.get_value()
+        self.preset.acodec.channels[0] = value
+        
+        if self.channels_max.get_value() < value:
+            self.channels_max.set_value(value)
+    
+    def on_channels_max_changed(self, widget):
+        value = widget.get_value()
+        self.preset.acodec.channels[1] = value
+        
+        if self.channels_min.get_value() > value:
+            self.channels_min.set_value(value)
     
     def on_vcodec_help_clicked(self, widget):
         iter = self.video_codec.get_active_iter()
