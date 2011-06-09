@@ -114,6 +114,9 @@ def get_write_path(*parts, **kwargs):
             test = os.path.dirname(test)
         
         if os.access(test, os.W_OK):
+            if not os.path.exists(os.path.dirname(full)):
+                os.makedirs(os.path.dirname(full))
+                
             return full
     else:
         if "default" in kwargs:
