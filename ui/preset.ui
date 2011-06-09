@@ -104,6 +104,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
+                        <signal name="clicked" handler="on_icon_clicked" swapped="no"/>
                         <child>
                           <object class="GtkImage" id="image_icon">
                             <property name="visible">True</property>
@@ -257,6 +258,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_shortname_change" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -334,7 +336,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <signal name="changed" handler="on_name_changed" swapped="no"/>
+                        <signal name="focus-out-event" handler="on_name_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

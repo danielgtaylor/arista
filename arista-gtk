@@ -1885,6 +1885,12 @@ class PresetDialog(object):
     def on_close_clicked(self, widget):
         self.window.destroy()
     
+    def on_icon_clicked(self, widget):
+        pass
+    
+    def on_shortname_changed(self, widget):
+        pass
+    
     def on_description_changed(self, widget):
         self.preset.description = widget.get_text()
     
@@ -1894,13 +1900,19 @@ class PresetDialog(object):
     def on_model_changed(self, widget):
         self.preset.device.model = widget.get_text()
     
-    def on_name_changed(self, widget):
+    def on_name_changed(self, widget, arg):
         # Update device presets dictionary
         old_name = self.preset.name
-        del self.preset.device.presets[old_name]
-        self.preset.device.presets[widget.get_text()] = self.preset
-        # Set name on preset itself
-        self.preset.name = widget.get_text()
+        new_name = widget.get_text()
+        if new_name:
+            # Update default if needed
+            if self.preset.device.default == old_name:
+                self.preset.device.default = new_name
+            # Update presets map
+            del self.preset.device.presets[old_name]
+            self.preset.device.presets[new_name] = self.preset
+            # Set name on preset itself
+            self.preset.name = new_name
     
     def on_author_name_changed(self, widget):
         self.preset.author.name = widget.get_text()
