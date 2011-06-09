@@ -57,10 +57,10 @@ def get_path(*parts, **kwargs):
         Get a path, searching first in the current directory, then the user's
         home directory, then sys.prefix, then sys.prefix + "local".
         
-            >>> get_path("presets", "computer.xml")
-            '/usr/share/arista/presets/computer.xml'
-            >>> get_path("presets", "my_cool_preset.xml")
-            '/home/dan/.arista/presets/my_cool_preset.xml'
+            >>> get_path("presets", "computer.json")
+            '/usr/share/arista/presets/computer.json'
+            >>> get_path("presets", "my_cool_preset.json")
+            '/home/dan/.arista/presets/my_cool_preset.json'
         
         @type parts: str
         @param parts: The parts of the path to get that you would normally 
@@ -82,6 +82,44 @@ def get_path(*parts, **kwargs):
             return kwargs["default"]
             
         raise IOError(_("Can't find %(path)s in any known prefix!") % {
+            "path": path,
+        })
+
+def get_write_path(*parts, **kwargs):
+    """
+        Get a path that can be written to. This uses the same logic as get_path
+        above, but instead of checking for the existence of a path it checks
+        to see if the current user has write accces.
+        
+            >>>> get_write_path("presets", "foo.json")
+            '/home/dan/.arista/presets/foo.json'
+        
+        @type parts: str
+        @param parts: The parts of the path to get that you would normally 
+                      send to os.path.join
+        @type default: bool
+        @param default: A default value to return rather than raising IOError
+        @rtype: str
+        @return: The full path to the relative path passed in
+        @raise IOError: The path cannot be written to in any location
+    """
+    path = os.path.join(*parts)
+
+    for search in get_search_paths()[1:]:
+        full = os.path.join(search, path)
+        
+        # Find part of path that exists
+        test = full
+        while not os.path.exists(test):
+            test = os.path.dirname(test)
+        
+        if os.access(test, os.W_OK):
+            return full
+    else:
+        if "default" in kwargs:
+            return kwargs["default"]
+        
+        raise IOError(_("Can't find %(path)s that can be written to!") % {
             "path": path,
         })
 
