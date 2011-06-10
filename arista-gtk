@@ -1767,14 +1767,18 @@ class AddDialog(object):
         
         dialog = PresetDialog(preset)
         
-        dialog.connect("changed", self.preset_changed, model.convert_iter_to_child_iter(iter))
+        dialog.connect("changed", self.preset_changed, "text", model.convert_iter_to_child_iter(iter))
+        dialog.connect("icon-changed", self.preset_changed, "icon", model.convert_iter_to_child_iter(iter))
     
-    def preset_changed(self, dialog, iter):
+    def preset_changed(self, dialog, type, iter):
         model = self.presets_view.get_model().get_model()
         device, preset = dialog.preset.device, dialog.preset
         
-        # Update text
-        model.set_value(iter, 1, "<b>%s - %s</b>\nUp to %sx%s" % (device.name, preset.name, preset.vcodec.width[1], preset.vcodec.height[1]))
+        # Update
+        if type == "icon":
+            model.set_value(iter, 0, _get_icon_pixbuf(preset.icon or device.icon, 32, 32))
+        elif type == "text":
+            model.set_value(iter, 1, "<b>%s - %s</b>\nUp to %sx%s" % (device.name, preset.name, preset.vcodec.width[1], preset.vcodec.height[1]))
 
 class PresetDialog(gobject.GObject):
     """
@@ -1783,7 +1787,8 @@ class PresetDialog(gobject.GObject):
         A dialog for viewing and editing preset properties.
     """
     __gsignals__ =  {
-        "changed": (gobject.SIGNAL_RUN_FIRST, None, ())
+        "changed": (gobject.SIGNAL_RUN_FIRST, None, ()),
+        "icon-changed": (gobject.SIGNAL_RUN_FIRST, None, ()),
     }
     
     CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG2 PS", "MPEG2 TS", "DVD (VOB)", "Matroska", "Ogg", "FLV"]
@@ -1904,9 +1909,10 @@ class PresetDialog(gobject.GObject):
         self.channels_max = self.builder.get_object("spin_channels_max")
         
         # Set general values
-        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
-        image = _get_icon_pixbuf(preset.icon or preset.device.icon, width, height)
-        self.image.set_from_pixbuf(image)
+        if preset.icon or preset.device.icon:
+            width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
+            image = _get_icon_pixbuf(preset.icon or preset.device.icon, width, height)
+            self.image.set_from_pixbuf(image)
         
         self.short_name.set_text(".".join(os.path.basename(preset.device.filename).split(".")[:-1]))
         self.description.set_text(preset.description or preset.device.description)
@@ -2023,6 +2029,8 @@ class PresetDialog(gobject.GObject):
             self.image.set_from_pixbuf(image)
             client.set_string(CONFIG_PATH + "/last_open_path",
                               os.path.dirname(filename))
+            
+            self.emit("icon-changed")
     
     def on_shortname_changed(self, widget, arg):
         # Change the filename, update icon filename if present, etc
