@@ -323,39 +323,39 @@ if __name__ == "__main__":
                 print _("All parameters to --crop/-c must be non negative integers. %i is negative, aborting.") % c
                 raise SystemExit()
         
-        outputs = []
-        queue = arista.queue.TranscodeQueue()
-        for arg in args:
-            if len(args) == 1 and options.output:
-                output = options.output
-            else:
-                output = arista.utils.generate_output_path(arg, preset,
-                             to_be_created=outputs, device_name=options.device)
-            
-            outputs.append(output)
+    outputs = []
+    queue = arista.queue.TranscodeQueue()
+    for arg in args:
+        if len(args) == 1 and options.output:
+            output = options.output
+        else:
+            output = arista.utils.generate_output_path(arg, preset,
+                         to_be_created=outputs, device_name=options.device)
         
-            opts = TranscoderOptions(arg, preset, output,
-                                     ssa=options.ssa,
-                                     subfile = options.subtitle,
-                                     subfile_charset = options.subtitle_encoding,
-                                     font = options.font,
-                                     crop = options.crop)
-            
-            queue.append(opts)
+        outputs.append(output)
+    
+        opts = TranscoderOptions(arg, preset, output,
+                                 ssa=options.ssa,
+                                 subfile = options.subtitle,
+                                 subfile_charset = options.subtitle_encoding,
+                                 font = options.font,
+                                 crop = options.crop)
         
-        queue.connect("entry-start", entry_start, options)
-        queue.connect("entry-pass-setup", entry_pass_setup, options)
-        queue.connect("entry-error", entry_error, options)
-        queue.connect("entry-complete", entry_complete, options)
-        
-        if len(queue) > 1:
-            print _("Processing %(job_count)d jobs...") % {
-                "job_count": len(queue),
-            }
-        
-        signal.signal(signal.SIGINT, signal_handler)
-        gobject.timeout_add(50, check_interrupted)
-        
-        loop = gobject.MainLoop()
-        loop.run()
+        queue.append(opts)
+    
+    queue.connect("entry-start", entry_start, options)
+    queue.connect("entry-pass-setup", entry_pass_setup, options)
+    queue.connect("entry-error", entry_error, options)
+    queue.connect("entry-complete", entry_complete, options)
+    
+    if len(queue) > 1:
+        print _("Processing %(job_count)d jobs...") % {
+            "job_count": len(queue),
+        }
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    gobject.timeout_add(50, check_interrupted)
+    
+    loop = gobject.MainLoop()
+    loop.run()
 
