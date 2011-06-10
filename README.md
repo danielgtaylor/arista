@@ -101,13 +101,6 @@ Sometimes it may be useful to generate a test file:
 
     gst-launch-0.10 videotestsrc num-buffers=500 ! x264enc ! qtmux ! filesink location=test.mp4
 
-Creating New Device Presets
----------------------------
-New device presets can be created via the [create preset](http://www.transcoder.org/presets/create/ "Create a new Arista Transcoder preset")
-page on the website or by specifying information about yourself and 
-the device you wish to support along with presets that describe how to create a
-proper gstreamer pipeline to encode for the device in a JSON file.
-
 Contributing
 ------------
 All active development has moved to GitHub.com. Code is managed through git and
