@@ -1667,7 +1667,7 @@ class AddDialog(object):
                         "extension": "mp4",  
                         "vcodec": {
                             "passes": [
-                                "pass=cbr bitrate=2048 subme=4 threads=0"
+                                "pass=pass=qual quantizer=21 me=umh subme=6 ref=3 threads=0"
                             ], 
                             "container": "mp4mux", 
                             "name": "x264enc", 
