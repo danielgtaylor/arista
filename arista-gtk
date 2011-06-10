@@ -1130,6 +1130,8 @@ class AddDialog(object):
         self.entry_filter = self.builder.get_object("entry_filter")
         self.button_add = self.builder.get_object("button_add")
         self.button_destination = self.builder.get_object("button_destination")
+        self.button_del = self.builder.get_object("button_del")
+        self.button_info = self.builder.get_object("button_info")
         
         self.settings_frame = self.builder.get_object("settings_frame")
         
@@ -1304,9 +1306,6 @@ class AddDialog(object):
         """
         # Find plugins and sort them nicely
         # Adds output device profiles to the output device view
-        
-        width, height = 32, 32
-        
         model = self.presets_view.get_model().get_model()
         
         # Remove existing items
@@ -1315,21 +1314,26 @@ class AddDialog(object):
         self.default_device = 0
         for x, (id, device) in enumerate(arista.presets.get().items()):
             for (preset_id, preset) in sorted(device.presets.items(), lambda x, y: cmp(x[1].name, y[1].name)):
-                iter = model.append()
-                
-                image = _get_icon_pixbuf(preset.icon or device.icon, width, height)
-                
-                if image:
-                    model.set_value(iter, 0, image)
-                
-                model.set_value(iter, 1, "<b>%s - %s</b>\nUp to %sx%s" % (device.name, preset_id, preset.vcodec.width[1], preset.vcodec.height[1]))
-                model.set_value(iter, 2, (device, preset))
+                iter = self._add_device(model, device, preset)
                 
                 if id == "computer" and preset == device.default_preset:
                     self.default_device = iter
         
         self.presets_view.set_cursor(model.get_path(self.default_device))
         self.presets_view.scroll_to_cell(model.get_path(self.default_device))
+    
+    def _add_device(self, model, device, preset):
+        iter = model.append()
+        
+        image = _get_icon_pixbuf(preset.icon or device.icon, 32, 32)
+        
+        if image:
+            model.set_value(iter, 0, image)
+        
+        model.set_value(iter, 1, "<b>%s - %s</b>\nUp to %sx%s" % (device.name, preset.name, preset.vcodec.width[1], preset.vcodec.height[1]))
+        model.set_value(iter, 2, (device, preset))
+        
+        return iter
     
     def _filter(self, model, iter):
         """
@@ -1390,6 +1394,8 @@ class AddDialog(object):
     def on_preset_changed(self, selection):
         model, iter = selection.get_selected()
         
+        self.button_del.set_sensitive(bool(iter))
+        self.button_info.set_sensitive(bool(iter))
         self.button_add.set_sensitive(bool(iter))
     
     def on_disc_found(self, finder, device, label):
@@ -1632,7 +1638,92 @@ class AddDialog(object):
         """
             Create a new device preset.
         """
-        webbrowser.open("http://www.transcoder.org/presets/create")
+        devices = arista.presets.get()
+        shortname = "new"
+        count = 1
+        
+        # Get a unique name not overwriting another device
+        while shortname in devices:
+            shortname = "new" + str(count)
+            count += 1
+        
+        # Create a new device and preset
+        device = arista.presets.Device.from_json("""
+            {
+                "make": "Generic", 
+                "model": "New Device", 
+                "description": "", 
+                "author": {
+                    "name": "", 
+                    "email": ""
+                }, 
+                "version": "1.0", 
+                "icon": "", 
+                "default": "", 
+                "presets": [
+                    {
+                        "name": "New Preset", 
+                        "container": "mp4mux", 
+                        "extension": "mp4",  
+                        "vcodec": {
+                            "passes": [
+                                "pass=cbr bitrate=2048 subme=4 threads=0"
+                            ], 
+                            "container": "mp4mux", 
+                            "name": "x264enc", 
+                            "height": [
+                                240, 
+                                1080
+                            ], 
+                            "width": [
+                                320, 
+                                1920
+                            ], 
+                            "rate": [
+                                1,
+                                30
+                            ]
+                        }, 
+                        "acodec": {
+                            "passes": [
+                                "bitrate=192000"
+                            ], 
+                            "container": "mp4mux", 
+                            "name": "faac", 
+                            "depth": [
+                                8, 
+                                24
+                            ], 
+                            "channels": [
+                                1, 
+                                6
+                            ], 
+                            "width": [
+                                8, 
+                                24
+                            ], 
+                            "rate": [
+                                8000, 
+                                96000
+                            ]
+                        }
+                    }
+                ]
+            }
+        """)
+        
+        device.filename = arista.utils.get_write_path("presets", shortname + ".json")
+        
+        devices[shortname] = device
+        
+        model = self.presets_model
+        
+        self.entry_filter.set_text("")
+        iter = self._add_device(model, device, device.presets.values()[0])
+        self.presets_view.set_cursor(model.get_path(iter))
+        self.presets_view.scroll_to_cell(model.get_path(iter))
+        
+        self.on_info_clicked(self.presets_view)
     
     def on_delete_clicked(self, widget):
         """
@@ -1662,6 +1753,8 @@ class AddDialog(object):
                     device.filename = arista.utils.get_write_path("presets", os.path.basename(device.filename))
                 
                 device.save()
+            
+            self.presets_model.remove(model.convert_iter_to_child_iter(iter))
     
     def on_info_clicked(self, widget):
         """
