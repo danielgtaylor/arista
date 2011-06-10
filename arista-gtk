@@ -1673,13 +1673,30 @@ class AddDialog(object):
         device, preset = model.get_value(iter, 2)
         
         dialog = PresetDialog(preset)
+        
+        dialog.connect("changed", self.preset_changed, iter)
+    
+    def preset_changed(self, dialog, iter):
+        model = self.presets_view.get_model()
+        device, preset = model.get_value(iter, 2)
+        
+        # Convert iter/model to underlying TreeModel rather than filter
+        iter = model.convert_iter_to_child_iter(iter)
+        model = model.get_model()
+        
+        # Update text
+        model.set_value(iter, 1, "<b>%s - %s</b>\nUp to %sx%s" % (device.name, preset.name, preset.vcodec.width[1], preset.vcodec.height[1]))
 
-class PresetDialog(object):
+class PresetDialog(gobject.GObject):
     """
         Arista Preset Dialog
         ====================
         A dialog for viewing and editing preset properties.
     """
+    __gsignals__ =  {
+        "changed": (gobject.SIGNAL_RUN_FIRST, None, ())
+    }
+    
     CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG2 PS", "MPEG2 TS", "DVD (VOB)", "Matroska", "Ogg", "FLV"]
     MUXER_TO_CONTAINER = {
         "webmmux": 0,
@@ -1763,6 +1780,7 @@ class PresetDialog(object):
     }
     
     def __init__(self, preset):
+        gobject.GObject.__init__(self)
         ui_path = arista.utils.get_path("ui", "preset.ui")
         
         self.builder = gtk.Builder()
@@ -1971,9 +1989,13 @@ class PresetDialog(object):
     
     def on_make_changed(self, widget):
         self.preset.device.make = widget.get_text()
+        
+        self.emit("changed")
     
     def on_model_changed(self, widget):
         self.preset.device.model = widget.get_text()
+        
+        self.emit("changed")
     
     def on_name_changed(self, widget, arg):
         # Update device presets dictionary
@@ -1988,6 +2010,8 @@ class PresetDialog(object):
             self.preset.device.presets[new_name] = self.preset
             # Set name on preset itself
             self.preset.name = new_name
+            
+            self.emit("changed")
     
     def on_author_name_changed(self, widget):
         self.preset.author.name = widget.get_text()
@@ -2075,6 +2099,8 @@ class PresetDialog(object):
         
         if self.width_min.get_value() > value:
             self.width_min.set_value(value)
+        
+        self.emit("changed")
     
     def on_height_min_changed(self, widget):
         value = widget.get_value()
@@ -2089,6 +2115,8 @@ class PresetDialog(object):
         
         if self.height_min.get_value() > value:
             self.height_min.set_value(value)
+        
+        self.emit("changed")
     
     def on_framerate_min_changed(self, widget):
         value = widget.get_value()
@@ -2159,6 +2187,8 @@ class PresetDialog(object):
             CodecHelpDialog(html_path)
         else:
             webbrowser.open(html_path)
+
+gobject.type_register(PresetDialog)
 
 class CodecHelpDialog(object):
     """
