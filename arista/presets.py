@@ -205,7 +205,7 @@ class Device(object):
             rates = []
             for x in preset.acodec.rate[0], preset.acodec.rate[1], preset.vcodec.rate[0], preset.vcodec.rate[1]:
                 if isinstance(x, gst.Fraction):
-                    if x.num == x.denom:
+                    if x.denom == 1:
                         rates.append("%s" % x.num)
                     else:
                         rates.append("%s/%s" % (x.num, x.denom))
@@ -286,7 +286,7 @@ class Device(object):
                 "acodec": AudioCodec(**{
                     "name": acodec.get("name", ""),
                     "container": acodec.get("container", ""),
-                    "rate": acodec.get("rate", []),
+                    "rate": [int(x) for x in acodec.get("rate", [])],
                     "passes": acodec.get("passes", []),
                     "width": acodec.get("width", []),
                     "depth": acodec.get("depth", []),
