@@ -1674,15 +1674,11 @@ class AddDialog(object):
         
         dialog = PresetDialog(preset)
         
-        dialog.connect("changed", self.preset_changed, iter)
+        dialog.connect("changed", self.preset_changed, model.convert_iter_to_child_iter(iter))
     
     def preset_changed(self, dialog, iter):
-        model = self.presets_view.get_model()
-        device, preset = model.get_value(iter, 2)
-        
-        # Convert iter/model to underlying TreeModel rather than filter
-        iter = model.convert_iter_to_child_iter(iter)
-        model = model.get_model()
+        model = self.presets_view.get_model().get_model()
+        device, preset = dialog.preset.device, dialog.preset
         
         # Update text
         model.set_value(iter, 1, "<b>%s - %s</b>\nUp to %sx%s" % (device.name, preset.name, preset.vcodec.width[1], preset.vcodec.height[1]))
