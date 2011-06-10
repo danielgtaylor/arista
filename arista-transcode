@@ -201,10 +201,6 @@ if __name__ == "__main__":
     parser.add_option("-v", "--verbose", dest = "verbose",
                       action = "store_true", default = False,
                       help = _("Show verbose (debug) output"))
-    parser.add_option("-u", "--update", dest = "update",
-                      action = "store_true", default = False,
-                      help = _("Check for and download updated device " \
-                               "presets if they are available"))
     parser.add_option("--install-preset", dest = "install",
                       action = "store_true", default=False,
                       help = _("Install a downloaded device preset file"))
@@ -304,9 +300,6 @@ if __name__ == "__main__":
         
         loop = gobject.MainLoop()
         loop.run()
-    elif options.update:
-        # Update the local presets to the latest versions
-        arista.presets.check_and_install_updates()
     elif options.install:
         for arg in args:
             arista.presets.extract(open(arg))

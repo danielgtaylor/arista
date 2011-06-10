@@ -77,7 +77,6 @@ DEFAULT_CHECK_INPUTS = True
 DEFAULT_SHOW_TOOLBAR = True
 DEFAULT_SHOW_PREVIEW = True
 DEFAULT_PREVIEW_FPS = 10
-DEFAULT_CHECK_UPDATES = True
 DEFAULT_OPEN_PATH = os.path.expanduser("~/Desktop")
 
 RE_ENDS_NUM = re.compile(r'^.*(?P<number>[0-9]+)$')
@@ -158,80 +157,6 @@ def _get_filename_icon(filename):
     icon = theme.choose_icon(names, gtk.ICON_SIZE_MENU, 0)
     
     return icon
-
-class UpdateChecker(threading.Thread):
-    """
-        A thread to check for updates on startup.
-    """
-    def __init__(self, main):
-        """
-            @type main: MainWindow
-            @param main: The main Arista window
-        """
-        self.main = main
-        
-        super(UpdateChecker, self).__init__()
-    
-    def run(self):
-        """
-            Check for updates and present the user with the option of
-            installing any updated presets, then install them if she chooses
-            to. After the installation another dialog is shown asking to
-            restart the program.
-        """
-        client = gconf.client_get_default()
-        
-        try:
-            last_check = client.get_value(CONFIG_PATH + "/last_update_check")
-        except ValueError:
-            last_check = 0
-        
-        # Let's not hammer the server - wait minimum of an hour between checks
-        if time.time() - last_check < 60 * 60:
-            return
-        
-        # Set last update check time
-        client.set_value(CONFIG_PATH + "/last_update_check", time.time())
-        
-        # Do the update checks
-        updates = arista.presets.check_for_updates()
-        if updates:
-            gtk.gdk.threads_enter()
-            dialog = gtk.MessageDialog(parent = self.main.window,
-                type = gtk.MESSAGE_QUESTION,
-                buttons = gtk.BUTTONS_YES_NO,
-                message_format = _("There are %(count)d new or updated " \
-                                   "device presets available. Install " \
-                                   "them now?") % {
-                    "count": len(updates),
-            })
-            result = dialog.run()
-            dialog.hide()
-            gtk.gdk.threads_leave()
-            
-            if result == gtk.RESPONSE_YES:
-                devices = []
-                
-                for loc, name in updates:
-                    devices += arista.presets.fetch(loc, name)
-                
-                for device in devices:
-                    icon = arista.utils.get_path("presets/" + arista.presets.get()[device].icon[7:])
-                    notice = pynotify.Notification(_("Update Successful"), _("Device preset %(name)s successfully updated.") % {
-                        "name": arista.presets.get()[device],
-                    }, icon)
-                    notice.show()
-            
-                gtk.gdk.threads_enter()
-                dialog.destroy()
-                
-                arista.presets.reset()
-                self.main.setup_devices()
-                gtk.gdk.threads_leave()
-            else:
-                gtk.gdk.threads_enter()
-                dialog.destroy()
-                gtk.gdk.threads_leave()
 
 class LogoWidget(gtk.Widget):
     """
@@ -938,7 +863,6 @@ class PrefsDialog(object):
         self.window = self.builder.get_object("prefs_dialog")
         self.check_inputs = self.builder.get_object("check_inputs")
         self.check_show_live = self.builder.get_object("check_show_live")
-        self.check_updates = self.builder.get_object("check_updates")
         self.spin_live_fps = self.builder.get_object("spin_live_fps")
         
         # Setup configuration system
@@ -965,12 +889,6 @@ class PrefsDialog(object):
         except ValueError:
             self.spin_live_fps.set_value(DEFAULT_PREVIEW_FPS)
         
-        try:
-            value = client.get_value(CONFIG_PATH + "/check_updates")
-            self.check_updates.set_active(value)
-        except ValueError:
-            self.check_updates.set_active(DEFAULT_CHECK_UPDATES)
-        
         # Register handlers for when settings are changed
         client.notify_add(CONFIG_PATH + "/check_inputs", 
                           self.on_gconf_check_inputs)
@@ -978,8 +896,6 @@ class PrefsDialog(object):
                           self.on_gconf_show_preview)
         client.notify_add(CONFIG_PATH + "/preview_fps", 
                           self.on_gconf_preview_fps)
-        client.notify_add(CONFIG_PATH + "/check_updates",
-                          self.on_gconf_check_updates)
         
         # Connect to signals defined in UI definition file
         self.builder.connect_signals(self)
@@ -1016,15 +932,6 @@ class PrefsDialog(object):
         client = gconf.client_get_default()
         client.set_int(CONFIG_PATH + "/preview_fps", int(widget.get_value()))
     
-    def on_check_updates_toggled(self, widget):
-        """
-            Update GConf preference for checking online for updated presets.
-            If enabled the application will check on launch for updated presets
-            and ask the user to install them.
-        """
-        client = gconf.client_get_default()
-        client.set_bool(CONFIG_PATH + "/check_updates", widget.get_active())
-    
     def on_gconf_check_inputs(self, client, connection, entry, args):
         """
             Update UI when the GConf preference for checking DVD drives has
@@ -1048,13 +955,6 @@ class PrefsDialog(object):
             been modified.
         """
         self.spin_live_fps.set_value(entry.get_value().get_int())
-    
-    def on_gconf_check_updates(self, client, connection, entry, args):
-        """
-            Update the UI when the GConf preference for checking for updates
-            has been modified.
-        """
-        self.check_updates.set_active(entry.get_value().get_bool())
 
 class PropertiesDialog(object):
     """
@@ -2395,16 +2295,6 @@ if __name__ == "__main__":
     gtk.window_set_default_icon_from_file(icon_path)
     
     main = MainWindow(options)
-    
-    client = gconf.client_get_default()
-    try:
-        check_updates = client.get_value(CONFIG_PATH + "/check_updates")
-    except ValueError:
-        check_updates = DEFAULT_CHECK_UPDATES
-    
-    if check_updates:
-        update_checker = UpdateChecker(main)
-        update_checker.start()
     
     gtk.main()
 

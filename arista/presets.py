@@ -62,8 +62,6 @@ _ = gettext.gettext
 _presets = {}
 _log = logging.getLogger("arista.presets")
 
-UPDATE_LOCATION = "http://www.transcoder.org/media/presets/"
-
 class Fraction(gst.Fraction):
     """
         An object for storing a fraction as two integers. This is a subclass
@@ -589,85 +587,6 @@ def fetch(location, name):
         })
     
     return updated
-
-def check_for_updates(location = UPDATE_LOCATION):
-    """
-        Check for updated presets from a central server.
-        
-        @type location: str
-        @param location: The directory where latest.txt and all preset files
-                         can be found on the server
-        @rtype: list
-        @return: A list of [(location, name), (location, name), ...] for each
-                 preset that has an update available
-    """
-    _log.debug(_("Checking for device preset updates..."))
-    
-    updates = []
-    
-    if not location.endswith("/"):
-        location = location + "/"
-    
-    try:
-        f = urllib2.urlopen(location + "latest.txt")
-    except urllib2.URLError:
-        return updates
-    
-    try:
-        for line in f.readlines():
-            if not line.strip():
-                continue
-            
-            parts = [part.strip() for part in line.split(",")]
-            
-            if len(parts) == 2:
-                name, version = parts
-                if _presets.has_key(name):
-                    if _presets[name].version >= version:
-                        _log.debug(_("Device preset %(name)s is up to date") % {
-                            "name": name,
-                        })
-                    else:
-                        _log.debug(_("Found updated device preset %(name)s") % {
-                            "name": name,
-                        })
-                        try:
-                            updates.append((location, name))
-                        except Exception, e:
-                            _log.error(_("Error installing preset %(name)s " \
-                                         "from %(location)s: %(error)s") % {
-                                "name": name,
-                                "location": location,
-                                "error": str(e),
-                            })
-            else:
-                _log.warning(_("Malformed plugin version line %(line)s") % {
-                    "line": line,
-                })
-    except:
-        _log.warning(_("There was a problem accessing %(location)slatest.txt!") % {
-            "location": location,
-        })
-    
-    return updates
-
-def check_and_install_updates(location = UPDATE_LOCATION):
-    """
-        Check for and install updated presets from a central server. This is
-        equivalent to calling install_preset with each tuple returned from
-        check_for_updates.
-        
-        @type location: str
-        @param location: The directory where presets.txt and all preset files
-                         can be found on the server
-    """
-    updates = check_for_updates(location)
-    
-    if updates:
-        for loc, name in updates:
-            fetch(loc, name)
-    else:
-        _log.debug(_("All device presets are up to date!"))
 
 def reset():
     # Automatically load presets
