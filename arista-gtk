@@ -1136,6 +1136,7 @@ class AddDialog(object):
         self.presets_model = gtk.ListStore(gtk.gdk.Pixbuf,        # Image
                                            gobject.TYPE_STRING,   # Preset
                                            gobject.TYPE_PYOBJECT) # Data
+        self.presets_model.set_sort_column_id(1, gtk.SORT_ASCENDING)
         
         self.presets_filter = self.presets_model.filter_new()
         self.presets_filter.set_visible_func(self._filter)
@@ -1312,8 +1313,7 @@ class AddDialog(object):
         model.clear()
         
         self.default_device = 0
-        for x, (id, device) in enumerate(sorted(arista.presets.get().items(),
-                                   lambda x, y: cmp(x[1].name, y[1].name))):
+        for x, (id, device) in enumerate(arista.presets.get().items()):
             for (preset_id, preset) in sorted(device.presets.items(), lambda x, y: cmp(x[1].name, y[1].name)):
                 iter = model.append()
                 
