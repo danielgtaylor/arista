@@ -2087,14 +2087,14 @@ class PresetDialog(gobject.GObject):
             }.get(vcodec, ""))
     
     def on_width_min_changed(self, widget):
-        value = widget.get_value()
+        value = int(widget.get_value())
         self.preset.vcodec.width[0] = value
         
         if self.width_max.get_value() < value:
             self.width_max.set_value(value)
     
     def on_width_max_changed(self, widget):
-        value = widget.get_value()
+        value = int(widget.get_value())
         self.preset.vcodec.width[1] = value
         
         if self.width_min.get_value() > value:
@@ -2103,14 +2103,14 @@ class PresetDialog(gobject.GObject):
         self.emit("changed")
     
     def on_height_min_changed(self, widget):
-        value = widget.get_value()
+        value = int(widget.get_value())
         self.preset.vcodec.height[0] = value
         
         if self.height_max.get_value() < value:
             self.height_max.set_value(value)
     
     def on_height_max_changed(self, widget):
-        value = widget.get_value()
+        value = int(widget.get_value())
         self.preset.vcodec.height[1] = value
         
         if self.height_min.get_value() > value:
