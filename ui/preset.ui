@@ -258,7 +258,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <signal name="changed" handler="on_shortname_change" swapped="no"/>
+                        <signal name="focus-out-event" handler="on_shortname_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

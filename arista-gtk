@@ -32,6 +32,7 @@ import locale
 import logging
 import os
 import re
+import shutil
 import sys
 import threading
 import time
@@ -1628,46 +1629,50 @@ class AddDialog(object):
         gtk.gdk.threads_leave()
     
     def on_new_clicked(self, widget):
+        """
+            Create a new device preset.
+        """
         webbrowser.open("http://www.transcoder.org/presets/create")
+    
+    def on_delete_clicked(self, widget):
+        """
+            Delete a device preset. Asks the user if she is really sure before
+            actually doing so.
+        """
+        model, iter = self.presets_view.get_selection().get_selected()
+        device, preset = model.get_value(iter, 2)
+        
+        dialog = gtk.MessageDialog(self.window, type=gtk.MESSAGE_WARNING, buttons=gtk.BUTTONS_YES_NO, message_format="Are you sure you want to delete the %(preset)s preset?" % { "preset": device.name + " - " + preset.name })
+        response = dialog.run()
+        dialog.destroy()
+        
+        if response == gtk.RESPONSE_YES:
+            devices = arista.presets.get()
+            name = ".".join(os.path.basename(device.filename).split(".")[:-1])
+            
+            if len(device.presets) == 1:
+                # This was the only preset, so delete the file
+                del devices[name]
+                
+                if os.access(device.filename, os.W_OK):
+                    os.unlink(device.filename)
+            else:
+                del device.presets[preset.name]
+                if not os.access(device.filename, os.W_OK):
+                    device.filename = arista.utils.get_write_path("presets", os.path.basename(device.filename))
+                
+                device.save()
     
     def on_info_clicked(self, widget):
         """
-            Display a very simple dialog showing information about a device
-            preset. Currently shown are:
-            
-             * Icon
-             * Name
-             * Description
-             * Author
-             * Version
-            
+            Display an edit dialog allowing you to view info about and manage
+            device presets.
         """
         model, iter = self.presets_view.get_selection().get_selected()
         
         device, preset = model.get_value(iter, 2)
         
         dialog = PresetDialog(preset)
-        return
-        
-        width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
-        
-        image = _get_icon_pixbuf(preset.icon, width, height)
-        
-        dialog = gtk.AboutDialog()
-        dialog.set_name("%(device)s %(preset)s" % {
-            "device": device.name,
-            "preset": preset.name,
-        })
-        dialog.set_version(preset.version or device.version)
-        dialog.set_copyright(str(preset.author) or str(device.author))
-        dialog.set_comments(preset.description or device.description)
-        
-        if image:
-            dialog.set_logo(image)
-        
-        dialog.run()
-        
-        dialog.destroy()
 
 class PresetDialog(object):
     """
@@ -1886,10 +1891,80 @@ class PresetDialog(object):
         self.window.destroy()
     
     def on_icon_clicked(self, widget):
-        pass
+        # Let user select new image, copy to presets folder, possibly rename
+        client = gconf.client_get_default()
+        dialog = gtk.FileChooserDialog(title=_("Choose Preset Icon..."),
+                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                             gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
+        dialog.set_property("local-only", False)
+        dialog.set_current_folder(client.get_string(CONFIG_PATH + "/last_open_path"))
+        filter = gtk.FileFilter()
+        filter.set_name("Image Files")
+        filter.add_pattern("*.png")
+        filter.add_pattern("*.svg")
+        dialog.set_filter(filter)
+        response = dialog.run()
+        dialog.hide()
+        if response == gtk.RESPONSE_ACCEPT:
+            filename = dialog.get_filename()
+            ext = filename.split(".")[-1]
+            output = arista.utils.get_write_path("presets", self.preset.slug + "." + ext)
+            shutil.copy(filename, output)
+            self.preset.icon = "file://" + self.preset.slug + "." + ext
+            width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
+            image = _get_icon_pixbuf(self.preset.icon, width, height)
+            self.image.set_from_pixbuf(image)
+            client.set_string(CONFIG_PATH + "/last_open_path",
+                              os.path.dirname(filename))
     
-    def on_shortname_changed(self, widget):
-        pass
+    def on_shortname_changed(self, widget, arg):
+        # Change the filename, update icon filename if present, etc
+        # This can actually be used to group multiple presets into a single
+        # file. Hopefully that's not too confusing.
+        old_name = ".".join(os.path.basename(self.preset.device.filename).split(".")[:-1])
+        new_name = widget.get_text()
+        if new_name:
+            old_filename = self.preset.device.filename
+            devices = arista.presets.get()
+            
+            if new_name in devices:
+                # We are moving this preset into an existing device
+                devices[new_name].presets[self.preset.name] = self.preset
+            else:
+                # We are creating a new device file
+                devices[new_name] = arista.presets.Device(**{
+                    "make": devices[old_name].make,
+                    "model": devices[old_name].model,
+                    "description": devices[old_name].description,
+                    "author": arista.presets.Author(**{
+                        "name": devices[old_name].author.name,
+                        "email": devices[old_name].author.email,
+                    }),
+                    "version": devices[old_name].version,
+                    "presets": {
+                        self.preset.name: self.preset,
+                    },
+                    "icon": devices[old_name].icon,
+                    "default": self.preset.name,
+                })
+                devices[new_name].filename = arista.utils.get_write_path("presets", new_name + ".json")
+            
+            self.preset.device = devices[new_name]
+            self.make.set_text(self.preset.device.make)
+            self.model.set_text(self.preset.device.model)
+            
+            if len(devices[old_name].presets) == 1:
+                # This was the only preset, so delete the file
+                del devices[old_name]
+                
+                if os.access(old_filename, os.W_OK):
+                    os.unlink(old_filename)
+            else:
+                del devices[old_name].presets[self.preset.name]
+                if not os.access(old_filename, os.W_OK):
+                    devices[old_name].filename = arista.utils.get_write_path("presets", os.path.basename(old_filename))
+                
+                devices[old_name].save()
     
     def on_description_changed(self, widget):
         self.preset.description = widget.get_text()

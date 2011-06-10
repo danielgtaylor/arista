@@ -45,6 +45,7 @@ except ImportError:
     import simplejson as json
 
 import gettext
+import shutil
 import logging
 import os
 import sys
@@ -176,10 +177,10 @@ class Device(object):
             @return: The default preset for this device
             @raise ValueError: No presets have been defined for this device
         """
-        if self.default:
+        if self.default in self.presets:
             preset = self.presets[self.default]
         elif len(self.presets):
-            preset = self.presets[0]
+            preset = self.presets.values()[0]
         else:
             raise ValueError(_("No presets have been defined for " \
                                  "%(name)s") % { "name": self.name })
@@ -275,15 +276,15 @@ class Device(object):
             vcodec = preset.get("vcodec", {})
             device.presets[preset.get("name", "")] = Preset(**{
                 "name": preset.get("name", ""),
-                "description": preset.get("description", ""),
+                "description": preset.get("description", device.description),
                 "author": Author(
-                    name = preset.get("author", {}).get("name", ""),
-                    email = preset.get("author", {}).get("email", ""),
+                    name = preset.get("author", {}).get("name", device.author.name),
+                    email = preset.get("author", {}).get("email", device.author.email),
                 ),
                 "container": preset.get("container", ""),
                 "extension": preset.get("extension", ""),
-                "version": preset.get("version", ""),
-                "icon": preset.get("icon", ""),
+                "version": preset.get("version", device.version),
+                "icon": preset.get("icon", device.icon),
                 "acodec": AudioCodec(**{
                     "name": acodec.get("name", ""),
                     "container": acodec.get("container", ""),
@@ -350,6 +351,17 @@ class Preset(object):
             @return: The number of passes in this preset
         """
         return max(len(self.vcodec.passes), len(self.acodec.passes))
+    
+    @property
+    def slug(self):
+        """
+            @rtype: str
+            @return: A slug based on the preset name safe to use as a filename
+                     or in links
+        """
+        slug = ".".join(os.path.basename(self.device.filename).split(".")[:-1]) + "-" + self.name.lower()
+        
+        return slug.replace(" ", "_").replace("'", "").replace("/", "")
     
     def check_elements(self, callback, *args):
         """
@@ -658,15 +670,28 @@ def check_and_install_updates(location = UPDATE_LOCATION):
         _log.debug(_("All device presets are up to date!"))
 
 def reset():
-    # Automatically load presets - system, home, current path
+    # Automatically load presets
     global _presets
     
     _presets = {}
     
-    for path in reversed(utils.get_search_paths()):
-        full = os.path.join(path, "presets")
-        if os.path.exists(full):
-            load_directory(full)
+    load_path = utils.get_write_path("presets")
+    if not os.path.exists(os.path.join(load_path, ".initial_complete")):
+        # Do initial population of presets from system install / cwd
+        if not os.path.exists(load_path):
+            os.makedirs(load_path)
+            
+        # Write file to say we have done this
+        open(os.path.join(load_path, ".initial_complete"), "w").close()
+        
+        # Copy actual files
+        for path in reversed(utils.get_search_paths()[:-1]):
+            full = os.path.join(path, "presets")
+            if full != load_path and os.path.exists(full):
+                for f in os.listdir(full):
+                    shutil.copy2(os.path.join(full, f), load_path)
+    
+    load_directory(load_path)
 
 reset()
 

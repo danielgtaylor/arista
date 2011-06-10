@@ -150,6 +150,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Add a new preset</property>
                 <property name="use_action_appearance">False</property>
                 <signal name="clicked" handler="on_new_clicked" swapped="no"/>
                 <child>
@@ -167,17 +168,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button_info">
+              <object class="GtkButton" id="button_del">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Delete preset</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_info_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_delete_clicked" swapped="no"/>
                 <child>
-                  <object class="GtkImage" id="image4">
+                  <object class="GtkImage" id="image1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="stock">gtk-info</property>
+                    <property name="stock">gtk-delete</property>
                   </object>
                 </child>
               </object>
@@ -229,6 +231,40 @@
                 <property name="fill">True</property>
                 <property name="pack_type">end</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVSeparator" id="vseparator1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_info">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">View or edit preset</property>
+                <property name="use_action_appearance">False</property>
+                <signal name="clicked" handler="on_info_clicked" swapped="no"/>
+                <child>
+                  <object class="GtkImage" id="image4">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="stock">gtk-info</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>
