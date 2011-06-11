@@ -2083,6 +2083,9 @@ class PresetDialog(gobject.GObject):
                 "FLV / Spark / H.263": "bitrate=512000",
             }.get(vcodec, ""))
     
+    def on_video_options_changed(self, widget):
+        self.preset.vcodec.passes = widget.get_text().split(";")
+    
     def on_width_min_changed(self, widget):
         value = int(widget.get_value())
         self.preset.vcodec.width[0] = value
@@ -2147,6 +2150,9 @@ class PresetDialog(gobject.GObject):
                 "AAC": "profile=4 bitrate=128000",
                 "MP3": "vbr=new vbr-quality=4",
             }.get(vcodec, ""))
+    
+    def on_audio_options_changed(self, widget):
+        self.preset.acodec.passes = widget.get_text().split(";")
     
     def on_channels_min_changed(self, widget):
         value = widget.get_value()

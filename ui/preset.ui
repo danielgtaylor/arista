@@ -514,6 +514,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_audio_options_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -722,6 +723,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
+                        <signal name="changed" handler="on_video_options_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
