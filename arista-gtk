@@ -1984,7 +1984,7 @@ class PresetDialog(gobject.GObject):
             "DVD (VOB)": ["MPEG2"],
             "Matroska": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2", "VP8", "Theora"],
             "Ogg": ["Theora"],
-            "FLV": ["H.264", "FLV / Spark / H.263"],
+            "FLV": ["H.264 / AVC", "FLV / Spark / H.263"],
         }.get(container, ["No known codecs"])
         
         acodecs = {
