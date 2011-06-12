@@ -1851,7 +1851,7 @@ class PresetDialog(gobject.GObject):
                     buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
                              gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
         dialog.set_property("local-only", False)
-        dialog.set_current_folder(client.get_string(CONFIG_PATH + "/last_open_path"))
+        dialog.set_current_folder(os.path.expanduser(os.path.join("~", "Pictures")))
         filter = gtk.FileFilter()
         filter.set_name("Image Files")
         filter.add_pattern("*.png")
@@ -1868,8 +1868,6 @@ class PresetDialog(gobject.GObject):
             width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
             image = _get_icon_pixbuf(self.preset.icon, width, height)
             self.image.set_from_pixbuf(image)
-            client.set_string(CONFIG_PATH + "/last_open_path",
-                              os.path.dirname(filename))
             
             self.emit("icon-changed")
     
