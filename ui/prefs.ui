@@ -9,8 +9,8 @@
     <property name="step_increment">1</property>
   </object>
   <object class="GtkDialog" id="prefs_dialog">
-    <property name="width_request">450</property>
-    <property name="height_request">250</property>
+    <property name="width_request">430</property>
+    <property name="height_request">220</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Arista Preferences</property>
