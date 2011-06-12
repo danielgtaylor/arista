@@ -2098,7 +2098,7 @@ class PresetDialog(gobject.GObject):
                 "Vorbis": "quality=0.5",
                 "AAC": "profile=4 bitrate=128000",
                 "MP3": "vbr=new vbr-quality=4",
-            }.get(vcodec, ""))
+            }.get(acodec, ""))
     
     def on_audio_options_changed(self, widget):
         self.preset.acodec.passes = widget.get_text().split(";")
