@@ -44,10 +44,14 @@ def get_search_paths():
         @return: A list of paths to search in the order they will be searched
     """
     return [
+        # Current path, useful for development:
         os.getcwd(),
+        # User home directory:
         os.path.expanduser(os.path.join("~", ".arista")),
-        os.path.join(sys.prefix, "share", "arista"),
+        # User-installed:
         os.path.join(sys.prefix, "local", "share", "arista"),
+        # System-installed:
+        os.path.join(sys.prefix, "share", "arista"),
         # The following allows stuff like virtualenv to work!
         os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "share", "arista")),
     ]
