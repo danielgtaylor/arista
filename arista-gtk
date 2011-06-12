@@ -1904,6 +1904,17 @@ class PresetDialog(gobject.GObject):
         self.window.destroy()
     
     def on_export_clicked(self, widget):
+        if len(self.preset.device.presets) > 1:
+            dialog = gtk.MessageDialog(self.window, buttons=gtk.BUTTONS_YES_NO, message_format=_("You are about to export %(count)d presets with the short name '%(shortname)s'. If you want to only export %(name)s then please first change the short name. Do you want to continue?") % {
+                "count": len(self.preset.device.presets),
+                "shortname": self.preset.device.short_name,
+                "name": self.preset.device.name + " - " + self.preset.name
+            })
+            response = dialog.run()
+            dialog.destroy()
+            if response == gtk.RESPONSE_NO:
+                return
+        
         dialog = gtk.FileChooserDialog(title=_("Export Preset"),
                     action=gtk.FILE_CHOOSER_ACTION_SAVE,
                     buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
@@ -1913,6 +1924,8 @@ class PresetDialog(gobject.GObject):
         filter.set_name("Arista Presets")
         filter.add_pattern("*.bz2")
         dialog.set_filter(filter)
+        dialog.set_current_folder(os.path.expanduser(os.path.join("~", "Desktop")))
+        dialog.set_current_name(self.preset.device.short_name + ".tar.bz2")
         response = dialog.run()
         dialog.hide()
         if response == gtk.RESPONSE_ACCEPT:
@@ -1921,10 +1934,16 @@ class PresetDialog(gobject.GObject):
                 filename += ".tar.bz2"
             self.preset.device.export(filename)
             dialog.destroy()
-            dialog = gtk.MessageDialog(self.window, buttons=gtk.BUTTONS_OK, message_format=_("Export of %(name)s with %(count)d presets complete") % {
-                "name": self.preset.device.name,
-                "count": len(self.preset.device.presets),
-            })
+            if len(self.preset.device.presets) > 1:
+                msg = _("Export of '%(shortname)s' with %(count)d presets complete.") % {
+                    "shortname": self.preset.device.short_name,
+                    "count": len(self.preset.device.presets),
+                }
+            else:
+                msg = _("Export of '%(name)s' complete.") % {
+                    "name": self.preset.device.name + " - " + self.preset.name
+                }
+            dialog = gtk.MessageDialog(self.window, buttons=gtk.BUTTONS_OK, message_format=msg)
             dialog.run()
             dialog.destroy()
     
