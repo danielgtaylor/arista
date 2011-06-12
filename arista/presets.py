@@ -277,8 +277,10 @@ class Device(object):
         
         files = " ".join([os.path.basename(self.filename)] + images)
         
+        cwd = os.getcwd()
         os.chdir(os.path.dirname(self.filename))
         subprocess.call("tar -cjf %s %s" % (filename, files), shell=True)
+        os.chdir(cwd)
     
     @staticmethod
     def from_json(data):
