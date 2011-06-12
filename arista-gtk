@@ -1687,6 +1687,7 @@ class PresetDialog(gobject.GObject):
         self.author_email = self.builder.get_object("entry_author_email")
         self.version = self.builder.get_object("entry_version")
         self.container = self.builder.get_object("combo_container")
+        self.extension = self.builder.get_object("entry_extension")
         
         self.video_codec = self.builder.get_object("combo_video_codec")
         self.video_options = self.builder.get_object("entry_video_options")
@@ -1717,6 +1718,7 @@ class PresetDialog(gobject.GObject):
         self.author_name.set_text(preset.author.name or preset.device.author.name)
         self.author_email.set_text(preset.author.email or preset.device.author.email)
         self.version.set_text(preset.version or preset.device.version)
+        self.extension.set_text(preset.extension or preset.device.extension)
         
         # Setup list models for combo boxes
         cstore = gtk.ListStore(gobject.TYPE_STRING)
@@ -1965,6 +1967,13 @@ class PresetDialog(gobject.GObject):
         self.preset.container = self.CONTAINER_TO_MUXER[container]
         
         self.update_codecs(container)
+        
+        self.extension.set_text({
+            "MPEG2 PS": "mpg",
+            "MPEG2 TS": "ts",
+            "DVD (VOB)": "vob",
+            "Matroska": "mkv"
+        }.get(container, container.lower()))
     
     def update_codecs(self, container):
         vcodecs = {
@@ -2007,6 +2016,9 @@ class PresetDialog(gobject.GObject):
                     new_selected = i
                     
             widget.set_active(new_selected)
+    
+    def on_extension_changed(self, widget):
+        self.preset.extension = widget.get_text()
     
     def on_vcodec_changed(self, widget):
         iter = self.video_codec.get_active_iter()
