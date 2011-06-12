@@ -1077,6 +1077,7 @@
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="image">image_save_as2</property>
+                <signal name="clicked" handler="on_export_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

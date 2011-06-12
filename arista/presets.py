@@ -48,6 +48,7 @@ import gettext
 import shutil
 import logging
 import os
+import subprocess
 import sys
 import tarfile
 import urllib2
@@ -165,6 +166,13 @@ class Device(object):
             return "%s %s" % (self.make, self.model)
     
     @property
+    def short_name(self):
+        """
+            Return the short name of this device preset.
+        """
+        return ".".join(os.path.basename(self.filename).split(".")[:-1])
+    
+    @property
     def default_preset(self):
         """
             Get the default preset for this device. If no default has been
@@ -251,6 +259,26 @@ class Device(object):
             be set to a valid path or an error will be thrown.
         """
         open(self.filename, "w").write(self.json)
+   
+    def export(self, filename):
+        """
+            Export this device and all presets to a file. Creates a bzipped
+            tarball of the JSON and all associated images that can be easily
+            imported later.
+        """
+        # Make sure all changes are saved
+        self.save()
+        
+        # Gather image files
+        images = []
+        for name, preset in self.presets.items():
+            if preset.icon:
+                images.append(preset.icon[7:])
+        
+        files = " ".join([os.path.basename(self.filename)] + images)
+        
+        os.chdir(os.path.dirname(self.filename))
+        subprocess.call("tar -cjf %s %s" % (filename, files), shell=True)
     
     @staticmethod
     def from_json(data):
@@ -604,11 +632,13 @@ def reset():
         open(os.path.join(load_path, ".initial_complete"), "w").close()
         
         # Copy actual files
-        for path in reversed(utils.get_search_paths()[:-1]):
+        for path in utils.get_search_paths():
             full = os.path.join(path, "presets")
             if full != load_path and os.path.exists(full):
                 for f in os.listdir(full):
-                    shutil.copy2(os.path.join(full, f), load_path)
+                    # Do not overwrite existing files
+                    if not os.path.exists(os.path.join(load_path, f)):
+                        shutil.copy2(os.path.join(full, f), load_path)
     
     load_directory(load_path)
 

@@ -1903,6 +1903,31 @@ class PresetDialog(gobject.GObject):
     def on_close_clicked(self, widget):
         self.window.destroy()
     
+    def on_export_clicked(self, widget):
+        dialog = gtk.FileChooserDialog(title=_("Export Preset"),
+                    action=gtk.FILE_CHOOSER_ACTION_SAVE,
+                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+                             gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
+        dialog.set_property("local-only", False)
+        filter = gtk.FileFilter()
+        filter.set_name("Arista Presets")
+        filter.add_pattern("*.bz2")
+        dialog.set_filter(filter)
+        response = dialog.run()
+        dialog.hide()
+        if response == gtk.RESPONSE_ACCEPT:
+            filename = dialog.get_filename()
+            if not filename.endswith(".tar.bz2"):
+                filename += ".tar.bz2"
+            self.preset.device.export(filename)
+            dialog.destroy()
+            dialog = gtk.MessageDialog(self.window, buttons=gtk.BUTTONS_OK, message_format=_("Export of %(name)s with %(count)d presets complete") % {
+                "name": self.preset.device.name,
+                "count": len(self.preset.device.presets),
+            })
+            dialog.run()
+            dialog.destroy()
+    
     def on_icon_clicked(self, widget):
         # Let user select new image, copy to presets folder, possibly rename
         client = gconf.client_get_default()
