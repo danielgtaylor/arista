@@ -253,23 +253,68 @@ if __name__ == "__main__":
                 "name": name.rjust(longest + 1),
                 "description": devices[name].description,
             }
+            for preset in devices[name].presets.values():
+               default = devices[name].default == preset.name
+               print _("%(spacing)s- %(name)s") % {
+                  "spacing": " " * (longest + 3),
+                  "name": default and preset.name + "*" or preset.name,
+               }
         print
-        print _("Use --info device_name for more information on a device.")
+        print _("Use --info device_name preset_name for more information on a preset.")
         raise SystemExit()
     elif options.info:
-        print _("Preset info:")
+        try:
+           device = devices[args[0]]
+        except KeyError:
+            print _("Device not found!")
+            raise SystemExit(1)
+        
+        preset = None
+        if len(args) > 1:
+            try:
+                preset = device.presets[args[1]]
+            except KeyError:
+                print _("Preset not found!")
+                raise SystemExit(1)
+        
+        if preset:
+            print _("Preset info:")
+        else:
+            print _("Device info:")
         print 
         
-        device = devices[args[0]]
         info = [
             (_("ID:"), args[0]),
             (_("Make:"), device.make),
             (_("Model:"), device.model),
-            (_("Description:"), device.description),
-            (_("Author:"), unicode(device.author)),
-            (_("Version:"), device.version),
-            (_("Presets:"), ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])),
+            (_("Description:"), preset and preset.description or device.description),
+            (_("Author:"), preset and unicode(preset.author) or unicode(device.author)),
+            (_("Version:"), preset and preset.version or device.version),
         ]
+        
+        if not preset:
+            info.append((_("Presets:"), ", ".join([(p.name == device.default and "*" + p.name or p.name) for (id, p) in device.presets.items()])))
+        else:
+            info.append((_("Extension:"), preset.extension))
+            info.append((_("Container:"), preset.container))
+            info.append((_("Video codec:"), preset.vcodec.name))
+            info.append((_("Width:"), "%(min)d to %(max)d" % {
+                "min": preset.vcodec.width[0],
+                "max": preset.vcodec.width[1],
+            }))
+            info.append((_("Height:"), "%(min)d to %(max)d" % {
+                "min": preset.vcodec.height[0],
+                "max": preset.vcodec.height[1],
+            }))
+            info.append((_("Framerate:"), "%(min)s to %(max)s" % {
+                "min": preset.vcodec.rate[0].denom == 1 and preset.vcodec.rate[0].num or "%d/%d" % (preset.vcodec.rate[0].num, preset.vcodec.rate[0].denom),
+                "max": preset.vcodec.rate[1].denom == 1 and preset.vcodec.rate[1].num or "%d/%d" % (preset.vcodec.rate[1].num, preset.vcodec.rate[1].denom),
+            }))
+            info.append((_("Audio codec:"), preset.acodec.name))
+            info.append((_("Channels:"), "%(min)d to %(max)d" % {
+                "min": preset.acodec.channels[0],
+                "max": preset.acodec.channels[1],
+            }))
 
         longest = 0
         for (attr, value) in info:

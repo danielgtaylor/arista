@@ -83,12 +83,12 @@ To use the terminal client please see:
 
 An example of using the terminal client:
 
-    arista-transcode --device=ipod --preset=low test.mp4
+    arista-transcode --device=apple --preset="iPhone / iPod Touch" test.avi
 
 Other useful terminal options:
 
     arista-transcode --info
-    arista-transcode --info ipod
+    arista-transcode --info apple iPad
 
 There is also a Nautilus extension installed by default. You can right-click on
 any media file and select "Convert for device..." in the menu. This menu
