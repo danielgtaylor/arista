@@ -443,6 +443,13 @@ class MainWindow(object):
         
         self.add_dialog = AddDialog(self)
     
+    def on_get_new(self, widget):
+        """
+            Go to the presets list page online and let the user download
+            new presets!
+        """
+        webbrowser.open("http://www.transcoder.org/presets/")
+    
     def stop_processing_entry(self, entry):
         """
             Stop processing an entry that is currently being processed. This
