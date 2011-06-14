@@ -101,6 +101,14 @@ Sometimes it may be useful to generate a test file:
 
     gst-launch-0.10 videotestsrc num-buffers=500 ! x264enc ! qtmux ! filesink location=test.mp4
 
+Trying the Latest Version
+-------------------------
+You can try out the latest development version of Arista by grabbing and running the code from git. This lets you test issues you may have against the latest work of the developers as well as try out new features. Try running the following in a terminal:
+
+    git clone git://github.com/danielgtaylor/arista.git
+    cd arista
+    ./arista-gtk
+
 Contributing
 ------------
 All active development has moved to GitHub.com. Code is managed through git and
