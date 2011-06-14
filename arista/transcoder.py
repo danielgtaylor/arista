@@ -380,6 +380,14 @@ class Transcoder(gobject.GObject):
             
             owidth = self.info.videowidth - crop[1] - crop[3]
             oheight = self.info.videoheight - crop[0] - crop[2]
+            
+            try:
+                if self.info.videocaps[0].has_key("pixel-aspect-ratio"):
+                    owidth = int(owidth * float(self.info.videocaps[0]["pixel-aspect-ratio"]))
+            except KeyError:
+                # The videocaps we are looking for may not even exist, just ignore
+                pass
+            
             width, height = owidth, oheight
             
             # Scale width / height to fit requested min/max
@@ -415,13 +423,6 @@ class Transcoder(gobject.GObject):
                 px = (hmin - height) / 2
                 vbox = "videobox top=%i bottom=%i ! ffmpegcolorspace ! " % \
                        (-px, -px)
-            
-            try:
-                if self.info.videocaps[0].has_key("pixel-aspect-ratio"):
-                    width = int(width * float(self.info.videocaps[0]["pixel-aspect-ratio"]))
-            except KeyError:
-                # The videocaps we are looking for may not even exist, just ignore
-                pass
             
             # FIXME Odd widths / heights seem to freeze gstreamer
             if width % 2:
