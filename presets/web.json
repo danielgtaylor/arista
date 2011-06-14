@@ -2,7 +2,7 @@
     "make": "Generic", 
     "model": "Web Browser", 
     "description": "Media for World Wide Web", 
-    "version": "1.3", 
+    "version": "1.4", 
     "author": {
         "name": "Ferran Basora Roca", 
         "email": "fcsonline@gmail.com"
@@ -12,6 +12,7 @@
     "presets": [
         {
             "name": "Flash Video", 
+            "description": "H.264/AAC in FLV for the web",
             "extension": "flv", 
             "icon": "file://web-flv.png",
             "container": "flvmux", 
@@ -53,6 +54,7 @@
         },
         {
             "name": "H.264", 
+            "description": "H.264/AAC in MP4 for the web",
             "extension": "mp4", 
             "container": "mp4mux faststart=1", 
             "vcodec": {
@@ -93,6 +95,7 @@
         }, 
         {
             "name": "WebM", 
+            "description": "WebM for the web",
             "extension": "webm", 
             "container": "webmmux", 
             "icon": "file://web-webm.svg", 

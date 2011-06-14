@@ -6,12 +6,13 @@
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
     }, 
-    "version": "1.8", 
+    "version": "1.9", 
     "icon": "file://computer.svg", 
     "default": "WebM", 
     "presets": [
         {
             "name": "Live Input H.264", 
+            "description": "Constant bitrate fast H.264 / AAC in MP4",
             "container": "mp4mux", 
             "extension": "mp4", 
             "icon": "file://computer-live.svg", 
@@ -60,6 +61,7 @@
         }, 
         {
             "name": "H.264", 
+            "description": "H.264/AAC in MP4 for the computer",
             "container": "mp4mux", 
             "extension": "mp4", 
             "vcodec": {
@@ -127,6 +129,7 @@
             }, 
             "container": "matroskamux", 
             "name": "Theora", 
+            "description": "Theora/Vorbis in Ogg for the computer",
             "extension": "mkv", 
             "acodec": {
                 "passes": [
@@ -154,6 +157,7 @@
         }, 
         {
             "name": "WebM", 
+            "description": "WebM for the computer",
             "extension": "webm", 
             "container": "webmmux", 
             "icon": "file://computer-webm.svg", 
