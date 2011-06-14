@@ -255,9 +255,10 @@ if __name__ == "__main__":
             }
             for preset in devices[name].presets.values():
                default = devices[name].default == preset.name
-               print _("%(spacing)s- %(name)s") % {
+               print _("%(spacing)s- %(name)s%(description)s") % {
                   "spacing": " " * (longest + 3),
                   "name": default and preset.name + "*" or preset.name,
+                  "description": (preset.description != devices[name].description) and ": " + preset.description or "",
                }
         print
         print _("Use --info device_name preset_name for more information on a preset.")
