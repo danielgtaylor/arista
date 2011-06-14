@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-13 15:27-0400\n"
+"POT-Creation-Date: 2011-06-14 14:45-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid ""
 "https://translations.launchpad.net/arista/trunk/+pots/arista"
 msgstr ""
 
-#: ui/add.ui:10 ui/main.ui:155
+#: ui/add.ui:10 ui/main.ui:216
 msgid "Create Conversion"
 msgstr ""
 
@@ -79,47 +79,59 @@ msgstr ""
 msgid "Codec Help"
 msgstr ""
 
-#: ui/main.ui:7
+#: ui/main.ui:25
 msgid "Arista Transcoder"
 msgstr ""
 
-#: ui/main.ui:22
+#: ui/main.ui:44
 msgid "_File"
 msgstr ""
 
-#: ui/main.ui:41
+#: ui/main.ui:66
+msgid "_Get New Presets..."
+msgstr ""
+
+#: ui/main.ui:78
 msgid "_Install Device Preset..."
 msgstr ""
 
-#: ui/main.ui:73
+#: ui/main.ui:117
 msgid "_Edit"
 msgstr ""
 
-#: ui/main.ui:97
+#: ui/main.ui:146
 msgid "_View"
 msgstr ""
 
-#: ui/main.ui:105
+#: ui/main.ui:157
 msgid "Show _Toolbar"
 msgstr ""
 
-#: ui/main.ui:119
+#: ui/main.ui:173
 msgid "_Help"
 msgstr ""
 
-#: ui/main.ui:153
+#: ui/main.ui:213
 msgid "Add a file to be transcoded"
 msgstr ""
 
-#: ui/main.ui:167
+#: ui/main.ui:229
+msgid "Download new presets from the web"
+msgstr ""
+
+#: ui/main.ui:231
+msgid "Get Presets"
+msgstr ""
+
+#: ui/main.ui:245 ui/main.ui:247
 msgid "Preferences"
 msgstr ""
 
-#: ui/main.ui:214
+#: ui/main.ui:300
 msgid "Idle"
 msgstr ""
 
-#: ui/main.ui:263 ui/prefs.ui:186
+#: ui/main.ui:360 ui/prefs.ui:186
 msgid "<b>Live Preview</b>"
 msgstr ""
 
@@ -281,86 +293,86 @@ msgstr ""
 msgid "Cleaning up and flushing buffers..."
 msgstr ""
 
-#: arista-gtk:505
+#: arista-gtk:512
 #, python-format
 msgid "Input %(infile)s contains no valid streams!"
 msgstr ""
 
-#: arista-gtk:519
+#: arista-gtk:526
 msgid "Error with input!"
 msgstr ""
 
-#: arista-gtk:582
+#: arista-gtk:589
 msgid "Error!"
 msgstr ""
 
-#: arista-gtk:582
+#: arista-gtk:589
 #, python-format
 msgid ""
 "Conversion of %(filename)s to %(device)s %(preset)s failed! Reason: "
 "%(reason)s"
 msgstr ""
 
-#: arista-gtk:613
+#: arista-gtk:620
 msgid "Job done"
 msgstr ""
 
-#: arista-gtk:613
+#: arista-gtk:620
 #, python-format
 msgid "Conversion of %(filename)s to %(device)s %(preset)s %(action)s"
 msgstr ""
 
-#: arista-gtk:617
+#: arista-gtk:624
 msgid "canceled"
 msgstr ""
 
-#: arista-gtk:617
+#: arista-gtk:624
 msgid "finished"
 msgstr ""
 
-#: arista-gtk:721 arista-gtk:1241
+#: arista-gtk:728 arista-gtk:1248
 msgid "Choose Source File..."
 msgstr ""
 
-#: arista-gtk:739
+#: arista-gtk:746
 msgid "Installation Successful"
 msgstr ""
 
-#: arista-gtk:739
+#: arista-gtk:746
 #, python-format
 msgid "Device preset %(name)s successfully installed."
 msgstr ""
 
-#: arista-gtk:948
+#: arista-gtk:955
 msgid "Device Preset"
 msgstr ""
 
-#: arista-gtk:1052
+#: arista-gtk:1059
 #, python-format
 msgid "Unknown V4L version %(version)s!"
 msgstr ""
 
-#: arista-gtk:1060 arista-gtk:1076 arista-gtk:1078 arista-gtk:1240
+#: arista-gtk:1067 arista-gtk:1083 arista-gtk:1085 arista-gtk:1247
 msgid "Choose File..."
 msgstr ""
 
-#: arista-gtk:1065 arista-gtk:1284
+#: arista-gtk:1072 arista-gtk:1291
 msgid "Choose Directory..."
 msgstr ""
 
-#: arista-gtk:1285
+#: arista-gtk:1292
 msgid "Choose Source Directory..."
 msgstr ""
 
-#: arista-gtk:1386
+#: arista-gtk:1393
 msgid "Cannot add conversion to queue because of missing elements!"
 msgstr ""
 
-#: arista-gtk:1797
+#: arista-gtk:1804
 msgid "Saving preset to disk..."
 msgstr ""
 
-#: arista-gtk:1805
+#: arista-gtk:1812
 #, python-format
 msgid ""
 "You are about to export %(count)d presets with the short name "
@@ -368,45 +380,45 @@ msgid ""
 "change the short name. Do you want to continue?"
 msgstr ""
 
-#: arista-gtk:1815
+#: arista-gtk:1822
 msgid "Export Preset"
 msgstr ""
 
-#: arista-gtk:1835
+#: arista-gtk:1842
 #, python-format
 msgid "Export of '%(shortname)s' with %(count)d presets complete."
 msgstr ""
 
-#: arista-gtk:1840
+#: arista-gtk:1847
 #, python-format
 msgid "Export of '%(name)s' complete."
 msgstr ""
 
-#: arista-gtk:1850
+#: arista-gtk:1857
 msgid "Choose Preset Icon..."
 msgstr ""
 
-#: arista-gtk:2199
+#: arista-gtk:2206
 msgid "%prog [options] [file1 file2 file3 ...]"
 msgstr ""
 
-#: arista-gtk:2200
+#: arista-gtk:2207
 msgid "Arista Transcoder GUI "
 msgstr ""
 
-#: arista-gtk:2204 arista-transcode:203
+#: arista-gtk:2211 arista-transcode:203
 msgid "Show verbose (debug) output"
 msgstr ""
 
-#: arista-gtk:2206 arista-transcode:190
+#: arista-gtk:2213 arista-transcode:190
 msgid "Preset to encode to [default]"
 msgstr ""
 
-#: arista-gtk:2208 arista-transcode:192
+#: arista-gtk:2215 arista-transcode:192
 msgid "Device to encode to [computer]"
 msgstr ""
 
-#: arista-gtk:2210
+#: arista-gtk:2217
 msgid "Simple UI"
 msgstr ""
 
@@ -499,105 +511,105 @@ msgstr ""
 
 #: arista-transcode:258
 #, python-format
-msgid "%(spacing)s- %(name)s"
+msgid "%(spacing)s- %(name)s%(description)s"
 msgstr ""
 
-#: arista-transcode:263
+#: arista-transcode:264
 msgid "Use --info device_name preset_name for more information on a preset."
 msgstr ""
 
-#: arista-transcode:269
+#: arista-transcode:270
 msgid "Device not found!"
 msgstr ""
 
-#: arista-transcode:277
+#: arista-transcode:280
 msgid "Preset not found!"
 msgstr ""
 
-#: arista-transcode:281
+#: arista-transcode:284
 msgid "Preset info:"
 msgstr ""
 
-#: arista-transcode:283
+#: arista-transcode:286
 msgid "Device info:"
 msgstr ""
 
-#: arista-transcode:287
+#: arista-transcode:290
 msgid "ID:"
 msgstr ""
 
-#: arista-transcode:288
+#: arista-transcode:291
 msgid "Make:"
 msgstr ""
 
-#: arista-transcode:289
+#: arista-transcode:292
 msgid "Model:"
 msgstr ""
 
-#: arista-transcode:290
+#: arista-transcode:293
 msgid "Description:"
 msgstr ""
 
-#: arista-transcode:291
+#: arista-transcode:294
 msgid "Author:"
 msgstr ""
 
-#: arista-transcode:292
+#: arista-transcode:295
 msgid "Version:"
 msgstr ""
 
-#: arista-transcode:296
+#: arista-transcode:299
 msgid "Presets:"
 msgstr ""
 
-#: arista-transcode:298
+#: arista-transcode:301
 msgid "Extension:"
 msgstr ""
 
-#: arista-transcode:299
+#: arista-transcode:302
 msgid "Container:"
 msgstr ""
 
-#: arista-transcode:300
+#: arista-transcode:303
 msgid "Video codec:"
 msgstr ""
 
-#: arista-transcode:301
+#: arista-transcode:304
 msgid "Width:"
 msgstr ""
 
-#: arista-transcode:305
+#: arista-transcode:308
 msgid "Height:"
 msgstr ""
 
-#: arista-transcode:309
+#: arista-transcode:312
 msgid "Framerate:"
 msgstr ""
 
-#: arista-transcode:313
+#: arista-transcode:316
 msgid "Audio codec:"
 msgstr ""
 
-#: arista-transcode:314
+#: arista-transcode:317
 msgid "Channels:"
 msgstr ""
 
-#: arista-transcode:332
+#: arista-transcode:335
 msgid "You may only pass one filename for --source-info!"
 msgstr ""
 
-#: arista-transcode:344
+#: arista-transcode:347
 msgid "Discovering file info..."
 msgstr ""
 
-#: arista-transcode:368
+#: arista-transcode:371
 #, python-format
 msgid ""
 "All parameters to --crop/-c must be non negative integers. %i is negative, "
 "aborting."
 msgstr ""
 
-#: arista-transcode:397
+#: arista-transcode:400
 #, python-format
 msgid "Processing %(job_count)d jobs..."
 msgstr ""
@@ -733,28 +745,28 @@ msgstr ""
 msgid "Longest title found is %(filename)s"
 msgstr ""
 
-#: arista/transcoder.py:623
+#: arista/transcoder.py:624
 msgid "Unable to construct pipeline! "
 msgstr ""
 
-#: arista/transcoder.py:715 arista/transcoder.py:726
+#: arista/transcoder.py:716 arista/transcoder.py:727
 msgid "Unknown"
 msgstr ""
 
-#: arista/transcoder.py:720
+#: arista/transcoder.py:721
 msgid "Can't query position!"
 msgstr ""
 
-#: arista/transcoder.py:722
+#: arista/transcoder.py:723
 msgid "No pipeline to query!"
 msgstr ""
 
-#: arista/transcoder.py:741
+#: arista/transcoder.py:742
 #, python-format
 msgid "%(min)d:%(sec)02d"
 msgstr ""
 
-#: arista/transcoder.py:746
+#: arista/transcoder.py:747
 msgid "Problem calculating time remaining!"
 msgstr ""
 
