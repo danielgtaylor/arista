@@ -271,9 +271,11 @@ if __name__ == "__main__":
         
         preset = None
         if len(args) > 1:
-            try:
-                preset = device.presets[args[1]]
-            except KeyError:
+            for p in device.presets:
+                if p.startswith(args[1]):
+                    preset = device.presets[p]
+                    break
+            else:
                 print _("Preset not found!")
                 raise SystemExit(1)
         
