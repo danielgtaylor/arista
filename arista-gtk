@@ -1987,7 +1987,7 @@ class PresetDialog(gobject.GObject):
             "WebM": ["VP8"],
             "MP4": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
             "MOV": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
-            "AVI": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
+            "AVI": ["H.264 / AVC", "MPEG4 / DivX / XviD", "VP8"],
             "MPEG PS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
             "MPEG TS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
             "DVD (VOB)": ["MPEG2"],
