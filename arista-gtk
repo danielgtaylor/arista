@@ -1593,7 +1593,7 @@ class PresetDialog(gobject.GObject):
         "icon-changed": (gobject.SIGNAL_RUN_FIRST, None, ()),
     }
     
-    CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG2 PS", "MPEG2 TS", "DVD (VOB)", "Matroska", "Ogg", "FLV"]
+    CONTAINER_LIST = ["WebM", "MP4", "MOV", "AVI", "MPEG PS", "MPEG TS", "DVD (VOB)", "Matroska", "Ogg", "FLV"]
     MUXER_TO_CONTAINER = {
         "webmmux": 0,
         "ffmux_webm": 0,
@@ -1620,8 +1620,8 @@ class PresetDialog(gobject.GObject):
         "MP4": "mp4mux",
         "MOV": "qtmux",
         "AVI": "avimux",
-        "MPEG2 PS": "mpegpsmux",
-        "MPEG2 TS": "mpegtsmux",
+        "MPEG PS": "mpegpsmux",
+        "MPEG TS": "mpegtsmux",
         "DVD (VOB)": "ffmux_dvd",
         "Matroska": "matroskamux",
         "Ogg": "oggmux",
@@ -1974,8 +1974,8 @@ class PresetDialog(gobject.GObject):
         self.update_codecs(container)
         
         self.extension.set_text({
-            "MPEG2 PS": "mpg",
-            "MPEG2 TS": "ts",
+            "MPEG PS": "mpg",
+            "MPEG TS": "ts",
             "DVD (VOB)": "vob",
             "Matroska": "mkv"
         }.get(container, container.lower()))
@@ -1986,8 +1986,8 @@ class PresetDialog(gobject.GObject):
             "MP4": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
             "MOV": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
             "AVI": ["H.264 / AVC", "MPEG4 / DivX / XviD"],
-            "MPEG2 PS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
-            "MPEG2 TS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
+            "MPEG PS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
+            "MPEG TS": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2"],
             "DVD (VOB)": ["MPEG2"],
             "Matroska": ["H.264 / AVC", "MPEG4 / DivX / XviD", "MPEG2", "VP8", "Theora"],
             "Ogg": ["Theora"],
@@ -1999,8 +1999,8 @@ class PresetDialog(gobject.GObject):
             "MP4": ["AAC", "MP3"],
             "MOV": ["AAC", "MP3"],
             "AVI": ["AAC", "MP3", "Vorbis"],
-            "MPEG2 PS": ["AAC", "MP3"],
-            "MPEG2 TS": ["AAC", "MP3"],
+            "MPEG PS": ["AAC", "MP3"],
+            "MPEG TS": ["AAC", "MP3"],
             "DVD (VOB)": ["MP3"],
             "Matroska": ["AAC", "MP3", "Vorbis"],
             "Ogg": ["Vorbis"],
