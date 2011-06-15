@@ -31,7 +31,7 @@ data_files = [
 for (prefix, path) in [("arista", "presets"), 
                         ("arista", "ui"), 
                         ("", "locale"),
-                        ("arista": "help")]:
+                        ("arista", "help")]:
     for root, dirs, files in os.walk(path):
         to_add = []
         
