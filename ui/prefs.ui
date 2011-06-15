@@ -9,8 +9,6 @@
     <property name="step_increment">1</property>
   </object>
   <object class="GtkDialog" id="prefs_dialog">
-    <property name="width_request">430</property>
-    <property name="height_request">220</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Arista Preferences</property>
@@ -59,7 +57,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">5</property>
-                <property name="spacing">5</property>
+                <property name="spacing">6</property>
                 <child>
                   <object class="GtkFrame" id="frame1">
                     <property name="visible">True</property>
@@ -70,6 +68,8 @@
                       <object class="GtkAlignment" id="alignment1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="bottom_padding">6</property>
                         <property name="left_padding">12</property>
                         <child>
                           <object class="GtkCheckButton" id="check_inputs">
@@ -110,11 +110,14 @@
                       <object class="GtkAlignment" id="alignment2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="top_padding">6</property>
+                        <property name="bottom_padding">6</property>
                         <property name="left_padding">12</property>
                         <child>
                           <object class="GtkVBox" id="vbox3">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="spacing">6</property>
                             <child>
                               <object class="GtkCheckButton" id="check_show_live">
                                 <property name="label" translatable="yes">Show live preview during transcoding</property>
