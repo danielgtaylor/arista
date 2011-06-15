@@ -336,14 +336,17 @@ class Discoverer(gst.Pipeline):
         if "audio" in caps.to_string():
             self.audiocaps = caps
             self.audiolength = length
-            pos = 0
-            cap = caps[pos]
-            while not cap.has_key("rate"):
-                pos += 1
+            try:
+                pos = 0
                 cap = caps[pos]
-            self.audiorate = cap["rate"]
-            self.audiowidth = cap["width"]
-            self.audiochannels = cap["channels"]
+                while not cap.has_key("rate"):
+                    pos += 1
+                    cap = caps[pos]
+                self.audiorate = cap["rate"]
+                self.audiowidth = cap["width"]
+                self.audiochannels = cap["channels"]
+            except IndexError:
+                pass
             if "x-raw-float" in caps.to_string():
                 self.audiofloat = True
             else:
@@ -353,14 +356,17 @@ class Discoverer(gst.Pipeline):
         elif "video" in caps.to_string():
             self.videocaps = caps
             self.videolength = length
-            pos = 0
-            cap = caps[pos]
-            while not cap.has_key("width"):
-                pos += 1
+            try:
+                pos = 0
                 cap = caps[pos]
-            self.videowidth = cap["width"]
-            self.videoheight = cap["height"]
-            self.videorate = cap["framerate"]
+                while not cap.has_key("width"):
+                    pos += 1
+                    cap = caps[pos]
+                self.videowidth = cap["width"]
+                self.videoheight = cap["height"]
+                self.videorate = cap["framerate"]
+            except IndexError:
+                pass
             if self._nomorepads and ((not self.is_audio) or self.audiocaps):
                 self._finished(True)
 
