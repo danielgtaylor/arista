@@ -1384,10 +1384,6 @@ class AddDialog(object):
             Called when a preset is ready to be encoded after checking for
             (and optionally installing) required GStreamer elements.
         """
-        gtk.gdk.threads_enter()
-        
-        gtk.gdk.threads_leave()
-        
         if not can_encode:
             gtk.gdk.threads_enter()
             dialog = gtk.MessageDialog(self.window, type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK, message_format = _("Cannot add conversion to queue because of missing elements!"))
@@ -1410,7 +1406,7 @@ class AddDialog(object):
         outdir = self.button_destination.get_current_folder()
         
         if not os.path.isdir(inpath):
-            filenames.append((inpath, self.get_default_output_name(inpath, preset)))
+            filenames.append((inpath, os.path.join(outdir, os.path.basename(self.get_default_output_name(inpath, preset)))))
         else:
             for root, dirs, files in os.walk(inpath):
                 for fname in files:
