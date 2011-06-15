@@ -1,9 +1,14 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-14 14:45-0400\n"
+"POT-Creation-Date: 2011-06-14 23:22-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,7 +172,7 @@ msgstr ""
 msgid "Short name:"
 msgstr ""
 
-#: ui/preset.ui:158
+#: ui/preset.ui:158 arista-transcode:295
 msgid "Version:"
 msgstr ""
 
@@ -179,15 +184,15 @@ msgstr ""
 msgid "Author name:"
 msgstr ""
 
-#: ui/preset.ui:200
+#: ui/preset.ui:200 arista-transcode:292
 msgid "Model:"
 msgstr ""
 
-#: ui/preset.ui:214
+#: ui/preset.ui:214 arista-transcode:291
 msgid "Make:"
 msgstr ""
 
-#: ui/preset.ui:228
+#: ui/preset.ui:228 arista-transcode:293
 msgid "Description:"
 msgstr ""
 
@@ -195,15 +200,15 @@ msgstr ""
 msgid "Preset name:"
 msgstr ""
 
-#: ui/preset.ui:414
+#: ui/preset.ui:414 arista-transcode:302
 msgid "Container:"
 msgstr ""
 
-#: ui/preset.ui:442
+#: ui/preset.ui:442 arista-transcode:301
 msgid "Extension:"
 msgstr ""
 
-#: ui/preset.ui:503
+#: ui/preset.ui:503 arista-transcode:303
 msgid "Video codec:"
 msgstr ""
 
@@ -211,7 +216,7 @@ msgstr ""
 msgid "Codec options:"
 msgstr ""
 
-#: ui/preset.ui:594
+#: ui/preset.ui:594 arista-transcode:304
 msgid "Width:"
 msgstr ""
 
@@ -219,11 +224,11 @@ msgstr ""
 msgid "to"
 msgstr ""
 
-#: ui/preset.ui:673
+#: ui/preset.ui:673 arista-transcode:312
 msgid "Framerate:"
 msgstr ""
 
-#: ui/preset.ui:687
+#: ui/preset.ui:687 arista-transcode:308
 msgid "Height:"
 msgstr ""
 
@@ -235,11 +240,11 @@ msgstr ""
 msgid "Video Options"
 msgstr ""
 
-#: ui/preset.ui:892
+#: ui/preset.ui:892 arista-transcode:316
 msgid "Audio codec:"
 msgstr ""
 
-#: ui/preset.ui:983
+#: ui/preset.ui:983 arista-transcode:317
 msgid "Channels:"
 msgstr ""
 
@@ -282,7 +287,6 @@ msgstr ""
 #: ui/props.ui:149
 msgid "gtk-close"
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
 
 #: arista-gtk:134
 #, python-format
@@ -538,60 +542,12 @@ msgstr ""
 msgid "ID:"
 msgstr ""
 
-#: arista-transcode:291
-msgid "Make:"
-msgstr ""
-
-#: arista-transcode:292
-msgid "Model:"
-msgstr ""
-
-#: arista-transcode:293
-msgid "Description:"
-msgstr ""
-
 #: arista-transcode:294
 msgid "Author:"
 msgstr ""
 
-#: arista-transcode:295
-msgid "Version:"
-msgstr ""
-
 #: arista-transcode:299
 msgid "Presets:"
-msgstr ""
-
-#: arista-transcode:301
-msgid "Extension:"
-msgstr ""
-
-#: arista-transcode:302
-msgid "Container:"
-msgstr ""
-
-#: arista-transcode:303
-msgid "Video codec:"
-msgstr ""
-
-#: arista-transcode:304
-msgid "Width:"
-msgstr ""
-
-#: arista-transcode:308
-msgid "Height:"
-msgstr ""
-
-#: arista-transcode:312
-msgid "Framerate:"
-msgstr ""
-
-#: arista-transcode:316
-msgid "Audio codec:"
-msgstr ""
-
-#: arista-transcode:317
-msgid "Channels:"
 msgstr ""
 
 #: arista-transcode:335
