@@ -270,12 +270,12 @@ class Device(object):
         self.save()
         
         # Gather image files
-        images = []
+        images = set()
         for name, preset in self.presets.items():
             if preset.icon:
-                images.append(preset.icon[7:])
+                images.add(preset.icon[7:])
         
-        files = " ".join([os.path.basename(self.filename)] + images)
+        files = " ".join([os.path.basename(self.filename)] + list(images))
         
         cwd = os.getcwd()
         os.chdir(os.path.dirname(self.filename))
