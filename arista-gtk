@@ -308,9 +308,14 @@ class MainWindow(object):
         self.preview = self.builder.get_object("video_preview")
         self.preview_frame = self.builder.get_object("preview_frame")
         
+        self.logo = LogoWidget()
+        
+        self.window.drag_dest_set(gtk.DEST_DEFAULT_ALL, [('text/plain', 0, 0)], gtk.gdk.ACTION_COPY)
+        self.window.connect("drag-data-received", self.drag_data_received)
+        
         self.image_preview = gtk.Alignment(xscale = 1.0, yscale = 1.0)
         self.image_preview.set_padding(0, 5, 0, 0)
-        self.image_preview.add(LogoWidget())
+        self.image_preview.add(self.logo)
         self.builder.get_object("vbox_preview").pack_start(self.image_preview)
         
         self.add_dialog = None
@@ -390,6 +395,16 @@ class MainWindow(object):
                 opts = arista.transcoder.TranscoderOptions(fname, preset, output)
             
                 self.queue.append(opts)
+    
+    def drag_data_received(self, widget, context, x, y, selection, target_type, time):
+        """
+            Files were dragged and dropped into Arista. Add the first file or
+            folder as the source and show the add dialog.
+        """
+        filenames = [x.strip()[7:] for x in selection.data.split("\n") if x]
+        
+        self.on_add(None)
+        self.add_dialog.set_source_to_path(filenames[0])
     
     def on_quit(self, widget, *args):
         """
@@ -1282,33 +1297,13 @@ class AddDialog(object):
                 client = gconf.client_get_default()
                 client.set_string(CONFIG_PATH + "/last_open_path",
                                   os.path.dirname(filename))
-                pos = widget.get_active()
-                newiter = model.insert(pos)
-                icon = _get_filename_icon(filename)
-                if icon:
-                    model.set_value(newiter, 0, icon.load_icon())
-                basename = os.path.basename(filename)
-                if len(basename) > 25:
-                    basename = basename[:22] + "..."
-                model.set_value(newiter, 1, basename)
-                model.set_value(newiter, 2, filename)
-                self.fileiter = newiter
-                widget.set_active(pos)
+                self.set_source_to_path(filename)
             else:
                 if self.fileiter:
                     pos = widget.get_active()
                     widget.set_active(pos - 1)
                 else:
                     widget.set_active(0)
-
-            # Reset the custom input options
-            self.options.reset()
-
-            # Find a subtitle file with same filename
-            if filename:
-                subfilename = filename[0:filename.rfind(".")]+".srt" 
-                if os.path.exists(subfilename):
-                    self.options.subfile = subfilename
 
         elif item == _("Choose Directory..."):
             dialog = gtk.FileChooserDialog(title=_("Choose Source Directory..."),
@@ -1325,23 +1320,56 @@ class AddDialog(object):
                 directory = dialog.get_current_folder()
                 client = gconf.client_get_default()
                 client.set_string(CONFIG_PATH + "/last_open_path", directory)
-                pos = widget.get_active() - 1
-                newiter = model.insert(pos)
-                icon = icon = _get_icon_pixbuf("stock://gtk-directory", width, height)
-                model.set_value(newiter, 0, icon)
-                model.set_value(newiter, 1, os.path.basename(directory.rstrip("/")))
-                model.set_value(newiter, 2, directory)
-                self.fileiter = newiter
-                widget.set_active(pos)
+                self.set_source_to_path(directory)
             else:
                 if self.fileiter:
                     pos = widget.get_active()
                     widget.set_active(pos - 2)
                 else:
                     widget.set_active(0)
-                
-            # Reset the custom input options
-            self.options.reset()
+    
+    def set_source_to_path(self, path):
+        """
+            Set the source selector widget to a path.
+        """
+        if not hasattr(self.source, "get_model"):
+            # Source is not a combo box
+            self.source.set_filename(path)
+            return
+        
+        size = gtk.ICON_SIZE_MENU
+        width, height = gtk.icon_size_lookup(size)
+        
+        model = self.source.get_model()
+        pos = self.source.get_active()
+        newiter = model.insert(pos)
+        
+        # Reset the custom input options
+        self.options.reset()
+        
+        if os.path.isdir(path):
+            icon = icon = _get_icon_pixbuf("stock://gtk-directory", width, height)
+        else:
+            icon = _get_filename_icon(path)
+            if icon:
+                icon = icon.load_icon()
+            
+            # Find a subtitle file with same filename
+            subfilename = path[0:path.rfind(".")]+".srt" 
+            if os.path.exists(subfilename):
+                self.options.subfile = subfilename
+        
+        if icon:
+             model.set_value(newiter, 0, icon)
+        
+        basename = os.path.basename(path.rstrip("/"))
+        if len(basename) > 25:
+            basename = basename[:22] + "..."
+        model.set_value(newiter, 1, basename)
+        model.set_value(newiter, 2, path)
+        
+        self.fileiter = newiter
+        self.source.set_active(pos)
     
     def on_source_properties(self, widget):
         """
