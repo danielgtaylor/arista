@@ -154,7 +154,7 @@ def _get_filename_icon(filename):
     theme = gtk.icon_theme_get_default()
     
     names = gio.content_type_get_icon(gio.content_type_guess(filename)).get_property("names")
-    icon = theme.choose_icon(names, gtk.ICON_SIZE_MENU, 0)
+    icon = theme.choose_icon(names, gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)[0], 0)
     
     return icon
 
@@ -1028,7 +1028,7 @@ class AddDialog(object):
             depending on the settings and available devices.
         """
         theme = gtk.icon_theme_get_default()
-        size = gtk.ICON_SIZE_MENU
+        size = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)[0]
         
         # Already exists? Remove it!
         if self.source:
