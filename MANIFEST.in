@@ -1,6 +1,6 @@
 recursive-include presets *.json *.svg *.png
 recursive-include ui *.ui *.svg
 recursive-include locale *.pot *.po *.mo
-recursive-include help *.html
+recursive-include help *.html *.css
 include . AUTHORS LICENSE TODO README.md arista.desktop arista-nautilus.py
 
