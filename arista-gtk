@@ -749,7 +749,11 @@ class MainWindow(object):
             arista.presets.reset()
             if pynotify:
                 for device in devices:
-                    icon = arista.utils.get_path("presets/" + arista.presets.get()[device].icon[7:])
+                    try:
+                        icon = arista.utils.get_path("presets", arista.presets.get()[device].icon[7:])
+                    except:
+                        icon = None
+                        
                     notice = pynotify.Notification(_("Installation Successful"), _("Device preset %(name)s successfully installed.") % {
                         "name": arista.presets.get()[device].name,
                     }, icon)
