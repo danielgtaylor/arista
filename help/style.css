@@ -5,10 +5,12 @@ body {
 
 h1 {
     font-size: 150%;
+    text-shadow: 1px 1px 3px #aaa;
 }
 
 h2 {
     font-size: 120%;
+    text-shadow: 1px 1px 2px #ccc;
 }
 
 pre {
@@ -19,6 +21,7 @@ code {
     background-color: #eee;
     border: 1px solid #ddd;
     padding: 0.25em;
+    border-radius: 3px;
 }
 
 iframe {
