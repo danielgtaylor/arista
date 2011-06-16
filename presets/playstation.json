@@ -1,5 +1,5 @@
 {
-    "version": "1.1", 
+    "version": "1.2", 
     "description": "H.264/AAC for Playstation", 
     "author": {
         "name": "Daniel G. Taylor", 
@@ -24,8 +24,8 @@
                     480
                 ], 
                 "rate": [
-                    15,
-                    30
+                    "30000 / 1001",
+                    "30000 / 1001"
                 ]
             }, 
             "container": "mp4mux", 
