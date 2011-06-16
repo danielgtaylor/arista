@@ -1661,15 +1661,17 @@ class PresetDialog(gobject.GObject):
         "faac": "AAC",
         "lame": "MP3",
         "vorbisenc": "Vorbis",
-        "ffenc_ac3": "AC3",
+        "ffenc_ac3": "AC-3",
         "flacenc": "FLAC",
+        "twolame": "MP2",
     }
     ACODEC_TO_ENCODER = {
         "Vorbis": "vorbisenc",
         "AAC": "faac",
         "MP3": "lame",
-        "AC3": "ffenc_ac3",
+        "AC-3": "ffenc_ac3",
         "FLAC": "flacenc",
+        "MP2": "twolame",
     }
     EFFECT_LIST = ["None", "Rotate clockwise", "Rotate counter-clockwise", "Flip vertical", "Flip horizontal"]
     EFFECT_TO_ELEMENTS = {
@@ -2017,7 +2019,7 @@ class PresetDialog(gobject.GObject):
             "AVI": ["AAC", "MP3", "Vorbis"],
             "MPEG PS": ["AAC", "MP3"],
             "MPEG TS": ["AAC", "MP3"],
-            "DVD (VOB)": ["MP3"],
+            "DVD (VOB)": ["MP2", "AC-3"],
             "Matroska": ["AAC", "MP3", "Vorbis", "FLAC"],
             "Ogg": ["Vorbis", "FLAC"],
             "FLV": ["MP3"],
@@ -2122,6 +2124,8 @@ class PresetDialog(gobject.GObject):
                 "AAC": "profile=4 bitrate=128000",
                 "MP3": "vbr=new vbr-quality=4",
                 "FLAC": "quality=6",
+                "MP2": "bitrate=192",
+                "AC-3": "bitrate=128000",
             }.get(acodec, ""))
     
     def on_audio_options_changed(self, widget):

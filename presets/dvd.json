@@ -1,5 +1,5 @@
 {
-    "version": "1.1", 
+    "version": "1.2", 
     "description": "DivX or MPEG2 for DVD players", 
     "author": {
         "name": "Daniel G. Taylor", 
@@ -33,10 +33,10 @@
             "extension": "mpg", 
             "acodec": {
                 "passes": [
-                    "bitrate=128"
+                    "bitrate=192"
                 ], 
                 "container": "ffmux_dvd", 
-                "name": "lame", 
+                "name": "twolame", 
                 "depth": [
                     8, 
                     24
@@ -127,10 +127,10 @@
             "extension": "mpg", 
             "acodec": {
                 "passes": [
-                    "bitrate=128"
+                    "bitrate=192"
                 ], 
                 "container": "ffmux_dvd", 
-                "name": "lame", 
+                "name": "twolame", 
                 "depth": [
                     8, 
                     24
