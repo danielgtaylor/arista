@@ -618,14 +618,14 @@ def fetch(location, name):
     
     return updated
 
-def reset():
+def reset(overwrite=False, ignore_initial=False):
     # Automatically load presets
     global _presets
     
     _presets = {}
     
     load_path = utils.get_write_path("presets")
-    if not os.path.exists(os.path.join(load_path, ".initial_complete")):
+    if ignore_initial or not os.path.exists(os.path.join(load_path, ".initial_complete")):
         # Do initial population of presets from system install / cwd
         if not os.path.exists(load_path):
             os.makedirs(load_path)
@@ -639,7 +639,7 @@ def reset():
             if full != load_path and os.path.exists(full):
                 for f in os.listdir(full):
                     # Do not overwrite existing files
-                    if not os.path.exists(os.path.join(load_path, f)):
+                    if overwrite or not os.path.exists(os.path.join(load_path, f)):
                         shutil.copy2(os.path.join(full, f), load_path)
     
     load_directory(load_path)

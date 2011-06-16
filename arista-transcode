@@ -204,6 +204,9 @@ if __name__ == "__main__":
     parser.add_option("--install-preset", dest = "install",
                       action = "store_true", default=False,
                       help = _("Install a downloaded device preset file"))
+    parser.add_option("--reset-presets", dest = "reset",
+                      action = "store_true", default=False,
+                      help = _("Reset presets to factory defaults"))
 
     options, args = parser.parse_args()
     
@@ -351,6 +354,9 @@ if __name__ == "__main__":
     elif options.install:
         for arg in args:
             arista.presets.extract(open(arg))
+    elif options.reset:
+        arista.presets.reset(overwrite=True, ignore_initial=True)
+        print _("Reset complete")
     else:
         if len(args) < 1:
             parser.print_help()

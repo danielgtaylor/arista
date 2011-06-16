@@ -737,14 +737,21 @@ class MainWindow(object):
             client = gconf.client_get_default()
             client.set_string(CONFIG_PATH + "/last_open_path",
                               os.path.dirname(filename))
-            devices = arista.presets.extract(open(filename))
+            try:
+                devices = arista.presets.extract(open(filename))
+            except Exception, e:
+                _log.error(str(e))
+                dialog = gtk.MessageDialog(self.window, type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_CLOSE, message_format=_("Problem importing preset. This file does not appear to be a valid Arista preset!"))
+                dialog.run()
+                dialog.destroy()
+                return
+                
             arista.presets.reset()
-            self.setup_devices()
             if pynotify:
                 for device in devices:
                     icon = arista.utils.get_path("presets/" + arista.presets.get()[device].icon[7:])
                     notice = pynotify.Notification(_("Installation Successful"), _("Device preset %(name)s successfully installed.") % {
-                        "name": arista.presets.get()[device],
+                        "name": arista.presets.get()[device].name,
                     }, icon)
                     notice.show()
 
@@ -857,6 +864,17 @@ class PrefsDialog(object):
             been modified.
         """
         self.spin_live_fps.set_value(entry.get_value().get_int())
+    
+    def on_reset_clicked(self, widget):
+        dialog = gtk.MessageDialog(self.window, type=gtk.MESSAGE_WARNING, buttons=gtk.BUTTONS_YES_NO, message_format=_("Are you sure you want to reset your device presets? Doing so will permanently remove any modifications you have made to presets that ship with or share a short name with presets that ship with Arista!"))
+        response = dialog.run()
+        dialog.destroy()
+        
+        if response == gtk.RESPONSE_YES:
+            # Reset all presets that ship with Arista to the factory default.
+            # This does not touch user-made presets unless the shortname
+            # matches one of the factory default preset shortnames.
+            arista.presets.reset(overwrite=True, ignore_initial=True)
 
 class PropertiesDialog(object):
     """
