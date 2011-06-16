@@ -1737,7 +1737,9 @@ class PresetDialog(gobject.GObject):
         if preset.icon or preset.device.icon:
             width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_DIALOG)
             image = _get_icon_pixbuf(preset.icon or preset.device.icon, width, height)
-            self.image.set_from_pixbuf(image)
+            
+            if image:
+                self.image.set_from_pixbuf(image)
         
         self.short_name.set_text(".".join(os.path.basename(preset.device.filename).split(".")[:-1]))
         self.description.set_text(preset.description or preset.device.description)
