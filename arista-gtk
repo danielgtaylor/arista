@@ -2285,5 +2285,10 @@ if __name__ == "__main__":
     
     main = MainWindow(options)
     
+    # Renice by default to sort of background transcoding
+    if hasattr(os, "nice"):
+        _log.debug("Increasing niceness by 5...")
+        os.nice(5)
+    
     gtk.main()
 
