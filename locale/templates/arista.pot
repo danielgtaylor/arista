@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-14 23:22-0400\n"
+"POT-Creation-Date: 2011-06-15 20:24-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -136,11 +136,11 @@ msgstr ""
 msgid "Idle"
 msgstr ""
 
-#: ui/main.ui:360 ui/prefs.ui:186
+#: ui/main.ui:360 ui/prefs.ui:189
 msgid "<b>Live Preview</b>"
 msgstr ""
 
-#: ui/prefs.ui:16
+#: ui/prefs.ui:14
 msgid "Arista Preferences"
 msgstr ""
 
@@ -152,15 +152,30 @@ msgstr ""
 msgid "<b>Sources</b>"
 msgstr ""
 
-#: ui/prefs.ui:120
+#: ui/prefs.ui:123
 msgid "Show live preview during transcoding"
 msgstr ""
 
-#: ui/prefs.ui:145
+#: ui/prefs.ui:148
 msgid "Live preview framerate:"
 msgstr ""
 
-#: ui/prefs.ui:206 ui/preset.ui:483
+#: ui/prefs.ui:224
+msgid ""
+"All device presets that ship with Arista Transcoder\n"
+"can be reset to their original settings. Warning: this\n"
+"will potentially overwrite user modifications."
+msgstr ""
+
+#: ui/prefs.ui:243
+msgid "Reset Presets"
+msgstr ""
+
+#: ui/prefs.ui:272
+msgid "<b>Device Preset Reset</b>"
+msgstr ""
+
+#: ui/prefs.ui:289 ui/preset.ui:483
 msgid "General"
 msgstr ""
 
@@ -172,7 +187,7 @@ msgstr ""
 msgid "Short name:"
 msgstr ""
 
-#: ui/preset.ui:158 arista-transcode:295
+#: ui/preset.ui:158 arista-transcode:298
 msgid "Version:"
 msgstr ""
 
@@ -184,15 +199,15 @@ msgstr ""
 msgid "Author name:"
 msgstr ""
 
-#: ui/preset.ui:200 arista-transcode:292
+#: ui/preset.ui:200 arista-transcode:295
 msgid "Model:"
 msgstr ""
 
-#: ui/preset.ui:214 arista-transcode:291
+#: ui/preset.ui:214 arista-transcode:294
 msgid "Make:"
 msgstr ""
 
-#: ui/preset.ui:228 arista-transcode:293
+#: ui/preset.ui:228 arista-transcode:296
 msgid "Description:"
 msgstr ""
 
@@ -200,15 +215,15 @@ msgstr ""
 msgid "Preset name:"
 msgstr ""
 
-#: ui/preset.ui:414 arista-transcode:302
+#: ui/preset.ui:414 arista-transcode:305
 msgid "Container:"
 msgstr ""
 
-#: ui/preset.ui:442 arista-transcode:301
+#: ui/preset.ui:442 arista-transcode:304
 msgid "Extension:"
 msgstr ""
 
-#: ui/preset.ui:503 arista-transcode:303
+#: ui/preset.ui:503 arista-transcode:306
 msgid "Video codec:"
 msgstr ""
 
@@ -216,7 +231,7 @@ msgstr ""
 msgid "Codec options:"
 msgstr ""
 
-#: ui/preset.ui:594 arista-transcode:304
+#: ui/preset.ui:594 arista-transcode:307
 msgid "Width:"
 msgstr ""
 
@@ -224,11 +239,11 @@ msgstr ""
 msgid "to"
 msgstr ""
 
-#: ui/preset.ui:673 arista-transcode:312
+#: ui/preset.ui:673 arista-transcode:315
 msgid "Framerate:"
 msgstr ""
 
-#: ui/preset.ui:687 arista-transcode:308
+#: ui/preset.ui:687 arista-transcode:311
 msgid "Height:"
 msgstr ""
 
@@ -240,11 +255,11 @@ msgstr ""
 msgid "Video Options"
 msgstr ""
 
-#: ui/preset.ui:892 arista-transcode:316
+#: ui/preset.ui:892 arista-transcode:319
 msgid "Audio codec:"
 msgstr ""
 
-#: ui/preset.ui:983 arista-transcode:317
+#: ui/preset.ui:983 arista-transcode:320
 msgid "Channels:"
 msgstr ""
 
@@ -282,10 +297,6 @@ msgstr ""
 
 #: ui/props.ui:122
 msgid "<b>Deinterlacing</b>"
-msgstr ""
-
-#: ui/props.ui:149
-msgid "gtk-close"
 msgstr ""
 
 #: arista-gtk:134
@@ -334,49 +345,62 @@ msgstr ""
 msgid "finished"
 msgstr ""
 
-#: arista-gtk:728 arista-gtk:1248
+#: arista-gtk:728 arista-gtk:1266
 msgid "Choose Source File..."
 msgstr ""
 
-#: arista-gtk:746
+#: arista-gtk:744
+msgid ""
+"Problem importing preset. This file does not appear to be a valid Arista "
+"preset!"
+msgstr ""
+
+#: arista-gtk:753
 msgid "Installation Successful"
 msgstr ""
 
-#: arista-gtk:746
+#: arista-gtk:753
 #, python-format
 msgid "Device preset %(name)s successfully installed."
 msgstr ""
 
-#: arista-gtk:955
+#: arista-gtk:869
+msgid ""
+"Are you sure you want to reset your device presets? Doing so will "
+"permanently remove any modifications you have made to presets that ship with "
+"or share a short name with presets that ship with Arista!"
+msgstr ""
+
+#: arista-gtk:973
 msgid "Device Preset"
 msgstr ""
 
-#: arista-gtk:1059
+#: arista-gtk:1077
 #, python-format
 msgid "Unknown V4L version %(version)s!"
 msgstr ""
 
-#: arista-gtk:1067 arista-gtk:1083 arista-gtk:1085 arista-gtk:1247
+#: arista-gtk:1085 arista-gtk:1101 arista-gtk:1103 arista-gtk:1265
 msgid "Choose File..."
 msgstr ""
 
-#: arista-gtk:1072 arista-gtk:1291
+#: arista-gtk:1090 arista-gtk:1309
 msgid "Choose Directory..."
 msgstr ""
 
-#: arista-gtk:1292
+#: arista-gtk:1310
 msgid "Choose Source Directory..."
 msgstr ""
 
-#: arista-gtk:1393
+#: arista-gtk:1407
 msgid "Cannot add conversion to queue because of missing elements!"
 msgstr ""
 
-#: arista-gtk:1804
+#: arista-gtk:1820
 msgid "Saving preset to disk..."
 msgstr ""
 
-#: arista-gtk:1812
+#: arista-gtk:1828
 #, python-format
 msgid ""
 "You are about to export %(count)d presets with the short name "
@@ -384,45 +408,45 @@ msgid ""
 "change the short name. Do you want to continue?"
 msgstr ""
 
-#: arista-gtk:1822
+#: arista-gtk:1838
 msgid "Export Preset"
 msgstr ""
 
-#: arista-gtk:1842
+#: arista-gtk:1858
 #, python-format
 msgid "Export of '%(shortname)s' with %(count)d presets complete."
 msgstr ""
 
-#: arista-gtk:1847
+#: arista-gtk:1863
 #, python-format
 msgid "Export of '%(name)s' complete."
 msgstr ""
 
-#: arista-gtk:1857
+#: arista-gtk:1873
 msgid "Choose Preset Icon..."
 msgstr ""
 
-#: arista-gtk:2206
+#: arista-gtk:2223
 msgid "%prog [options] [file1 file2 file3 ...]"
 msgstr ""
 
-#: arista-gtk:2207
+#: arista-gtk:2224
 msgid "Arista Transcoder GUI "
 msgstr ""
 
-#: arista-gtk:2211 arista-transcode:203
+#: arista-gtk:2228 arista-transcode:203
 msgid "Show verbose (debug) output"
 msgstr ""
 
-#: arista-gtk:2213 arista-transcode:190
+#: arista-gtk:2230 arista-transcode:190
 msgid "Preset to encode to [default]"
 msgstr ""
 
-#: arista-gtk:2215 arista-transcode:192
+#: arista-gtk:2232 arista-transcode:192
 msgid "Device to encode to [computer]"
 msgstr ""
 
-#: arista-gtk:2217
+#: arista-gtk:2234
 msgid "Simple UI"
 msgstr ""
 
@@ -504,68 +528,76 @@ msgstr ""
 msgid "Install a downloaded device preset file"
 msgstr ""
 
-#: arista-transcode:244
+#: arista-transcode:209
+msgid "Reset presets to factory defaults"
+msgstr ""
+
+#: arista-transcode:247
 msgid "Available devices:"
 msgstr ""
 
-#: arista-transcode:252
+#: arista-transcode:255
 #, python-format
 msgid "%(name)s: %(description)s"
 msgstr ""
 
-#: arista-transcode:258
+#: arista-transcode:261
 #, python-format
 msgid "%(spacing)s- %(name)s%(description)s"
 msgstr ""
 
-#: arista-transcode:264
+#: arista-transcode:267
 msgid "Use --info device_name preset_name for more information on a preset."
 msgstr ""
 
-#: arista-transcode:270
+#: arista-transcode:273
 msgid "Device not found!"
 msgstr ""
 
-#: arista-transcode:280
+#: arista-transcode:283
 msgid "Preset not found!"
 msgstr ""
 
-#: arista-transcode:284
+#: arista-transcode:287
 msgid "Preset info:"
 msgstr ""
 
-#: arista-transcode:286
+#: arista-transcode:289
 msgid "Device info:"
 msgstr ""
 
-#: arista-transcode:290
+#: arista-transcode:293
 msgid "ID:"
 msgstr ""
 
-#: arista-transcode:294
+#: arista-transcode:297
 msgid "Author:"
 msgstr ""
 
-#: arista-transcode:299
+#: arista-transcode:302
 msgid "Presets:"
 msgstr ""
 
-#: arista-transcode:335
+#: arista-transcode:338
 msgid "You may only pass one filename for --source-info!"
 msgstr ""
 
-#: arista-transcode:347
+#: arista-transcode:350
 msgid "Discovering file info..."
 msgstr ""
 
-#: arista-transcode:371
+#: arista-transcode:359
+msgid "Reset complete"
+msgstr ""
+
+#: arista-transcode:377
 #, python-format
 msgid ""
 "All parameters to --crop/-c must be non negative integers. %i is negative, "
 "aborting."
 msgstr ""
 
-#: arista-transcode:400
+#: arista-transcode:406
 #, python-format
 msgid "Processing %(job_count)d jobs..."
 msgstr ""
