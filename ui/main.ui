@@ -324,7 +324,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="button_cancel">
-                            <property name="label">gtk-cancel</property>
+                            <property name="label">gtk-media-stop</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
