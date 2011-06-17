@@ -201,6 +201,8 @@ class TranscodeQueue(gobject.GObject):
             
             def error(transcoder, errorstr):
                 self.emit("entry-error", item, errorstr)
+                self._queue.pop(0)
+                self.pipe_running = False
             
             item.transcoder.connect("discovered", discovered)
             item.transcoder.connect("pass-setup", pass_setup)
