@@ -596,7 +596,8 @@ class Transcoder(gobject.GObject):
                 if premux.startswith("mux"):
                     amux += "audio_%d"
             
-            cmd += " dmux. ! queue ! audioconvert ! audiorate ! " \
+            cmd += " dmux. ! queue ! audioconvert ! " \
+                   "audiorate tolerance=100000000 ! " \
                    "audioresample ! %s ! %s ! %s" % \
                    (self.acaps.to_string(), aencoder, amux)
         
