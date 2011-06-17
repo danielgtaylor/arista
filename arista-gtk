@@ -1081,7 +1081,7 @@ class AddDialog(object):
                     iter = model.append()
                     model.set_value(iter, 0, theme.load_icon(icon, size, 0))
                     model.set_value(iter, 1, drive.nice_label)
-                    model.set_value(iter, 2, "dvd://" + block)
+                    model.set_value(iter, 2, ("dvd://" + block, drive.media))
                 
                 for device, capture in self.finder.capture_devices.items():
                     iter = model.append()
@@ -1089,9 +1089,9 @@ class AddDialog(object):
                                                              size, 0))
                     model.set_value(iter, 1, capture.nice_label)
                     if capture.version == '1':
-                        model.set_value(iter, 2, "v4l://" + device)
+                        model.set_value(iter, 2, ("v4l://" + device, True))
                     elif capture.version == '2':
-                        model.set_value(iter, 2, "v4l2://" + device)
+                        model.set_value(iter, 2, ("v4l2://" + device, True))
                     else:
                         _log.warning(_("Unknown V4L version %(version)s!") % {
                                        "version": capture.version,
@@ -1233,9 +1233,15 @@ class AddDialog(object):
     def on_preset_changed(self, selection):
         model, iter = selection.get_selected()
         
+        if hasattr(self.source, "get_model"):
+            smodel, siter = self.source.get_model(), self.source.get_active_iter()
+            source = smodel.get_value(siter, 2)[1]
+        else:
+            source = self.source.get_filename()
+        
         self.button_del.set_sensitive(bool(iter))
         self.button_info.set_sensitive(bool(iter))
-        self.button_add.set_sensitive(bool(iter))
+        self.button_add.set_sensitive(bool(iter and source))
     
     def on_disc_found(self, finder, device, label):
         """
@@ -1243,9 +1249,12 @@ class AddDialog(object):
         """
         model = self.source.get_model()
         for pos, item in enumerate(model):
-            if item[2] and item[2].endswith(device.path):
-                model[pos] = (item[0], device.nice_label, item[2])
+            if item[2] and item[2][0].endswith(device.path):
+                model[pos] = (item[0], device.nice_label, (item[2][0], True))
                 break
+        
+        # Update UI sensitivity of various buttons
+        self.on_preset_changed(self.presets_view.get_selection())
     
     def on_disc_lost(self, finder, device, label):
         """
@@ -1253,9 +1262,12 @@ class AddDialog(object):
         """
         model = self.source.get_model()
         for pos, item in enumerate(model):
-            if item[2].endswith(device.path):
-                model[pos] = (item[0], device.nice_label, item[2])
+            if item[2] and item[2][0].endswith(device.path):
+                model[pos] = (item[0], device.nice_label, (item[2][0], False))
                 break
+        
+        # Update UI sensitivity of various buttons
+        self.on_preset_changed(self.presets_view.get_selection())
     
     def on_gconf_last_open_path(self, client, connection, entry, args):
         """
@@ -1327,6 +1339,9 @@ class AddDialog(object):
                     widget.set_active(pos - 2)
                 else:
                     widget.set_active(0)
+        
+        # Simulate preset being changed to update UI sensitivity to clicks
+        self.on_preset_changed(self.presets_view.get_selection())
     
     def set_source_to_path(self, path):
         """
@@ -1366,7 +1381,7 @@ class AddDialog(object):
         if len(basename) > 25:
             basename = basename[:22] + "..."
         model.set_value(newiter, 1, basename)
-        model.set_value(newiter, 2, path)
+        model.set_value(newiter, 2, (path, True))
         
         self.fileiter = newiter
         self.source.set_active(pos)
@@ -1446,7 +1461,7 @@ class AddDialog(object):
         if isinstance(self.source, gtk.ComboBox):
             iter = self.source.get_active_iter()
             model = self.source.get_model()
-            inpath = model.get_value(iter, 2)
+            inpath = model.get_value(iter, 2)[0]
             inname = os.path.basename(inpath)
         else:
             inpath = self.source.get_filename()
