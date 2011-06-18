@@ -117,6 +117,7 @@ on Launchpad using a bazaar tracking branch of this git repository. The
 GitHub page is here:
 
  * [Github project page](http://github.com/danielgtaylor/arista)
+ * [Translations page](https://translations.launchpad.net/arista)
 
 You can grab a copy of the source code for Arista via:
 
