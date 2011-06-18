@@ -183,7 +183,7 @@ class LogoWidget(gtk.Widget):
             height = self.allocation.height,
             window_type = gtk.gdk.WINDOW_CHILD,
             wclass = gtk.gdk.INPUT_OUTPUT,
-            event_mask = self.get_events() | gtk.gdk.EXPOSURE_MASK)
+            event_mask = self.get_events() | gtk.gdk.EXPOSURE_MASK | gtk.gdk.BUTTON_PRESS_MASK)
         
         self.window.set_user_data(self)
         
@@ -309,6 +309,7 @@ class MainWindow(object):
         self.preview_frame = self.builder.get_object("preview_frame")
         
         self.logo = LogoWidget()
+        self.logo.connect("button-press-event", self.logo_button_pressed)
         
         self.window.drag_dest_set(gtk.DEST_DEFAULT_ALL, [('text/plain', 0, 0)], gtk.gdk.ACTION_COPY)
         self.window.connect("drag-data-received", self.drag_data_received)
@@ -406,6 +407,34 @@ class MainWindow(object):
         self.on_add(None)
         self.add_dialog.set_source_to_path(filenames[0])
     
+    def logo_button_pressed(self, widget, event):
+        """
+            Listen for button presses on the logo - if one of the preset icons
+            is pressed then show the add icon with that preset selected.
+        """
+        w, h = self.logo.allocation.width, self.logo.allocation.height
+        lw, lh = self.logo.pixbuf.get_width(), self.logo.pixbuf.get_height()
+        x, y = event.x, event.y
+        # Convert coordinates from widget-local to pixbuf-local
+        lx = x - ((w - lw) / 2)
+        ly = y - ((h - lh) / 2)
+        # See which preset was clicked and launch the create dialog with the
+        # given preset selected
+        if lx >= 50 and lx <= 93 and ly >= 155 and ly <= 195:
+            self.on_add(None, "DVD Player - DivX Home Theater")
+        elif lx >= 104 and lx <= 153 and ly >= 154 and ly <= 195:
+            self.on_add(None, "Computer - WebM")
+        elif lx >= 171 and lx <= 212 and ly >= 156 and ly <= 195:
+            self.on_add(None, "Computer - H.264")
+        elif lx >= 229 and lx <= 260 and ly >= 153 and ly <= 195:
+            self.on_add(None, "Apple iOS - iPad")
+        elif lx >= 276 and lx <= 298 and ly >= 157 and ly <= 195:
+            self.on_add(None, "Apple iOS - iPhone / iPod Touch")
+        elif lx >= 316 and lx <= 336 and ly >= 156 and ly <= 195:
+            self.on_add(None, "Android - Nexus One / Desire")
+        elif lx >= 352 and lx <= 399 and ly >= 168 and ly <= 193:
+            self.on_add(None, "Sony Playstation - PSP")
+    
     def on_quit(self, widget, *args):
         """
             Stop the transcoder and hopefully let it cleanup, then exit.
@@ -443,7 +472,7 @@ class MainWindow(object):
         else:
             self.transcoder.start()
     
-    def on_add(self, widget):
+    def on_add(self, widget, selected_preset=None):
         """
             Add an item to the queue. This shows a file chooser dialog to 
             pick the output filename and then adds the item to the queue for
@@ -452,11 +481,13 @@ class MainWindow(object):
         if self.add_dialog:
             if self.add_dialog.window.get_property("visible"):
                 self.add_dialog.window.present()
+                if selected_preset:
+                    self.add_dialog.select_preset(selected_preset)
                 return
             else:
                 self.add_dialog.window.destroy()
         
-        self.add_dialog = AddDialog(self)
+        self.add_dialog = AddDialog(self, selected_preset)
     
     def on_get_new(self, widget):
         """
@@ -956,8 +987,9 @@ class AddDialog(object):
     """
         A dialog for creating new conversion jobs.
     """
-    def __init__(self, parent):
+    def __init__(self, parent, selected_preset=None):
         self.parent = parent
+        self.selected_preset = selected_preset
         
         ui_path = arista.utils.get_path("ui", "add.ui")
         
@@ -1160,6 +1192,9 @@ class AddDialog(object):
         
         self.presets_view.set_cursor(model.get_path(self.default_device))
         self.presets_view.scroll_to_cell(model.get_path(self.default_device))
+        
+        if self.selected_preset:
+            self.select_preset(self.selected_preset)
     
     def _add_device(self, model, device, preset):
         iter = model.append()
@@ -1194,6 +1229,16 @@ class AddDialog(object):
                 return True
         
         return False
+    
+    def select_preset(self, name):
+        """
+            Select a named preset in the list. If it is not found then the
+            selection is not updated.
+        """
+        for item in self.presets_model:
+            if item[1].split("\n")[0].strip("</b>") == name:
+                self.presets_view.set_cursor(item.path)
+                self.presets_view.scroll_to_cell(item.path)
     
     def get_default_output_name(self, inname, preset):
         """
