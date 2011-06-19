@@ -311,8 +311,11 @@ class MainWindow(object):
         self.logo = LogoWidget()
         self.logo.connect("button-press-event", self.logo_button_pressed)
         
-        self.window.drag_dest_set(gtk.DEST_DEFAULT_ALL, [('text/plain', 0, 0)], gtk.gdk.ACTION_COPY)
-        self.window.connect("drag-data-received", self.drag_data_received)
+        self.logo.drag_dest_set(gtk.DEST_DEFAULT_ALL, [('text/plain', 0, 0)], gtk.gdk.ACTION_COPY)
+        self.logo.connect("drag-data-received", self.drag_data_received)
+        
+        self.preview.drag_dest_set(gtk.DEST_DEFAULT_ALL, [('text/plain', 0, 0)], gtk.gdk.ACTION_COPY)
+        self.preview.connect("drag-data-received", self.drag_data_received)
         
         self.image_preview = gtk.Alignment(xscale = 1.0, yscale = 1.0)
         self.image_preview.set_padding(0, 5, 0, 0)
@@ -397,14 +400,51 @@ class MainWindow(object):
             
                 self.queue.append(opts)
     
+    def _get_preset_from_coords(self, x, y):
+        """
+            Get a preset from a set of widget-local coordinates on the logo
+            widget. If a preset is clicked then the name is returned, otherwise
+            None is returned.
+        """
+        # Get logo dimensions, pixbuf dimensions
+        w, h = self.logo.allocation.width, self.logo.allocation.height
+        lw, lh = self.logo.pixbuf.get_width(), self.logo.pixbuf.get_height()
+        # Convert coordinates from widget-local to pixbuf-local
+        lx = x - ((w - lw) / 2)
+        ly = y - ((h - lh) / 2)
+        
+        # Find the preset that was clicked, if any
+        preset = None
+        
+        if lx >= 50 and lx <= 93 and ly >= 155 and ly <= 195:
+            preset = "DVD Player - DivX Home Theater"
+        elif lx >= 104 and lx <= 153 and ly >= 154 and ly <= 195:
+            preset = "Computer - WebM"
+        elif lx >= 171 and lx <= 212 and ly >= 156 and ly <= 195:
+            preset = "Computer - H.264"
+        elif lx >= 229 and lx <= 260 and ly >= 153 and ly <= 195:
+            preset = "Apple iOS - iPad"
+        elif lx >= 276 and lx <= 298 and ly >= 157 and ly <= 195:
+            preset = "Apple iOS - iPhone / iPod Touch"
+        elif lx >= 316 and lx <= 336 and ly >= 156 and ly <= 195:
+            preset = "Android - Nexus One / Desire"
+        elif lx >= 352 and lx <= 399 and ly >= 168 and ly <= 193:
+            preset = "Sony Playstation - PSP"
+        
+        return preset
+    
     def drag_data_received(self, widget, context, x, y, selection, target_type, time):
         """
             Files were dragged and dropped into Arista. Add the first file or
             folder as the source and show the add dialog.
         """
-        filenames = [x.strip()[7:] for x in selection.data.split("\n") if x]
+        filenames = [f.strip()[7:] for f in selection.data.split("\n") if x]
         
-        self.on_add(None)
+        preset = None
+        if widget == self.logo:
+            preset = self._get_preset_from_coords(x, y)
+        
+        self.on_add(None, preset)
         self.add_dialog.set_source_to_path(filenames[0])
     
     def logo_button_pressed(self, widget, event):
@@ -412,28 +452,12 @@ class MainWindow(object):
             Listen for button presses on the logo - if one of the preset icons
             is pressed then show the add icon with that preset selected.
         """
-        w, h = self.logo.allocation.width, self.logo.allocation.height
-        lw, lh = self.logo.pixbuf.get_width(), self.logo.pixbuf.get_height()
-        x, y = event.x, event.y
-        # Convert coordinates from widget-local to pixbuf-local
-        lx = x - ((w - lw) / 2)
-        ly = y - ((h - lh) / 2)
+        
         # See which preset was clicked and launch the create dialog with the
         # given preset selected
-        if lx >= 50 and lx <= 93 and ly >= 155 and ly <= 195:
-            self.on_add(None, "DVD Player - DivX Home Theater")
-        elif lx >= 104 and lx <= 153 and ly >= 154 and ly <= 195:
-            self.on_add(None, "Computer - WebM")
-        elif lx >= 171 and lx <= 212 and ly >= 156 and ly <= 195:
-            self.on_add(None, "Computer - H.264")
-        elif lx >= 229 and lx <= 260 and ly >= 153 and ly <= 195:
-            self.on_add(None, "Apple iOS - iPad")
-        elif lx >= 276 and lx <= 298 and ly >= 157 and ly <= 195:
-            self.on_add(None, "Apple iOS - iPhone / iPod Touch")
-        elif lx >= 316 and lx <= 336 and ly >= 156 and ly <= 195:
-            self.on_add(None, "Android - Nexus One / Desire")
-        elif lx >= 352 and lx <= 399 and ly >= 168 and ly <= 193:
-            self.on_add(None, "Sony Playstation - PSP")
+        preset = self._get_preset_from_coords(event.x, event.y)
+        if preset:
+            self.on_add(None, preset)
     
     def on_quit(self, widget, *args):
         """
