@@ -1264,18 +1264,18 @@ class AddDialog(object):
                 self.presets_view.set_cursor(item.path)
                 self.presets_view.scroll_to_cell(item.path)
     
-    def get_default_output_name(self, inname, preset):
+    def get_default_output_name(self, inname, outdir, preset):
         """
             Get the default recommended output filename given an input path
-            and a preset. The original extension is removed, then the new
+            and a dir/preset. The original extension is removed, then the new
             preset extension is added. If such a path already exists then
             numbers are added before the extension until a non-existing path
             is found to exist.
         """
         if "." in inname:
-            default_out = ".".join(inname.split(".")[:-1]) + "." + preset.extension
+            default_out = os.path.join(outdir, os.path.basename(".".join(inname.split(".")[:-1]) + "." + preset.extension))
         else:
-            default_out = inname + "." + preset.extension
+            default_out = os.path.join(outdir, os.path.basename(inname + "." + preset.extension))
         
         while os.path.exists(default_out):
             parts = default_out.split(".")
@@ -1290,6 +1290,7 @@ class AddDialog(object):
                 number = 1
                 
             default_out = "%s%d.%s" % (name, number, ext)
+            print default_out
         
         return default_out
     
@@ -1504,12 +1505,12 @@ class AddDialog(object):
         outdir = self.button_destination.get_current_folder()
         
         if not os.path.isdir(inpath):
-            filenames.append((inpath, os.path.join(outdir, os.path.basename(self.get_default_output_name(inpath, preset)))))
+            filenames.append((inpath, self.get_default_output_name(inpath, outdir, preset)))
         else:
             for root, dirs, files in os.walk(inpath):
                 for fname in files:
                     full_path = os.path.join(root, fname)
-                    filenames.append((full_path, os.path.join(outdir, os.path.basename(self.get_default_output_name(full_path, preset)))))
+                    filenames.append((full_path, self.get_default_output_name(full_path, outdir, preset)))
         
         for inpath, outpath in filenames:
             # Setup the transcode job options
