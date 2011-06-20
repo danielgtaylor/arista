@@ -66,7 +66,7 @@ class AristaInstall(install_data):
 
 setup(
     name = "arista",
-    version = "0.9.7",
+    version = "0.9.8",
     description = "An easy multimedia transcoder for GNOME",
     long_description = """Overview
 ========
