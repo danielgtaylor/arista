@@ -1176,6 +1176,7 @@ class AddDialog(object):
                 self.source = gtk.FileChooserButton(_("Choose File..."))
         else:
             self.source = gtk.FileChooserButton(_("Choose File..."))
+            self.source.connect("selection-changed", self.on_source_changed)
         
         # Add properties button to set source properties like subtitles
         source_prop_image = gtk.Image()
@@ -1355,6 +1356,12 @@ class AddDialog(object):
         """
             The source combo box or file chooser button has changed, update!
         """
+        if not hasattr(self.source, "get_model"):
+            # Source is a simple file selector
+            # Simulate preset being changed to update UI sensitivity to clicks
+            self.on_preset_changed(self.presets_view.get_selection())
+            return
+            
         theme = gtk.icon_theme_get_default()
         size = gtk.ICON_SIZE_MENU
         width, height = gtk.icon_size_lookup(size)
