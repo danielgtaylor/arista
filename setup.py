@@ -59,7 +59,10 @@ class AristaInstall(install_data):
                     if fname.endswith(".py"):
                         full = os.path.join(self.root + sys.prefix, path, fname)
                         print "byte-compiling %s" % full
-                        byte_compile([full], prefix=self.root, base_dir=sys.prefix)
+                        try:
+                           byte_compile([full], prefix=self.root, base_dir=sys.prefix)
+                        except Exception, e:
+                           print "Byte-compile failed: " + str(e)
 
 setup(
     name = "arista",
