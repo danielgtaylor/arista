@@ -1290,7 +1290,6 @@ class AddDialog(object):
                 number = 1
                 
             default_out = "%s%d.%s" % (name, number, ext)
-            print default_out
         
         return default_out
     
