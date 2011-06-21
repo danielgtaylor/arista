@@ -1148,6 +1148,9 @@ class AddDialog(object):
         except ValueError:
             check_inputs = DEFAULT_CHECK_INPUTS
         
+        self.source = _new_combo_with_image([gobject.TYPE_PYOBJECT])
+        model = self.source.get_model()
+        
         if check_inputs:
             # Setup input source discovery
             # Adds DVD and V4L devices to the source combo box
@@ -1155,8 +1158,6 @@ class AddDialog(object):
                 self.finder = arista.inputs.InputFinder()
                 
             icon = gtk.stock_lookup(gtk.STOCK_CDROM)[0]
-            self.source = _new_combo_with_image([gobject.TYPE_PYOBJECT])
-            model = self.source.get_model()
             
             if len(self.finder.drives) or len(self.finder.capture_devices):
                 for block, drive in self.finder.drives.items():
@@ -1181,27 +1182,24 @@ class AddDialog(object):
                         model.remove(iter)
                 
                 self.source.set_active(0)
-            
-            iter = model.append()
-            icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
-            model.set_value(iter, 0, theme.load_icon(icon, size, 0))
-            model.set_value(iter, 1, _("Choose File..."))
-            
-            iter = model.append()
-            icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
-            model.set_value(iter, 0, theme.load_icon(icon, size, 0))
-            model.set_value(iter, 1, _("Choose Directory..."))
-            
-            self.source.connect("changed", self.on_source_changed)
-            
+                
             # Watch for DVD discovery events
             self.finder_disc_found = self.finder.connect("disc-found",
                                                     self.on_disc_found)
             self.finder_disc_lost = self.finder.connect("disc-lost",
                                                     self.on_disc_lost)
-        else:
-            self.source = gtk.FileChooserButton(_("Choose File..."))
-            self.source.connect("selection-changed", self.on_source_changed)
+            
+        iter = model.append()
+        icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
+        model.set_value(iter, 0, theme.load_icon(icon, size, 0))
+        model.set_value(iter, 1, _("Choose File..."))
+        
+        iter = model.append()
+        icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
+        model.set_value(iter, 0, theme.load_icon(icon, size, 0))
+        model.set_value(iter, 1, _("Choose Directory..."))
+        
+        self.source.connect("changed", self.on_source_changed)
         
         # Add properties button to set source properties like subtitles
         source_prop_image = gtk.Image()
@@ -1328,18 +1326,15 @@ class AddDialog(object):
     def on_preset_changed(self, selection):
         model, iter = selection.get_selected()
         
-        if hasattr(self.source, "get_model"):
-            smodel, siter = self.source.get_model(), self.source.get_active_iter()
-            if siter:
-                try:
-                    source = smodel.get_value(siter, 2)[1]
-                except TypeError:
-                    # Not a tuple? Maybe None or a string instead, ignore
-                    source = None
-            else:
+        smodel, siter = self.source.get_model(), self.source.get_active_iter()
+        if siter:
+            try:
+                source = smodel.get_value(siter, 2)[1]
+            except TypeError:
+                # Not a tuple? Maybe None or a string instead, ignore
                 source = None
         else:
-            source = self.source.get_filename()
+            source = None
         
         self.button_del.set_sensitive(bool(iter))
         self.button_info.set_sensitive(bool(iter))
@@ -1388,12 +1383,6 @@ class AddDialog(object):
         """
             The source combo box or file chooser button has changed, update!
         """
-        if not hasattr(self.source, "get_model"):
-            # Source is a simple file selector
-            # Simulate preset being changed to update UI sensitivity to clicks
-            self.on_preset_changed(self.presets_view.get_selection())
-            return
-            
         theme = gtk.icon_theme_get_default()
         size = gtk.ICON_SIZE_MENU
         width, height = gtk.icon_size_lookup(size)
@@ -1455,11 +1444,6 @@ class AddDialog(object):
         """
             Set the source selector widget to a path.
         """
-        if not hasattr(self.source, "get_model"):
-            # Source is not a combo box
-            self.source.set_filename(path)
-            return
-        
         size = gtk.ICON_SIZE_MENU
         width, height = gtk.icon_size_lookup(size)
         
@@ -1535,14 +1519,10 @@ class AddDialog(object):
             return
         
         gtk.gdk.threads_enter()
-        if isinstance(self.source, gtk.ComboBox):
-            iter = self.source.get_active_iter()
-            model = self.source.get_model()
-            inpath = model.get_value(iter, 2)[0]
-            inname = os.path.basename(inpath)
-        else:
-            inpath = self.source.get_filename()
-            inname = os.path.basename(inpath)
+        iter = self.source.get_active_iter()
+        model = self.source.get_model()
+        inpath = model.get_value(iter, 2)[0]
+        inname = os.path.basename(inpath)
         
         filenames = []
         outdir = self.button_destination.get_current_folder()
