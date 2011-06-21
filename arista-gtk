@@ -158,6 +158,32 @@ def _get_filename_icon(filename):
     
     return icon
 
+class DvdInfo(gobject.GObject):
+    """
+        Get info about a DVD using an external process running lsdvd. Emits
+        a GObject signal when ready with the DVD info.
+    """
+    __gsignals__ = {
+        "ready": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,  (gobject.TYPE_PYOBJECT,)),
+    }
+
+    def __init__(self, path):
+        self.path = path
+        self.proc = subprocess.Popen('lsdvd -x -Oy %s' % path, stdin=subprocess.PIPE, shell=True)
+
+        gobject.timeout_add(100, self.run)
+
+    def run(self):
+        if self.proc.poll() is not None:
+            # TODO: is there a safer way to do this?
+            exec(self.proc.stdin.read())
+            
+            self.emit("ready", lsdvd)
+            
+            return False
+
+        return True
+
 class LogoWidget(gtk.Widget):
     """
         A widget to show the Arista logo.
@@ -957,8 +983,8 @@ class PropertiesDialog(object):
         A simple dialog to set properties for the input source, such as
         subtitles and deinterlacing.
     """
-    def __init__(self, options):
-        self.options = options
+    def __init__(self, dialog):
+        self.options = dialog.options
     
         ui_path = arista.utils.get_path("ui", "props.ui")
         
@@ -1128,11 +1154,11 @@ class AddDialog(object):
             if not self.finder:
                 self.finder = arista.inputs.InputFinder()
                 
+            icon = gtk.stock_lookup(gtk.STOCK_CDROM)[0]
+            self.source = _new_combo_with_image([gobject.TYPE_PYOBJECT])
+            model = self.source.get_model()
+            
             if len(self.finder.drives) or len(self.finder.capture_devices):
-                icon = gtk.stock_lookup(gtk.STOCK_CDROM)[0]
-                self.source = _new_combo_with_image([gobject.TYPE_PYOBJECT])
-                model = self.source.get_model()
-                
                 for block, drive in self.finder.drives.items():
                     iter = model.append()
                     model.set_value(iter, 0, theme.load_icon(icon, size, 0))
@@ -1154,26 +1180,25 @@ class AddDialog(object):
                                     })
                         model.remove(iter)
                 
-                iter = model.append()
-                icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
-                model.set_value(iter, 0, theme.load_icon(icon, size, 0))
-                model.set_value(iter, 1, _("Choose File..."))
-                
-                iter = model.append()
-                icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
-                model.set_value(iter, 0, theme.load_icon(icon, size, 0))
-                model.set_value(iter, 1, _("Choose Directory..."))
-                
                 self.source.set_active(0)
-                self.source.connect("changed", self.on_source_changed)
-                
-                # Watch for DVD discovery events
-                self.finder_disc_found = self.finder.connect("disc-found",
-                                                        self.on_disc_found)
-                self.finder_disc_lost = self.finder.connect("disc-lost",
-                                                        self.on_disc_lost)
-            else:
-                self.source = gtk.FileChooserButton(_("Choose File..."))
+            
+            iter = model.append()
+            icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
+            model.set_value(iter, 0, theme.load_icon(icon, size, 0))
+            model.set_value(iter, 1, _("Choose File..."))
+            
+            iter = model.append()
+            icon = gtk.stock_lookup(gtk.STOCK_OPEN)[0]
+            model.set_value(iter, 0, theme.load_icon(icon, size, 0))
+            model.set_value(iter, 1, _("Choose Directory..."))
+            
+            self.source.connect("changed", self.on_source_changed)
+            
+            # Watch for DVD discovery events
+            self.finder_disc_found = self.finder.connect("disc-found",
+                                                    self.on_disc_found)
+            self.finder_disc_lost = self.finder.connect("disc-lost",
+                                                    self.on_disc_lost)
         else:
             self.source = gtk.FileChooserButton(_("Choose File..."))
             self.source.connect("selection-changed", self.on_source_changed)
@@ -1305,7 +1330,14 @@ class AddDialog(object):
         
         if hasattr(self.source, "get_model"):
             smodel, siter = self.source.get_model(), self.source.get_active_iter()
-            source = smodel.get_value(siter, 2)[1]
+            if siter:
+                try:
+                    source = smodel.get_value(siter, 2)[1]
+                except TypeError:
+                    # Not a tuple? Maybe None or a string instead, ignore
+                    source = None
+            else:
+                source = None
         else:
             source = self.source.get_filename()
         
@@ -1433,6 +1465,11 @@ class AddDialog(object):
         
         model = self.source.get_model()
         pos = self.source.get_active()
+        
+        # No current item selected? Just put new item at first position
+        if pos == -1:
+            pos = 0
+        
         newiter = model.insert(pos)
         
         # Reset the custom input options
@@ -1467,7 +1504,7 @@ class AddDialog(object):
             Show source properties dialog so user can set things like
             subtitles, forcing deinterlacing, etc.
         """
-        dialog = PropertiesDialog(self.options)
+        dialog = PropertiesDialog(self)
         dialog.window.run()
         dialog.window.destroy()
     
