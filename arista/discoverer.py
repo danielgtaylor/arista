@@ -22,7 +22,7 @@
 """
 Class and functions for getting multimedia information about files
 
-Modified to support dvd://device@title style URIs using dvdreadsrc.
+Modified to support dvd://device@title:chapter:audio style URIs using dvdreadsrc.
 Modified to support v4l://device style URIs using v4lsrc.
 Modified to support v4l2://device style URIs using v4l2src.
 
@@ -136,9 +136,15 @@ class Discoverer(gst.Pipeline):
             if len(parts) > 1:
                 # Specific chapter was requested, so we need to use a different
                 # source to manually specify the title to decode.
+                rest = parts[1].split(":")
                 self.src = gst.element_factory_make("dvdreadsrc")
                 self.src.set_property("device", parts[0][6:])
-                self.src.set_property("title", int(parts[1]))
+                self.src.set_property("title", int(rest[0]))
+                if len(rest) > 1:
+                    try:
+                        self.src.set_property("chapter", int(rest[1]))
+                    except:
+                        pass
                 self.dbin = gst.element_factory_make("decodebin2")
                 
                 self.add(self.src, self.dbin)

@@ -37,6 +37,7 @@ Dependencies
  * gstreamer-plugins-bad
  * gstreamer-plugins-ugly
  * python-webkit (for in-app documentation)
+ * lsdvd (to read DVD title information)
 
 Debian users may need to install these additional dependencies:
 

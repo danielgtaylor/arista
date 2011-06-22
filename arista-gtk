@@ -33,6 +33,7 @@ import logging
 import os
 import re
 import shutil
+import subprocess
 import sys
 import threading
 import time
@@ -168,21 +169,26 @@ class DvdInfo(gobject.GObject):
     }
 
     def __init__(self, path):
+        gobject.GObject.__init__(self)
         self.path = path
-        self.proc = subprocess.Popen('lsdvd -x -Oy %s' % path, stdin=subprocess.PIPE, shell=True)
+        self.proc = subprocess.Popen('lsdvd -x -Oy %s' % path, stdout=subprocess.PIPE, shell=True)
 
         gobject.timeout_add(100, self.run)
 
     def run(self):
+        # Check if we have the info, if not, return and we will be called
+        # again to check in 100ms.
         if self.proc.poll() is not None:
-            # TODO: is there a safer way to do this?
-            exec(self.proc.stdin.read())
-            
-            self.emit("ready", lsdvd)
+            if self.proc.returncode == 0:
+                # TODO: is there a safer way to do this?
+                exec(self.proc.stdout.read())
+                self.emit("ready", lsdvd)
             
             return False
 
         return True
+
+gobject.type_register(DvdInfo)
 
 class LogoWidget(gtk.Widget):
     """
@@ -983,8 +989,9 @@ class PropertiesDialog(object):
         A simple dialog to set properties for the input source, such as
         subtitles and deinterlacing.
     """
-    def __init__(self, dialog):
-        self.options = dialog.options
+    def __init__(self, path, options):
+        self.path = path
+        self.options = options
     
         ui_path = arista.utils.get_path("ui", "props.ui")
         
@@ -992,9 +999,23 @@ class PropertiesDialog(object):
         self.builder.add_from_file(ui_path)
         
         self.window = self.builder.get_object("props_dialog")
+        self.frame_dvd = self.builder.get_object("frame_dvd")
+        self.table_dvd = self.builder.get_object("table_dvd")
+        self.combo_title = self.builder.get_object("combo_title")
+        self.combo_chapter = self.builder.get_object("combo_chapter")
+        self.combo_audio = self.builder.get_object("combo_audio")
         self.subs = self.builder.get_object("filechooserbutton_subs")
         self.font = self.builder.get_object("fontbutton")
         self.deinterlace = self.builder.get_object("checkbutton_deinterlace")
+        
+        # GStreamer's DVD handling is VERY limited, to the point of making
+        # chapter and audio stream selection extremely difficult if not
+        # impossible when using gst-launch. Hide chapter and audio selection
+        # until this can be fixed somehow!
+        self.table_dvd.remove(self.builder.get_object("label_chapter"))
+        self.table_dvd.remove(self.combo_chapter)
+        self.table_dvd.remove(self.builder.get_object("label_audio"))
+        self.table_dvd.remove(self.combo_audio)
         
         if options.subfile:
             self.subs.set_filename(options.subfile)
@@ -1005,15 +1026,145 @@ class PropertiesDialog(object):
         if options.deinterlace:
             self.deinterlace.set_active(options.deinterlace)
         
+        if path.startswith("dvd://"):
+            # Setup combo boxes
+            for combo, handler in [(self.combo_title, self.on_title_changed), (self.combo_chapter, self.on_chapter_changed), (self.combo_audio, self.on_audio_changed)]:
+                store = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)
+                text_cell = gtk.CellRendererText()
+                combo.set_model(store)
+                combo.pack_start(text_cell, True)
+                combo.add_attribute(text_cell, 'text', 0)
+                iter = store.append()
+                store.set_value(iter, 0, "Auto")
+                store.set_value(iter, 1, None)
+                combo.set_active(0)
+                combo.connect("changed", handler)
+            
+            # Get DVD info
+            info = DvdInfo(path[6:])
+            info.connect("ready", self.on_dvd_info_ready)
+        else:
+            self.frame_dvd.hide()
+        
         self.builder.connect_signals(self)
         
-        self.window.show_all()
+        self.window.show()
+    
+    def on_dvd_info_ready(self, widget, lsdvd):
+        """
+            Got DVD info, store it and populate the title list.
+        """
+        self.lsdvd = lsdvd
+        title_model = self.combo_title.get_model()
+        
+        for track in lsdvd["track"]:
+            iter = title_model.append()
+            title_model.set_value(iter, 0,"Title %(index)02d - %(length)s" % {
+                "index": track["ix"],
+                "length": arista.utils.get_friendly_time(track["length"]),
+            })
+            title_model.set_value(iter, 1, track)
+        
+        if self.options.title:
+            self.combo_title.set_active(self.options.title)
+        
+        self.combo_title.set_sensitive(True)
     
     def on_close(self, widget, response):
         """
             Close was clicked, remove the window.
         """
         self.window.destroy()
+    
+    def on_title_changed(self, widget):
+        """
+            Title was changed by user, update chapter and audio info, store
+            selected title in options.
+        """
+        sensitive = False
+        track = None
+        iter = self.combo_title.get_active_iter()
+        chapter_index = 0
+        audio_index = 0
+        
+        # Temporarily disable signal handling
+        self.combo_chapter.handler_block_by_func(self.on_chapter_changed)
+        self.combo_audio.handler_block_by_func(self.on_audio_changed)
+        
+        # Update models
+        if iter:
+            track = self.combo_title.get_model().get_value(iter, 1)
+            
+            if track:
+                chapter_model = self.combo_chapter.get_model()
+                audio_model = self.combo_audio.get_model()
+                
+                for model in [chapter_model, audio_model]:
+                    model.clear()
+                    iter = model.append()
+                    model.set_value(iter, 0, "Auto")
+                    model.set_value(iter, 1, None)
+                
+                for chapter in track["chapter"]:
+                    iter = chapter_model.append()
+                    chapter_model.set_value(iter, 0, "Chapter %(index)02d - %(length)s" % {
+                        "index": chapter["ix"],
+                        "length": arista.utils.get_friendly_time(chapter["length"]),
+                    })
+                    chapter_model.set_value(iter, 1, chapter)
+                
+                for audio in track["audio"]:
+                    iter = audio_model.append()
+                    audio_model.set_value(iter, 0, "Audio %(index)02d - %(language)s" % {
+                        "index": audio["ix"],
+                        "language": audio["language"],
+                    })
+                    audio_model.set_value(iter, 1, audio)
+                
+                sensitive = True
+                
+                if self.options.title == track["ix"]:
+                    chapter_index = self.options.chapter or 0
+                    audio_index = self.options.audio or 0
+        
+        # Store new title
+        self.options.title = track and track["ix"] or None
+        
+        # Set chapter/audio selection
+        self.combo_chapter.set_active(chapter_index)
+        self.combo_audio.set_active(audio_index)
+        
+        # Restore signal handling
+        self.combo_chapter.handler_unblock_by_func(self.on_chapter_changed)
+        self.combo_audio.handler_unblock_by_func(self.on_audio_changed)
+        
+        # Set combos sensitive or not
+        self.combo_chapter.set_sensitive(sensitive)
+        self.combo_audio.set_sensitive(sensitive)
+    
+    def on_chapter_changed(self, widget):
+        """
+            Chapter has changed - store new value in encoding options
+        """
+        chapter = None
+        
+        iter = self.combo_chapter.get_active_iter()
+        if iter:
+            chapter = self.combo_chapter.get_model().get_value(iter, 1)
+        
+        self.options.chapter = chapter and chapter["ix"] or None
+    
+    def on_audio_changed(self, widget):
+        """
+            Audio track has changed - store new value in encoding options
+        """
+        audio = None
+        
+        iter = self.combo_audio.get_active_iter()
+        if iter:
+            audio = self.combo_audio.get_model().get_value(iter, 1)
+        
+        self.options.audio = audio and audio["ix"] or None
     
     def on_subs_set(self, widget):
         """
@@ -1323,22 +1474,27 @@ class AddDialog(object):
         """
         self.presets_filter.refilter()
     
-    def on_preset_changed(self, selection):
-        model, iter = selection.get_selected()
-        
+    def get_source(self):
         smodel, siter = self.source.get_model(), self.source.get_active_iter()
         if siter:
             try:
-                source = smodel.get_value(siter, 2)[1]
+                source = smodel.get_value(siter, 2)
             except TypeError:
                 # Not a tuple? Maybe None or a string instead, ignore
-                source = None
+                source = ('', False)
         else:
-            source = None
+            source = ('', False)
+        
+        return source
+    
+    def on_preset_changed(self, selection):
+        model, iter = selection.get_selected()
+        
+        path, active = self.get_source()
         
         self.button_del.set_sensitive(bool(iter))
         self.button_info.set_sensitive(bool(iter))
-        self.button_add.set_sensitive(bool(iter and source))
+        self.button_add.set_sensitive(bool(iter and active))
     
     def on_disc_found(self, finder, device, label):
         """
@@ -1488,7 +1644,7 @@ class AddDialog(object):
             Show source properties dialog so user can set things like
             subtitles, forcing deinterlacing, etc.
         """
-        dialog = PropertiesDialog(self)
+        dialog = PropertiesDialog(self.get_source()[0], self.options)
         dialog.window.run()
         dialog.window.destroy()
     

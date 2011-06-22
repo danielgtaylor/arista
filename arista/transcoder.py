@@ -87,7 +87,8 @@ class TranscoderOptions(object):
     """
     def __init__(self, uri = None, preset = None, output_uri = None, ssa = False,
                  subfile = None, subfile_charset = None, font = "Sans Bold 16",
-                 deinterlace = None, crop = None):
+                 deinterlace = None, crop = None, title = None, chapter = None,
+                 audio = None):
         """
             @type uri: str
             @param uri: The URI to the input file, device, or stream
@@ -107,13 +108,20 @@ class TranscoderOptions(object):
             @type crop: int tuple
             @param crop: How much should be cropped on each side
                                     (top, right, bottom, left)
+            @type title: int
+            @param title: DVD title index
+            @type chatper: int
+            @param chapter: DVD chapter index
+            @type audio: int
+            @param audio: DVD audio stream index
         """
         self.reset(uri, preset, output_uri, ssa,subfile, subfile_charset, font,
-                   deinterlace, crop)
+                   deinterlace, crop, title, chapter, audio)
     
     def reset(self, uri = None, preset = None, output_uri = None, ssa = False,
               subfile = None, subfile_charset = None, font = "Sans Bold 16",
-              deinterlace = None, crop = None):
+              deinterlace = None, crop = None, title = None, chapter = None,
+              audio = None):
         """
             Reset the input options to nothing.
         """
@@ -126,6 +134,9 @@ class TranscoderOptions(object):
         self.font = font
         self.deinterlace = deinterlace
         self.crop = crop
+        self.title = title
+        self.chapter = chapter
+        self.audio = audio
 
 # =============================================================================
 # The Transcoder
@@ -166,16 +177,24 @@ class Transcoder(gobject.GObject):
         self._percent_cached_time = 0
         
         if options.uri.startswith("dvd://") and len(options.uri.split("@")) < 2:
+            options.uri += "@%(title)s:%(chapter)s:%(audio)s" % {
+                "title": options.title or "a",
+                "chapter": options.chapter or "a",
+                "audio": options.audio or "a",
+            }
+            
+        if not options.title:
             # This is a DVD and no title is yet selected... find the best
             # candidate by searching for the longest title!
-            self.options.uri += "@0"
+            parts = options.uri.split("@")
+            options.uri = parts[0] + "@0:a:a"
             self.dvd_infos = []
             
             def _got_info(info, is_media):
                 self.dvd_infos.append([discoverer, info])
                 parts = self.options.uri.split("@")
                 fname = parts[0]
-                title = int(parts[1])
+                title = int(parts[1].split(":")[0])
                 if title >= 8:
                     # We've checked 8 titles, let's give up and pick the
                     # most likely to be the main feature.
@@ -209,7 +228,7 @@ class Transcoder(gobject.GObject):
                         self.start()
                         return
                 
-                self.options.uri = fname + "@" + str(title + 1)
+                self.options.uri = fname + "@" + str(title + 1) + ":a:a"
                 self.discoverer = discoverer.Discoverer(options.uri)
                 self.discoverer.connect("discovered", _got_info)
                 self.discoverer.discover()
@@ -271,18 +290,23 @@ class Transcoder(gobject.GObject):
         if self.infile.startswith("dvd://"):
             parts = self.infile.split("@")
             device = parts[0][6:]
+            rest = len(parts) > 1 and parts[1].split(":")
             
             title = 1
-            if len(parts) > 1:
+            if rest:
                 try:
-                    title = int(parts[1])
+                    title = int(rest[0])
                 except:
                     title = 1
+                try:
+                    chapter = int(rest[1])
+                except:
+                    chapter = None
             
             if self.options.deinterlace is None:
                 self.options.deinterlace = True
             
-            return "dvdreadsrc device=\"%s\" title=%d ! decodebin2 name=dmux" % (device, title)
+            return "dvdreadsrc device=\"%s\" title=%d %s ! decodebin2 name=dmux" % (device, title, chapter and "chapter=" + str(chapter) or '')
         elif self.infile.startswith("v4l://") or self.infile.startswith("v4l2://"):
             filename = self.infile
         elif self.infile.startswith("file://"):

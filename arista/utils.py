@@ -130,6 +130,21 @@ def get_write_path(*parts, **kwargs):
             "path": path,
         })
 
+def get_friendly_time(seconds):
+   """
+      Get a human-friendly time description.
+   """
+   hours = seconds / (60 * 60)
+   seconds = seconds % (60 * 60)
+   minutes = seconds / 60
+   seconds = seconds % 60
+   
+   return "%(hours)02d:%(minutes)02d:%(seconds)02d" % {
+      "hours": hours,
+      "minutes": minutes,
+      "seconds": seconds,
+   }
+
 def generate_output_path(filename, preset, to_be_created=[],
                          device_name=""):
     """
