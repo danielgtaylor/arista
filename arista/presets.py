@@ -634,7 +634,12 @@ def reset(overwrite=False, ignore_initial=False):
         open(os.path.join(load_path, ".initial_complete"), "w").close()
         
         # Copy actual files
-        for path in utils.get_search_paths():
+        search_paths = utils.get_search_paths()
+        if overwrite:
+            # Reverse search paths because things will get overwritten
+            search_paths = reversed(search_paths)
+        
+        for path in search_paths:
             full = os.path.join(path, "presets")
             if full != load_path and os.path.exists(full):
                 for f in os.listdir(full):
