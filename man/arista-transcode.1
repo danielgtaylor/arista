@@ -1,0 +1,83 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH ARISTA-TRANSCODE 1 "July 16, 2009"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+arista-transcode \-  multimedia transcoding tool for the GNOME Desktop
+.SH SYNOPSIS
+.B arista-transcode
+.RI [ options ] " infile outfile" ...
+.SH DESCRIPTION
+This manual page documents briefly the
+.B arista-transcode
+command.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBarista\fP is a multimedia transcoder for the GNOME Desktop which allows
+user to encode audio and video streams for a wide variety of devices.
+.PP
+.B arista-transcode
+is a command line program which allows user to encode audio and video stream
+for various devices.
+.PP
+Features include automatic discovery of DVD media and V4L devices, ripping
+from DVD or files, a live quality preview, and included presets for the
+most popular devices currently in use.
+.SH OPTIONS
+This program follows the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+.TP
+.B \-h, \-\-help
+Show summary of options.
+.TP
+.B \-v, \-\-version
+Show version of program.
+.TP
+.B \-i, \-\-info
+Show information about available devices.
+.TP
+.B \-S SUBTITLE, \-\-subtitle=SUBTITLE
+Subtitle file to render.
+.TP
+.B \-f FONT, \-\-font=FONT
+Font to use when rendering subtitles.
+.TP
+.B \-p PRESET, \-\-preset=PRESET
+Preset to encode to [default].
+.TP
+.B \-d DEVICE, \-\-device=DEVICE
+Device to encode to [computer].
+.TP
+.B \-s, \-\-source-info
+Show information about input file and exit.
+.TP
+.B \-q, \-\-quiet
+Don't show status and time remaining.
+.TP
+.B -v, \-\-verbose
+Show verbose (debug) output.
+.TP 
+.B \-u, \-\-update
+Check for and download updated device presets if they are available
+.SH SEE ALSO
+.BR arista-gtk (1).
+.SH AUTHOR
+arista-transcode was written by Daniel G. Taylor <dan@programmer-art.org>.
+.PP
+This manual page was written by Alessio Treglia <quadrispro@ubuntu.com>,
+for the Ubuntu project (and may be used by others).
