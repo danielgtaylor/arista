@@ -62,7 +62,7 @@
             "name": "Droid / Milestone", 
             "container": "mp4mux", 
             "extension": "mp4", 
-            "icon": "file://android-droid.png", 
+            "icon": "file://android-droid.svg", 
             "vcodec": {
                 "name": "x264enc", 
                 "container": "mp4mux", 
@@ -114,7 +114,7 @@
 			}, 
 			"container": "mp4mux", 
             "extension": "mp4", 
-            "icon": "file://android-spica.png", 
+            "icon": "file://android-galaxy-lite.svg", 
             "vcodec": {
                 "name": "x264enc", 
                 "container": "mp4mux", 
@@ -155,7 +155,7 @@
             "name": "G1 / Dream", 
             "container": "mp4mux", 
             "extension": "mp4", 
-            "icon": "file://android-g1.png", 
+            "icon": "file://android-g1.svg", 
             "vcodec": {
                 "name": "x264enc", 
                 "container": "mp4mux", 
@@ -207,7 +207,7 @@
             }, 
             "extension": "mp4", 
             "container": "mp4mux", 
-            "icon": "file://droidx.png", 
+            "icon": "file://android-droidx.svg", 
             "vcodec": {
                 "name": "x264enc", 
                 "container": "mp4mux", 
@@ -251,7 +251,7 @@
                 "email": "pierre.pericard@gmail.com"
             }, 
             "extension": "mp4", 
-            "icon": "file://android-galaxy-s.png", 
+            "icon": "file://android-galaxy-s.svg", 
             "container": "mp4mux", 
             "vcodec": {
                 "name": "x264enc", 
