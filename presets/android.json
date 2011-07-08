@@ -2,7 +2,7 @@
     "make": "Generic", 
     "model": "Android", 
     "description": "Presets for various Android devices", 
-    "version": "1.7", 
+    "version": "1.8", 
     "author": {
         "name": "Daniel G. Taylor", 
         "email": "dan@programmer-art.org"
