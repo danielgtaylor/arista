@@ -183,7 +183,7 @@ class Transcoder(gobject.GObject):
                 "audio": options.audio or "a",
             }
             
-        if not options.title:
+        if options.uri.startswith("dvd://") and not options.title:
             # This is a DVD and no title is yet selected... find the best
             # candidate by searching for the longest title!
             parts = options.uri.split("@")
