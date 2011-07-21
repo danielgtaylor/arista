@@ -130,12 +130,13 @@ class Discoverer(gst.Pipeline):
         self._timeoutid = 0
         self._max_interleave = max_interleave
         
+        self.src = None
         self.dbin = None
         if filename.startswith("dvd://"):
             parts = filename.split("@")
             if len(parts) > 1:
-                # Specific chapter was requested, so we need to use a different
-                # source to manually specify the title to decode.
+                # Specific title/chapter was requested, so we need to use a 
+                # different source to manually specify the title to decode.
                 rest = parts[1].split(":")
                 self.src = gst.element_factory_make("dvdreadsrc")
                 self.src.set_property("device", parts[0][6:])
@@ -145,16 +146,6 @@ class Discoverer(gst.Pipeline):
                         self.src.set_property("chapter", int(rest[1]))
                     except:
                         pass
-                self.dbin = gst.element_factory_make("decodebin2")
-                
-                self.add(self.src, self.dbin)
-                self.src.link(self.dbin)
-                
-                self.typefind = self.dbin.get_by_name("typefind")
-                self.typefind.connect("have-type", self._have_type_cb)
-                
-                self.dbin.connect("new-decoded-pad", self._new_decoded_pad_cb)
-                self.dbin.connect("no-more-pads", self._no_more_pads_cb)
         elif filename.startswith("v4l://"):
             pass
         elif filename.startswith("v4l2://"):
@@ -162,9 +153,24 @@ class Discoverer(gst.Pipeline):
         elif filename.startswith("file://"):
             pass
         else:
-            filename = "file://" + os.path.abspath(filename)
+            # uridecodebin fails to properly decode some files because it only
+            # uses decodebin2 functionality.
+            #filename = "file://" + os.path.abspath(filename)
+            self.src = gst.element_factory_make("filesrc")
+            self.src.set_property("location", os.path.abspath(filename))
         
-        if not self.dbin:
+        if self.src is not None:
+            self.dbin = gst.element_factory_make("decodebin")
+                
+            self.add(self.src, self.dbin)
+            self.src.link(self.dbin)
+            
+            self.typefind = self.dbin.get_by_name("typefind")
+            self.typefind.connect("have-type", self._have_type_cb)
+            
+            self.dbin.connect("new-decoded-pad", self._new_decoded_pad_cb)
+            self.dbin.connect("no-more-pads", self._no_more_pads_cb)
+        else:
             # No custom source was setup, so let's use the uridecodebin!
             self.dbin = gst.element_factory_make("uridecodebin")
             self.dbin.set_property("uri", filename)
