@@ -45,6 +45,7 @@ def init():
         importing.
     """
     import discoverer
+    import dvd
     import inputs
     import presets
     import queue

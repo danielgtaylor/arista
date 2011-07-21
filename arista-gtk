@@ -159,37 +159,6 @@ def _get_filename_icon(filename):
     
     return icon
 
-class DvdInfo(gobject.GObject):
-    """
-        Get info about a DVD using an external process running lsdvd. Emits
-        a GObject signal when ready with the DVD info.
-    """
-    __gsignals__ = {
-        "ready": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,  (gobject.TYPE_PYOBJECT,)),
-    }
-
-    def __init__(self, path):
-        gobject.GObject.__init__(self)
-        self.path = path
-        self.proc = subprocess.Popen('lsdvd -x -Oy %s' % path, stdout=subprocess.PIPE, shell=True)
-
-        gobject.timeout_add(100, self.run)
-
-    def run(self):
-        # Check if we have the info, if not, return and we will be called
-        # again to check in 100ms.
-        if self.proc.poll() is not None:
-            if self.proc.returncode == 0:
-                # TODO: is there a safer way to do this?
-                exec(self.proc.stdout.read())
-                self.emit("ready", lsdvd)
-            
-            return False
-
-        return True
-
-gobject.type_register(DvdInfo)
-
 class LogoWidget(gtk.Widget):
     """
         A widget to show the Arista logo.
@@ -1041,7 +1010,7 @@ class PropertiesDialog(object):
                 combo.connect("changed", handler)
             
             # Get DVD info
-            info = DvdInfo(path[6:])
+            info = arista.dvd.DvdInfo(path[6:])
             info.connect("ready", self.on_dvd_info_ready)
         else:
             self.frame_dvd.hide()
