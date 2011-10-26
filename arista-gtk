@@ -1288,8 +1288,11 @@ class AddDialog(object):
                 
                 for device, capture in self.finder.capture_devices.items():
                     iter = model.append()
-                    model.set_value(iter, 0, theme.load_icon("camera-video",
+                    try:
+                        model.set_value(iter, 0, theme.load_icon("camera-video",
                                                              size, 0))
+                    except:
+                        pass
                     model.set_value(iter, 1, capture.nice_label)
                     if capture.version == '1':
                         model.set_value(iter, 2, ("v4l://" + device, True))
