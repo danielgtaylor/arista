@@ -1,0 +1,83 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH ARISTA-TRANSCODE 1 "July 16, 2009"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NOME
+arista-transcode \-  ferramenta de conversão mumtimídia para o Ambiente GNOME
+.SH SINOPSE
+.B arista-transcode
+.RI [ opções ] " arquivo_entrada arquivo_saída" ...
+.SH DESCRIÇÃO
+Este manual documenta brevemente o comando \fBarista-transcode\fP.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBarista\fP é um conversor multimídia para o Ambiente GNOME que permite
+o usuário converter áudio e vídeo para uma variedade de dispositivos.
+.PP
+.B arista-transcode
+é um programa de linha de comando que permite o usuário converter áudio e vídeo
+para vários dispositivos.
+.PP
+Seus recursos incluem descoberta automática de mídias de DVD e dispositivos V4L, extraindo
+do DVD ou arquivos, uma pré-visualização de qualidade, e inclui perfis para os
+mais populares dispositivos atualmente em uso.
+.SH OPÇÕES
+Este programa segue a sintaxe de linha de comando usual do GNU, com opções
+longas iniciando por dois traços (`-').
+.TP
+.B \-h, \-\-help
+Mostra resumo de opções.
+.TP
+.B \-v, \-\-version
+Mostra a versão do programa.
+.TP
+.B \-i, \-\-info
+Mostra informação sobre os dispositivos disponíveis.
+.TP
+.B \-S LEGENDA, \-\-subtitle=LEGENDA
+Arquivo de legenda a ser renderizado.
+.TP
+.B \-f FONTE, \-\-font=FONTE
+Fonte a ser utilizada ao renderizar legendas.
+.TP
+.B \-p PERFIL,\-\-preset=PERFIL
+Perfil para codificar [default].
+.TP
+.B \-d DISPOSITIVO, \-\-device=DISPOSITIVO
+Dispositivo para codificar [computador].
+.TP
+.B \-s, \-\-source-info
+Mostra informação sobre o arquivo de entrada e encerra.
+.TP
+.B \-q, \-\-quiet
+Não mostra status e tempo restante.
+.TP
+.B -v, \-\-verbose
+Mostra saída detalhada (debug).
+.TP 
+.B \-u, \-\-update
+Verifica e baixa atualização de perfil de dispositivos se estiverem disponíveis.
+.SH VER TAMBÉM
+.BR arista-gtk (1).
+.SH AUTOR
+arista-transcode foi escrito por Daniel G. Taylor <dan@programmer-art.org>.
+.PP
+Este manual foi escrito por Alessio Treglia <quadrispro@ubuntu.com>,
+para o projeto Ubuntu (e pode ser usado por outros).
+.SH TRADUÇÃO E REVISÃO PARA PORTUGUÊS DO BRASIL
+Átila Camurça <camurca.home@gmail.com>, Darlildo Lima <darlildo.cefetce@gmail.com>.

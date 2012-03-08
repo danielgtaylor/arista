@@ -1,7 +1,9 @@
 [Desktop Entry]
 Name=Arista Transcoder
 GenericName=Multimedia Converter
+GenericName[pt_BR]=Conversor Multimídia
 Comment=Convert multimedia for all your devices
+Comment[pt_BR]=Converta arquivos multimídia para todos os seus dispositivos
 Exec=arista-gtk
 StartupNotify=true
 Terminal=false
