@@ -4,6 +4,7 @@ GenericName=Multimedia Converter
 GenericName[pt_BR]=Conversor Multimídia
 Comment=Convert multimedia for all your devices
 Comment[pt_BR]=Converta arquivos multimídia para todos os seus dispositivos
+Comment[id]=Konverter multimedia untuk semua perangkat anda
 Exec=arista-gtk
 StartupNotify=true
 Terminal=false
